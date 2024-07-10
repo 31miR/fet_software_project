@@ -3,6 +3,18 @@
   <groupId>fet_software_project</groupId>
   <artifactId>fet_software_project</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <dependencies>
+         <dependency>
+             <groupId>org.hibernate</groupId>
+             <artifactId>hibernate-core</artifactId>
+             <version>5.6.4.Final</version>
+         </dependency>
+         <dependency>
+             <groupId>mysql</groupId>
+             <artifactId>mysql-connector-java</artifactId>
+             <version>8.0.28</version>
+         </dependency>
+  </dependencies>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <plugins>
