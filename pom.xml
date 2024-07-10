@@ -16,6 +16,12 @@
          </dependency>
   </dependencies>
   <build>
+	<resources>
+             <resource>
+                 <directory>src</directory>
+             </resource>
+             <!-- Any additional resource directories -->
+         </resources>
     <sourceDirectory>src</sourceDirectory>
     <plugins>
       <plugin>
