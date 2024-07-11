@@ -9,7 +9,7 @@ public class Application {
 
 	     // Create and persist a new entity
 	     em.getTransaction().begin();
-	     Product product = new Product(1L, "Laptop", 2.5);
+	     Product product = new Product(1L, "Laptop", 3.5);
 	     em.persist(product);
 	     em.getTransaction().commit();
 
