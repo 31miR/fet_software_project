@@ -1,6 +1,8 @@
 package model;
 
-import javax.persistence.Id;
+import java.util.List;
+
+import javax.persistence.*;
 
 public class Organizator {
 	@Id
@@ -11,7 +13,9 @@ public class Organizator {
 	private String lastName;
 	private String address;
 	private String phone;
-	//TODO: dodatna relacijska mapiranja sa entitijima kao sto su dogadjaji
+	private boolean profileApproved;
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "organizator")
+	private List<Dogadjaj> dogadjaji;
 	public String getUsername() {
 		return username;
 	}
@@ -53,5 +57,17 @@ public class Organizator {
 	}
 	public void setPhone(String phone) {
 		this.phone = phone;
+	}
+	public boolean isProfileApproved() {
+		return profileApproved;
+	}
+	public void setProfileApproved(boolean profileApproved) {
+		this.profileApproved = profileApproved;
+	}
+	public List<Dogadjaj> getDogadjaji() {
+		return dogadjaji;
+	}
+	public void setDogadjaji(List<Dogadjaj> dogadjaji) {
+		this.dogadjaji = dogadjaji;
 	}
 }
