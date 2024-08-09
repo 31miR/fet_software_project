@@ -1,5 +1,7 @@
 package model;
 
+import java.util.List;
+
 import javax.persistence.*;
 
 @Entity
@@ -14,7 +16,9 @@ public class Korisnik {
 	private String phone;
 	private double walletBalance;
 	private double discountRate;
-	//TODO: dodati relacijsko mapiranje sa Karta entity
+	private boolean profileApproved;
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "korisnik")
+	private List<Karta> karte;
 	public String getUsername() {
 		return username;
 	}
@@ -68,5 +72,17 @@ public class Korisnik {
 	}
 	public void setDiscountRate(double discountRate) {
 		this.discountRate = discountRate;
+	}
+	public boolean isProfileApproved() {
+		return profileApproved;
+	}
+	public void setProfileApproved(boolean profileApproved) {
+		this.profileApproved = profileApproved;
+	}
+	public List<Karta> getKarte() {
+		return karte;
+	}
+	public void setKarte(List<Karta> karte) {
+		this.karte = karte;
 	}
 }
