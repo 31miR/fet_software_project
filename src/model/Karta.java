@@ -9,6 +9,7 @@ public class Karta {
 	private int karta_id;
 	private int cijena; //store prices as ints, eg. 3.45$ is 345 in here
 	private int cijenaRezervacije;
+	private String sjediste;
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Sektor sektor;
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -34,6 +35,12 @@ public class Karta {
 	}
 	public void setCijenaRezervacije(int cijenaRezervacije) {
 		this.cijenaRezervacije = cijenaRezervacije;
+	}
+	public String getSjediste() {
+		return sjediste;
+	}
+	public void setSjediste(String sjediste) {
+		this.sjediste = sjediste;
 	}
 	public Sektor getSektor() {
 		return sektor;
