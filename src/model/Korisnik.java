@@ -15,7 +15,7 @@ public class Korisnik {
 	private String address;
 	private String phone;
 	private double walletBalance;
-	private double discountRate;
+	private int brojKupljenihKarti;
 	private boolean profileApproved;
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "korisnik")
 	private List<Karta> karte;
@@ -67,11 +67,11 @@ public class Korisnik {
 	public void setWalletBalance(double walletBalance) {
 		this.walletBalance = walletBalance;
 	}
-	public double getDiscountRate() {
-		return discountRate;
+	public int getBrojKupljenihKarti() {
+		return brojKupljenihKarti;
 	}
-	public void setDiscountRate(double discountRate) {
-		this.discountRate = discountRate;
+	public void setBrojKupljenihKarti(int brojKupljenihKarti) {
+		this.brojKupljenihKarti = brojKupljenihKarti;
 	}
 	public boolean isProfileApproved() {
 		return profileApproved;
