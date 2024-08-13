@@ -13,6 +13,7 @@ public class Lokacija {
 	private int kapacitet;
 	private String grad;
 	private String adresa;
+	private String slika; //lokacija slike
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "lokacija")
 	private List<Dogadjaj> dogadjaji;
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "lokacija")
@@ -46,6 +47,12 @@ public class Lokacija {
 	}
 	public void setAdresa(String adresa) {
 		this.adresa = adresa;
+	}
+	public String getSlika() {
+		return slika;
+	}
+	public void setSlika(String slika) {
+		this.slika = slika;
 	}
 	public List<Dogadjaj> getDogadjaji() {
 		return dogadjaji;
