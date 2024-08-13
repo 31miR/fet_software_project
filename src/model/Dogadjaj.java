@@ -12,6 +12,12 @@ public class Dogadjaj {
 	private String naziv;
 	private String opis;
 	private java.util.Date datum;
+	private String vrsta;
+	private String podvrsta;
+	private String slika; //lokacija slike u projektu
+	private boolean zavrsio;
+	private int maxKartiPoKorisniku;
+	private boolean naplataPriRegistraciji;
 	private boolean dogadjajApproved;
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Organizator organizator;
@@ -42,6 +48,42 @@ public class Dogadjaj {
 	}
 	public void setDatum(java.util.Date datum) {
 		this.datum = datum;
+	}
+	public String getVrsta() {
+		return vrsta;
+	}
+	public void setVrsta(String vrsta) {
+		this.vrsta = vrsta;
+	}
+	public String getPodvrsta() {
+		return podvrsta;
+	}
+	public void setPodvrsta(String podvrsta) {
+		this.podvrsta = podvrsta;
+	}
+	public String getSlika() {
+		return slika;
+	}
+	public void setSlika(String slika) {
+		this.slika = slika;
+	}
+	public boolean isZavrsio() {
+		return zavrsio;
+	}
+	public void setZavrsio(boolean zavrsio) {
+		this.zavrsio = zavrsio;
+	}
+	public int getMaxKartiPoKorisniku() {
+		return maxKartiPoKorisniku;
+	}
+	public void setMaxKartiPoKorisniku(int maxKartiPoKorisniku) {
+		this.maxKartiPoKorisniku = maxKartiPoKorisniku;
+	}
+	public boolean isNaplataPriRegistraciji() {
+		return naplataPriRegistraciji;
+	}
+	public void setNaplataPriRegistraciji(boolean naplataPriRegistraciji) {
+		this.naplataPriRegistraciji = naplataPriRegistraciji;
 	}
 	public boolean isDogadjajApproved() {
 		return dogadjajApproved;
