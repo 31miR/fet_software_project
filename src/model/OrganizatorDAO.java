@@ -1,11 +1,13 @@
 package model;
 
 import misc.EntityManagerFactoryHolder;
+
+import java.util.List;
+
 import javax.persistence.*;
 
 public class OrganizatorDAO {
 	private EntityManagerFactory emf = EntityManagerFactoryHolder.getEntityManagerFactory();
-	
 	public Organizator searchByUserName(String name) {
 		try {
 			EntityManager em = emf.createEntityManager();
@@ -19,12 +21,18 @@ public class OrganizatorDAO {
 			return null; //Makes this a total function, i.e. returns valid value for all inputs (I HOPE)
 		}
 	}
-	
 	public void addOrganizator(Organizator org) {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		em.persist(org);
 		em.getTransaction().commit();
 		em.close();
+	}
+	public List<Organizator> getLimitedPending(int start, int ammount) {
+		EntityManager em = emf.createEntityManager();
+		List<Organizator> ret = em.createQuery("SELECT a FROM Korisnik LIMIT " + String.valueOf(start) + ", " +
+				String.valueOf(ammount), Organizator.class).getResultList();
+		em.close();
+		return ret;
 	}
 }
