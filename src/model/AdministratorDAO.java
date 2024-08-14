@@ -20,7 +20,7 @@ public class AdministratorDAO {
 		}
 	}
 	
-	public void addAdministrator(Administrator adm) {
+	public void addAdministrator(Administrator adm) { //This one is useless
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		em.persist(adm);
