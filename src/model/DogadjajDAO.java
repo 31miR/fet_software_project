@@ -9,7 +9,7 @@ import javax.persistence.*;
 
 public class DogadjajDAO {
 	private EntityManagerFactory emf = EntityManagerFactoryHolder.getEntityManagerFactory();
-	List<Dogadjaj> getFiltered(List<String> filters, String sortBy, boolean ascending, int start, int ammount) {
+	public List<Dogadjaj> getFiltered(List<String> filters, String sortBy, boolean ascending, int start, int ammount) {
 		String where_part = "";
 		for(int i = 0; i < filters.size(); i += 2) {
 			if (i != 0) {
@@ -24,5 +24,12 @@ public class DogadjajDAO {
 				+ sort_part + " LIMIT " + limit_part, Dogadjaj.class).getResultList();
 		em.close();
 		return ret;
+	}
+	public void addDogadjaj(Dogadjaj d) {
+		EntityManager em = emf.createEntityManager();
+		em.getTransaction().begin();
+		em.persist(d);
+		em.getTransaction().commit();
+		em.close();
 	}
 }
