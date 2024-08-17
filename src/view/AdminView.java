@@ -2,6 +2,7 @@ package view;
 
 import javax.swing.*;
 
+
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -11,6 +12,7 @@ import model.KorisnikDAO;
 import model.OrganizatorDAO;
 import model.AdministratorDAO;
 import model.Korisnik;
+import view.RequestEvents;
 
 import javax.swing.border.LineBorder;
 
@@ -87,6 +89,16 @@ public class AdminView extends JFrame {
         eventButton.setFont(new Font("Chilanka", Font.PLAIN, 26));
         eventButton.setBounds(550, 300, 250, 50);
         eventButton.setForeground(new Color(51, 51, 51));
+        eventButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                RequestEvents event = new RequestEvents();
+                event.setVisible(true);
+                dispose();
+            }
+        });
+        
+        
         
         contentPane.add(eventButton);
         

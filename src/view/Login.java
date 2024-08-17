@@ -147,9 +147,6 @@ public class Login extends JFrame {
                          admin = adminController.searchByUserName(username);
                          if (admin != null) {
                              System.out.println("Prijava uspješna!");
-                             AdminView  adminView1 = new AdminView();
-                             adminView1.setVisible(true);
-                             dispose();
                              return; // Prekida izvršavanje metode ako je prijava uspješna
                          }
 
@@ -207,6 +204,18 @@ public class Login extends JFrame {
     guestButton.setBounds(600, 450, 300, 50);
    
     guestButton.setForeground(new Color(51, 51, 51)); 
+    
+    guestButton.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+        	 AdminView  adminView1 = new AdminView();
+        	    adminView1.setVisible(true);
+        	    dispose();
+           
+        }
+    });
+    
+   
   
     contentPane.add(guestButton);
     
