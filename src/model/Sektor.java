@@ -11,7 +11,7 @@ public class Sektor {
 	private int sektor_id;
 	private String naziv;
 	private int kapacitet;
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sektor")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "Sektor")
 	private List<Karta> karta;
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Lokacija lokacija;
