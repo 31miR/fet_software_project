@@ -50,8 +50,8 @@ public class DogadjajDAO {
 	}
 	public List<Dogadjaj> getLimitedPending(int start, int ammount) {
 		EntityManager em = emf.createEntityManager();
-		List<Dogadjaj> ret = em.createQuery("SELECT a FROM Dogadjaj LIMIT " + String.valueOf(start) + ", " +
-				String.valueOf(ammount), Dogadjaj.class).getResultList();
+		List<Dogadjaj> ret = em.createQuery("SELECT a FROM Dogadjaj a", Dogadjaj.class).setFirstResult(start)
+				.setMaxResults(ammount).getResultList();
 		em.close();
 		return ret;
 	}

@@ -1,8 +1,10 @@
 package model;
 
+import java.io.Serializable;
+
 import javax.persistence.*;
 
-class IzmjeneId {
+class IzmjeneId implements Serializable {
 	@SuppressWarnings("unused")
 	private String imeTabele;
 	@SuppressWarnings("unused")
