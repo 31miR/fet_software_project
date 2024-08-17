@@ -2,6 +2,7 @@ package view;
 
 
 import java.awt.Color;
+
 import javax.swing.border.BevelBorder;
 import java.awt.EventQueue;
 import java.awt.Font;
@@ -32,7 +33,7 @@ import model.Organizator;
 import model.AdministratorDAO;
 import model.OrganizatorDAO;
 import model.KorisnikDAO;
-
+import view.AdminView;;
 
 public class Login extends JFrame {
 
@@ -146,7 +147,9 @@ public class Login extends JFrame {
                          admin = adminController.searchByUserName(username);
                          if (admin != null) {
                              System.out.println("Prijava uspješna!");
-                             //TODO: switch to AdminView
+                             AdminView  adminView1 = new AdminView();
+                             adminView1.setVisible(true);
+                             dispose();
                              return; // Prekida izvršavanje metode ako je prijava uspješna
                          }
 
@@ -204,8 +207,7 @@ public class Login extends JFrame {
     guestButton.setBounds(600, 450, 300, 50);
    
     guestButton.setForeground(new Color(51, 51, 51)); 
-    
-    
+  
     contentPane.add(guestButton);
     
    
