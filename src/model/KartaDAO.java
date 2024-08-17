@@ -22,8 +22,8 @@ public class KartaDAO {
 			dummy.setDogadjaj(dogadjaj);
 			dummy.setSektor(sektor);
 			dummy.setSjediste("neodredjeno");
-			dogadjaj.getKarte().add(dummy);
-			sektor.getKarte().add(dummy);
+			dogadjaj.getKarta().add(dummy);
+			sektor.getKarta().add(dummy);
 			em.getTransaction().begin();
 			em.persist(dummy);
 			em.merge(dogadjaj);
@@ -36,8 +36,8 @@ public class KartaDAO {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		em.persist(karta);
-		karta.getDogadjaj().getKarte().add(karta);
-		karta.getSektor().getKarte().add(karta);
+		karta.getDogadjaj().getKarta().add(karta);
+		karta.getSektor().getKarta().add(karta);
 		em.merge(karta.getDogadjaj());
 		em.merge(karta.getSektor());
 		em.getTransaction().commit();

@@ -18,7 +18,7 @@ public class Korisnik {
 	private int brojKupljenihKarti;
 	private boolean profileApproved;
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "korisnik")
-	private List<Karta> karte;
+	private List<Karta> karta;
 	public String getUsername() {
 		return username;
 	}
@@ -79,10 +79,10 @@ public class Korisnik {
 	public void setProfileApproved(boolean profileApproved) {
 		this.profileApproved = profileApproved;
 	}
-	public List<Karta> getKarte() {
-		return karte;
+	public List<Karta> getKarta() {
+		return karta;
 	}
-	public void setKarte(List<Karta> karte) {
-		this.karte = karte;
+	public void setKarta(List<Karta> karta) {
+		this.karta = karta;
 	}
 }

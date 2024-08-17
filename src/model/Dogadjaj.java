@@ -25,7 +25,7 @@ public class Dogadjaj {
 	@JoinColumn(name="lokacija_id")
 	private Lokacija lokacija;
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "dogadjaj")
-	private List<Karta> karte;
+	private List<Karta> karta;
 	public int getDogadjaj_id() {
 		return dogadjaj_id;
 	}
@@ -104,10 +104,10 @@ public class Dogadjaj {
 	public void setLokacija(Lokacija lokacija) {
 		this.lokacija = lokacija;
 	}
-	public List<Karta> getKarte() {
-		return karte;
+	public List<Karta> getKarta() {
+		return karta;
 	}
-	public void setKarte(List<Karta> karte) {
-		this.karte = karte;
+	public void setKarta(List<Karta> karta) {
+		this.karta = karta;
 	}
 }

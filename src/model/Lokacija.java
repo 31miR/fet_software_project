@@ -15,9 +15,9 @@ public class Lokacija {
 	private String adresa;
 	private String slika; //lokacija slike
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "lokacija")
-	private List<Dogadjaj> dogadjaji;
+	private List<Dogadjaj> dogadjaj;
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "lokacija")
-	private List<Sektor> sektori;
+	private List<Sektor> sektor;
 	public int getLokacija_id() {
 		return lokacija_id;
 	}
@@ -54,16 +54,16 @@ public class Lokacija {
 	public void setSlika(String slika) {
 		this.slika = slika;
 	}
-	public List<Dogadjaj> getDogadjaji() {
-		return dogadjaji;
+	public List<Dogadjaj> getDogadjaj() {
+		return dogadjaj;
 	}
-	public void setDogadjaji(List<Dogadjaj> dogadjaji) {
-		this.dogadjaji = dogadjaji;
+	public void setDogadjaj(List<Dogadjaj> dogadjaj) {
+		this.dogadjaj = dogadjaj;
 	}
-	public List<Sektor> getSektori() {
-		return sektori;
+	public List<Sektor> getSektor() {
+		return sektor;
 	}
-	public void setSektori(List<Sektor> sektori) {
-		this.sektori = sektori;
+	public void setSektor(List<Sektor> sektor) {
+		this.sektor = sektor;
 	}
 }

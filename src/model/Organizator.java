@@ -16,7 +16,7 @@ public class Organizator {
 	private String phone;
 	private boolean profileApproved;
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "organizator")
-	private List<Dogadjaj> dogadjaji;
+	private List<Dogadjaj> dogadjaj;
 	public String getUsername() {
 		return username;
 	}
@@ -65,10 +65,10 @@ public class Organizator {
 	public void setProfileApproved(boolean profileApproved) {
 		this.profileApproved = profileApproved;
 	}
-	public List<Dogadjaj> getDogadjaji() {
-		return dogadjaji;
+	public List<Dogadjaj> getDogadjaj() {
+		return dogadjaj;
 	}
-	public void setDogadjaji(List<Dogadjaj> dogadjaji) {
-		this.dogadjaji = dogadjaji;
+	public void setDogadjaj(List<Dogadjaj> dogadjaj) {
+		this.dogadjaj = dogadjaj;
 	}
 }

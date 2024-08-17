@@ -12,7 +12,7 @@ public class Sektor {
 	private String naziv;
 	private int kapacitet;
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sektor")
-	private List<Karta> karte;
+	private List<Karta> karta;
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Lokacija lokacija;
 	public int getSektor_id() {
@@ -33,11 +33,11 @@ public class Sektor {
 	public void setKapacitet(int kapacitet) {
 		this.kapacitet = kapacitet;
 	}
-	public List<Karta> getKarte() {
-		return karte;
+	public List<Karta> getKarta() {
+		return karta;
 	}
-	public void setKarte(List<Karta> karte) {
-		this.karte = karte;
+	public void setKarta(List<Karta> karta) {
+		this.karta = karta;
 	}
 	public Lokacija getLokacija() {
 		return lokacija;
