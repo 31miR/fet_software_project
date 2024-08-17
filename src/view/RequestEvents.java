@@ -33,7 +33,7 @@ public class RequestEvents extends JFrame {
         setContentPane(contentPane);
 
         // Kreiraj tabelu
-        String[] columnNames = {"ID", "Event Name", "Organizer", "Status"};
+        String[] columnNames = {"ID", "Event Name", "Status"};
         DefaultTableModel model = new DefaultTableModel(columnNames, 0);
         table = new JTable(model);
 
