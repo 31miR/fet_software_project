@@ -37,7 +37,7 @@ public class RequestEvents extends JFrame {
         DefaultTableModel model = new DefaultTableModel(columnNames, 0);
         table = new JTable(model);
 
-        // Učitaj podatke u tabelu
+      
         loadEventRequests(model);
 
         JScrollPane scrollPane = new JScrollPane(table);
