@@ -24,7 +24,7 @@ public class Dogadjaj {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="lokacija_id")
 	private Lokacija lokacija;
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "Dogadjaj")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "dogadjaj")
 	private List<Karta> karta;
 	public int getDogadjaj_id() {
 		return dogadjaj_id;

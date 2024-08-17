@@ -15,7 +15,7 @@ public class Organizator {
 	private String address;
 	private String phone;
 	private boolean profileApproved;
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "Organizator")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "organizator")
 	private List<Dogadjaj> dogadjaj;
 	public String getUsername() {
 		return username;

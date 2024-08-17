@@ -17,7 +17,7 @@ public class Korisnik {
 	private double walletBalance;
 	private int brojKupljenihKarti;
 	private boolean profileApproved;
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "Korisnik")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "korisnik")
 	private List<Karta> karta;
 	public String getUsername() {
 		return username;
