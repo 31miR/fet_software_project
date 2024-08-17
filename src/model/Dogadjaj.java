@@ -22,6 +22,7 @@ public class Dogadjaj {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Organizator organizator;
 	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="lokacija_id")
 	private Lokacija lokacija;
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "dogadjaj")
 	private List<Karta> karte;
