@@ -28,7 +28,7 @@ public class OrganizatorDAO {
 		em.getTransaction().commit();
 		em.close();
 	}
-	public void addOrganizator(Organizator org) {
+	public void updateOrganizator(Organizator org) {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		em.merge(org);
