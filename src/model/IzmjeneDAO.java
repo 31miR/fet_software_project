@@ -16,7 +16,7 @@ public class IzmjeneDAO {
 		change.setNovaVrijednost(value);
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
-		em.merge(change);
+		em.persist(change);
 		em.getTransaction().commit();
 		em.close();
 	}
