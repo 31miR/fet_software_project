@@ -48,4 +48,11 @@ public class DogadjajDAO {
 	public int countTickets(Sektor sektor) {//if sektor is null, it will count all the cards for Dogadjaj
 		return 0; //TODO: implement this
 	}
+	public List<Dogadjaj> getLimitedPending(int start, int ammount) {
+		EntityManager em = emf.createEntityManager();
+		List<Dogadjaj> ret = em.createQuery("SELECT a FROM Dogadjaj LIMIT " + String.valueOf(start) + ", " +
+				String.valueOf(ammount), Dogadjaj.class).getResultList();
+		em.close();
+		return ret;
+	}
 }
