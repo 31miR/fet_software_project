@@ -15,13 +15,19 @@ public class DogadjajDAO {
 			if (i != 0) {
 				where_part += ",";
 			}
-			where_part += "a."+filters.get(i) + "=" + filters.get(i+1);
+			if (filters.get(i).equals("grad")) {
+				where_part += "b."+filters.get(i) + "=" + filters.get(i+1);
+			}
+			else {
+				where_part += "a."+filters.get(i) + "=" + filters.get(i+1);
+			}
 		}
 		String sort_part = sortBy + " " + (ascending ? "ASC" : "DESC");
 		String limit_part = String.valueOf(start) + ", " + String.valueOf(ammount);
 		EntityManager em = emf.createEntityManager();
-		List<Dogadjaj> ret = em.createQuery("Select a FROM Dogadjaj a WHERE " + where_part + " ORDER BY "
-				+ sort_part + " LIMIT " + limit_part, Dogadjaj.class).getResultList();
+		List<Dogadjaj> ret = em.createQuery("Select a FROM Dogadjaj a INNER JOIN Lokacija b ON "
+				+ "a.lokacija_id = b.lokacija_id WHERE " + where_part + " ORDER BY " + sort_part + " LIMIT "
+				+ limit_part, Dogadjaj.class).getResultList();
 		em.close();
 		return ret;
 	}
@@ -31,5 +37,15 @@ public class DogadjajDAO {
 		em.persist(d);
 		em.getTransaction().commit();
 		em.close();
+	}
+	public void updateDogadjaj(Dogadjaj d) {
+		EntityManager em = emf.createEntityManager();
+		em.getTransaction().begin();
+		em.merge(d);
+		em.getTransaction().commit();
+		em.close();
+	} //This function should not be used when requesting updates from Organizator!
+	public int countTickets(Sektor sektor) {//if sektor is null, it will count all the cards for Dogadjaj
+		return 0; //TODO: implement this
 	}
 }
