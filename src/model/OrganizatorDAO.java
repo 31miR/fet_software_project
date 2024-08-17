@@ -28,6 +28,13 @@ public class OrganizatorDAO {
 		em.getTransaction().commit();
 		em.close();
 	}
+	public void addOrganizator(Organizator org) {
+		EntityManager em = emf.createEntityManager();
+		em.getTransaction().begin();
+		em.merge(org);
+		em.getTransaction().commit();
+		em.close();
+	}
 	public List<Organizator> getLimitedPending(int start, int ammount) {
 		EntityManager em = emf.createEntityManager();
 		List<Organizator> ret = em.createQuery("SELECT a FROM Korisnik LIMIT " + String.valueOf(start) + ", " +

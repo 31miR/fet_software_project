@@ -26,6 +26,13 @@ public class KorisnikDAO {
 		em.getTransaction().commit();
 		em.close();
 	}
+	public void updateKorisnik(Korisnik kor) {
+		EntityManager em = emf.createEntityManager();
+		em.getTransaction().begin();
+		em.merge(kor);
+		em.getTransaction().commit();
+		em.close();
+	}
 	public List<Korisnik> getLimitedPending(int start, int ammount) {
 		EntityManager em = emf.createEntityManager();
 		List<Korisnik> ret = em.createQuery("SELECT a FROM Korisnik LIMIT " + String.valueOf(start) + ", " +
