@@ -17,8 +17,10 @@ public class Korisnik {
 	private double walletBalance;
 	private int brojKupljenihKarti;
 	private boolean profileApproved;
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "korisnik")
-	private List<Karta> karta;
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "korRezervisao")
+	private List<Karta> kartaRezervisana;
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "korKupio")
+	private List<Karta> kartaKupljena;
 	public String getUsername() {
 		return username;
 	}
@@ -79,10 +81,16 @@ public class Korisnik {
 	public void setProfileApproved(boolean profileApproved) {
 		this.profileApproved = profileApproved;
 	}
-	public List<Karta> getKarta() {
-		return karta;
+	public List<Karta> getKartaRezervisana() {
+		return kartaRezervisana;
 	}
-	public void setKarta(List<Karta> karta) {
-		this.karta = karta;
+	public void setKartaRezervisana(List<Karta> kartaRezervisana) {
+		this.kartaRezervisana = kartaRezervisana;
+	}
+	public List<Karta> getKartaKupljena() {
+		return kartaKupljena;
+	}
+	public void setKartaKupljena(List<Karta> kartaKupljena) {
+		this.kartaKupljena = kartaKupljena;
 	}
 }
