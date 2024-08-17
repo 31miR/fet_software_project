@@ -1,6 +1,6 @@
 ----------------------------------------------------------------
-Sat Aug 17 22:11:59 CEST 2024:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.15.2.0 - (1873585): instance a816c00e-0191-61f7-da25-000002104830 
+Sat Aug 17 22:24:39 CEST 2024:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.15.2.0 - (1873585): instance a816c00e-0191-6203-737c-000001dd00f0 
 on database directory /home/ajla/git/fet_software_project/myDB with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@7aec35a 
 Loaded from file:/home/ajla/.m2/repository/org/apache/derby/derby/10.15.2.0/derby-10.15.2.0.jar
 java.vendor=Eclipse Adoptium
