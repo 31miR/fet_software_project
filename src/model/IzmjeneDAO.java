@@ -22,7 +22,7 @@ public class IzmjeneDAO {
 	}
 	public List<Izmjene> getLimitedChanges(int start, int ammount) {
 		EntityManager em = emf.createEntityManager();
-		List<Izmjene> ret = em.createQuery("SELECT a FROM Izmjene a LIMIT", Izmjene.class).setFirstResult(start)
+		List<Izmjene> ret = em.createQuery("SELECT a FROM Izmjene a", Izmjene.class).setFirstResult(start)
 				.setMaxResults(ammount).getResultList();
 		em.close();
 		return ret;
