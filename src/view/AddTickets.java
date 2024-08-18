@@ -74,13 +74,13 @@ public class AddTickets extends JFrame {
                     int amount = Integer.parseInt(txtAmount.getText());
                     int price = Integer.parseInt(txtPrice.getText());
                     int resPrice = Integer.parseInt(txtResPrice.getText());
-
-                    // Fetch the sector from the database
-                //    Sektor sektor = sektorDAO.getSektorByName(sector);
-                 //   if (sektor == null) {
-                   //     JOptionPane.showMessageDialog(AddTickets.this, "Sector not found in the database.");
-                     //   return;
-                //    }
+                    	//TO DO
+                    	// Fetch the sector from the database
+                    	//    Sektor sektor = sektorDAO.getSektorByName(sector);
+                    	//   if (sektor == null) {
+                    	//     JOptionPane.showMessageDialog(AddTickets.this, "Sector not found in the database.");
+                    	//   return;
+                    	//    }
                     // Create a dummy sector object or fetch it from the DB
                     Sektor sektor = new Sektor(); // In a real scenario, fetch the actual sector from DB
                     sektor.setNaziv(sector); 

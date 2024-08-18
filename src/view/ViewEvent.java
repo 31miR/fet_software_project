@@ -20,6 +20,8 @@ public class ViewEvent extends JFrame {
         dogadjajDAO = new DogadjajDAO();
         setTitle("View Events");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setBounds(450, 210, 620, 750);
+        setResizable(false);
         setLayout(new BorderLayout());
 
         // Header
@@ -78,7 +80,7 @@ public class ViewEvent extends JFrame {
             JPanel eventPanel = new JPanel(new GridLayout(1, 2));
             eventPanel.add(new JLabel("Event Name: " + event.getNaziv()));
             eventPanel.add(new JLabel("Date: " + event.getDatum().toString()));
-            // Add more details as needed
+       
             eventsPanel.add(eventPanel);
         }
 
