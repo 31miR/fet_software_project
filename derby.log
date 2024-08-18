@@ -1,4 +1,4 @@
-Sun Aug 18 15:36:33 CEST 2024 Thread[AWT-EventQueue-0,6,main] Cleanup action starting
+Sun Aug 18 15:41:23 CEST 2024 Thread[AWT-EventQueue-0,6,main] Cleanup action starting
 java.sql.SQLException: Failed to start database 'myDB' with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@7aec35a, see the next exception for details.
 	at org.apache.derby.impl.jdbc.SQLExceptionFactory.getSQLException(SQLExceptionFactory.java:115)
 	at org.apache.derby.impl.jdbc.SQLExceptionFactory.getSQLException(SQLExceptionFactory.java:141)
