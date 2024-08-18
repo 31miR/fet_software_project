@@ -18,10 +18,10 @@ public class ViewEvent extends JFrame {
 
     public ViewEvent() {
         dogadjajDAO = new DogadjajDAO();
-        setTitle("View Events");
+        setTitle("Karta");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(450, 210, 620, 750);
-        setResizable(false);
+        setBounds(450, 210, 800, 600); 
+        setPreferredSize(new Dimension(800, 600));
         setLayout(new BorderLayout());
 
         // Header
@@ -43,7 +43,7 @@ public class ViewEvent extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 start += limit;
-                loadEvents();
+                dogadjajDAO.getFiltered(null, "datum", true, 0, 5);
             }
         });
 
@@ -54,20 +54,13 @@ public class ViewEvent extends JFrame {
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
-
+        
+        dogadjajDAO.getFiltered(null, "datum", true, 0, 5);
         // Load initial events
-        loadEvents();
-    }
+       
+       List<Dogadjaj> events = dogadjajDAO.getFiltered(null, "datum", true, 0, 5);
 
-    private void loadEvents() {
-        List<Dogadjaj> events = dogadjajDAO.getFiltered(
-            null,     // No filters applied
-            "datum",  // Replace with your preferred sorting field
-            true,     // Sorting direction
-            start,
-            limit
-        );
-
+  
         if (events.isEmpty() && start > 0) {
             seeMoreButton.setEnabled(false); // Disable button if no more events
         }
