@@ -1,6 +1,7 @@
 package view;
 
 import javax.swing.*;
+import view.RequestUsers;
 
 
 import javax.swing.border.EmptyBorder;
@@ -82,6 +83,16 @@ public class AdminView extends JFrame {
         requestButton.setFont(new Font("Chilanka", Font.PLAIN, 26));
         requestButton.setBounds(550, 200, 250, 50);
         requestButton.setForeground(new Color(51, 51, 51));
+        requestButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                RequestUsers event = new RequestUsers();
+                event.setVisible(true);
+                dispose();
+            }
+        });
+        
+        
         
         contentPane.add(requestButton); 
         
