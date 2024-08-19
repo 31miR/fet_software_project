@@ -20,6 +20,8 @@ public class RequestUsers extends JFrame {
     private JTable table;
     private DefaultTableModel model;
     private KorisnikDAO korisnikDAO;
+    private JButton loadMoreButton;
+    private int offset = 0; // Varijabla za praćenje pozicije u bazi podataka
 
     public RequestUsers() {
         korisnikDAO = new KorisnikDAO(); // Inicijalizuj DAO
@@ -70,17 +72,34 @@ public class RequestUsers extends JFrame {
 
         JScrollPane scrollPane = new JScrollPane(table);
         contentPane.add(scrollPane, BorderLayout.CENTER);
+
+        // Kreiraj panel za dugme na dnu
+        JPanel buttonPanel = new JPanel();
+        loadMoreButton = new JButton("Load More");
+        buttonPanel.add(loadMoreButton);
+
+        // Dodaj buttonPanel na dno prozora
+        contentPane.add(buttonPanel, BorderLayout.SOUTH);
+
+        // Akcija za dugme
+        loadMoreButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                offset += 30; // Povećaj offset da bi se učitali naredni set zahtjeva
+                loadUserRequests();
+            }
+        });
     }
 
     private void loadUserRequests() {
-        List<Korisnik> userRequests = korisnikDAO.getLimitedPending(0, 30); // Dohvati zahtjeve iz baze
+        List<Korisnik> userRequests = korisnikDAO.getLimitedPending(offset, 30); // Ažuriraj offset u pozivu
 
         // Clear the existing data
-        model.setRowCount(0);
+        // model.setRowCount(0); // Okomentariši ovu liniju ako želiš dodavati redove umjesto resetiranja tabele
 
         for (Korisnik korisnik : userRequests) {
             Object[] rowData = {
-                korisnik.getUsername(),
+                korisnik, // Čuvamo cijeli objekt korisnika u tabeli
                 korisnik.getName(),
                 korisnik.getLastName(),
                 "Buttons" // Placeholder for buttons, will be rendered by the custom renderer
@@ -100,11 +119,15 @@ public class RequestUsers extends JFrame {
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus,
                                                        int row, int column) {
-            setText(value != null ? value.toString() : "");
+            if (value instanceof Korisnik) {
+                Korisnik korisnik = (Korisnik) value;
+                setText(korisnik.getUsername());
+            } else {
+                setText(value != null ? value.toString() : "");
+            }
 
             // Bojenje pozadine redova u zeleno
-            setBackground(new Color(20,190, 166));
-
+            setBackground(new Color(20, 190, 166));
 
             // Ako je red selektovan, možeš postaviti drugu boju
             if (isSelected) {
@@ -172,8 +195,8 @@ public class RequestUsers extends JFrame {
             acceptButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    int row = table.getSelectedRow();
-                    Korisnik selectedUser = korisnikDAO.getLimitedPending(0, 30).get(row);
+                    int row = table.getEditingRow();
+                    Korisnik selectedUser = (Korisnik) model.getValueAt(row, 0); // Koristimo objekat iz modela
                     selectedUser.setProfileApproved(true);
                     korisnikDAO.updateKorisnik(selectedUser);
 
@@ -187,8 +210,8 @@ public class RequestUsers extends JFrame {
             rejectButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    int row = table.getSelectedRow();
-                    Korisnik selectedUser = korisnikDAO.getLimitedPending(0, 30).get(row);
+                    int row = table.getEditingRow();
+                    Korisnik selectedUser = (Korisnik) model.getValueAt(row, 0); // Koristimo objekat iz modela
                     selectedUser.setProfileApproved(false);
                     korisnikDAO.updateKorisnik(selectedUser);
 
