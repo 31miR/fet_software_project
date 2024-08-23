@@ -138,7 +138,7 @@ public class AdminView extends JFrame {
         editButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                EditEvent event1 = new EditEvent();
+                CreateLocation event1 = new CreateLocation();
                 event1.setVisible(true);
                 dispose();
             }
