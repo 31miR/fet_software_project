@@ -1,6 +1,7 @@
 package view;
 
 import javax.swing.*;
+
 import view.RequestUsers;
 
 
@@ -118,12 +119,30 @@ public class AdminView extends JFrame {
         ViewButton.setBounds(550, 400, 250, 50);
         ViewButton.setForeground(new Color(51, 51, 51));
         
+        ViewButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ViewEvent event = new ViewEvent();
+                event.setVisible(true);
+                dispose();
+            }
+        });
+        
+        
         contentPane.add(ViewButton);
         
         editButton = new JButton("Edit events");
         editButton.setFont(new Font("Chilanka", Font.PLAIN, 26));
         editButton.setBounds(550, 500, 250, 50);  
         editButton.setForeground(new Color(51, 51, 51));
+        editButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                EditEvent event1 = new EditEvent();
+                event1.setVisible(true);
+                dispose();
+            }
+        });
 
         contentPane.add(editButton);
 
