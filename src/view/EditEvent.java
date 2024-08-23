@@ -1,9 +1,8 @@
 package view;
-
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -28,6 +27,7 @@ public class EditEvent extends JFrame {
     private LokacijaDAO lokacijaDAO;
     private SektorDAO sektorDAO;
     private List<Sektor> sektori;
+    private int ukupniKapacitet;
 
     public EditEvent() {
         // Postavke prozora
@@ -37,10 +37,21 @@ public class EditEvent extends JFrame {
         setResizable(false);
 
         JPanel contentPane = new JPanel();
-        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        Border emptyBorder = BorderFactory.createEmptyBorder(5, 10, 5, 5);
+        contentPane.setBorder(emptyBorder);
         setContentPane(contentPane);
         contentPane.setLayout(null);
         contentPane.setBackground(new Color(29, 190, 166));
+        
+        // Prikaz slike
+        ImageIcon imageIcon = new ImageIcon("resources/logo.png"); // Postavi putanju do svoje slike
+        Image image = imageIcon.getImage(); // Transformacija slike
+        Image scaledImage = image.getScaledInstance(300, 300, java.awt.Image.SCALE_SMOOTH); // Promijeni veličinu slike
+        imageIcon = new ImageIcon(scaledImage); // Ponovo kreiraj ImageIcon sa promijenjenom slikom
+        
+        JLabel label = new JLabel(imageIcon);
+        label.setBounds(25, 200, 400, 300);
+        contentPane.add(label);
 
         // Inicijalizacija DAO klasa
         lokacijaDAO = new LokacijaDAO();
@@ -52,39 +63,69 @@ public class EditEvent extends JFrame {
         adresaField = new JTextField();
         kapacitetField = new JTextField();
         slikaField = new JTextField();
-        browseButton = new JButton("Browse...");
+        browseButton = new JButton("Browse..");
         addSectorButton = new JButton("Add Sectors");
         saveButton = new JButton("Save");
         cancelButton = new JButton("Cancel");
 
+        // Font za komponente
+        Font font = new Font("Chilanka", Font.PLAIN, 26);
+
+        // Postavljanje fonta na JLabel i JTextField
+        JLabel nazivLabel = new JLabel("Location name:");
+        nazivLabel.setFont(font);
+        JLabel gradLabel = new JLabel("City:");
+        gradLabel.setFont(font);
+        JLabel adresaLabel = new JLabel("Address:");
+        adresaLabel.setFont(font);
+        JLabel kapacitetLabel = new JLabel("Capacity:");
+        kapacitetLabel.setFont(font);
+        JLabel slikaLabel = new JLabel("Picture:");
+        slikaLabel.setFont(font);
+        
+        nazivField.setFont(font);
+        gradField.setFont(font);
+        adresaField.setFont(font);
+        kapacitetField.setFont(font);
+        slikaField.setFont(font);
+        browseButton.setFont(font);
+        addSectorButton.setFont(font);
+        saveButton.setFont(font);
+        cancelButton.setFont(font);
+
         // Postavljanje pozicija i veličina komponenti
-        nazivField.setBounds(200, 50, 300, 30);
-        gradField.setBounds(200, 100, 300, 30);
-        adresaField.setBounds(200, 150, 300, 30);
-        kapacitetField.setBounds(200, 200, 300, 30);
-        slikaField.setBounds(200, 250, 200, 30);
-        browseButton.setBounds(420, 250, 100, 30);
-        addSectorButton.setBounds(200, 300, 200, 30);
-        saveButton.setBounds(200, 350, 100, 30);
-        cancelButton.setBounds(320, 350, 100, 30);
+        nazivLabel.setBounds(400, 100, 150, 50);
+        nazivField.setBounds(550, 100, 300, 50);
+        gradLabel.setBounds(400, 200, 150, 50);
+        gradField.setBounds(550, 200, 300, 50);
+        adresaLabel.setBounds(400, 300, 150, 50);
+        adresaField.setBounds(550, 300, 300, 50);
+        kapacitetLabel.setBounds(400, 400, 150, 50);
+        kapacitetField.setBounds(550, 400, 300, 50);
+        slikaLabel.setBounds(400, 500, 150, 50);
+        slikaField.setBounds(550, 500, 300, 50);
+        browseButton.setBounds(860, 500, 160, 50);
+        addSectorButton.setBounds(550, 600, 200, 50);
+        saveButton.setBounds(550, 700, 200, 50);
+        cancelButton.setBounds(800, 700, 200, 50);
 
         // Dodavanje komponenti na panel
-        contentPane.add(new JLabel("Naziv lokacije:")).setBounds(50, 50, 150, 30);
+        contentPane.add(nazivLabel);
         contentPane.add(nazivField);
-        contentPane.add(new JLabel("Grad:")).setBounds(50, 100, 150, 30);
+        contentPane.add(gradLabel);
         contentPane.add(gradField);
-        contentPane.add(new JLabel("Adresa:")).setBounds(50, 150, 150, 30);
+        contentPane.add(adresaLabel);
         contentPane.add(adresaField);
-        contentPane.add(new JLabel("Kapacitet:")).setBounds(50, 200, 150, 30);
+        contentPane.add(kapacitetLabel);
         contentPane.add(kapacitetField);
-        contentPane.add(new JLabel("Slika:")).setBounds(50, 250, 150, 30);
+        contentPane.add(slikaLabel);
         contentPane.add(slikaField);
         contentPane.add(browseButton);
         contentPane.add(addSectorButton);
         contentPane.add(saveButton);
         contentPane.add(cancelButton);
 
-        // Postavljanje akcija za dugmadi
+        // Postavljanje akcije za dugme "Browse"
         browseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -98,30 +139,46 @@ public class EditEvent extends JFrame {
             }
         });
 
+        // Postavljanje akcije za dugme "Add Sectors"
         addSectorButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Unos broja sektora
-                int brojSektora = Integer.parseInt(JOptionPane.showInputDialog("Koliko sektora želite dodati za ovu lokaciju?"));
-                sektori = new ArrayList<>();
-                
-                for (int i = 0; i < brojSektora; i++) {
-                    String nazivSektora = JOptionPane.showInputDialog("Unesite naziv sektora " + (i + 1) + ":");
-                    int kapacitetSektora = Integer.parseInt(JOptionPane.showInputDialog("Unesite kapacitet sektora " + nazivSektora + ":"));
+                try {
+                    // Unos ukupnog kapaciteta lokacije
+                    ukupniKapacitet = Integer.parseInt(kapacitetField.getText());
+                    int brojSektora = Integer.parseInt(JOptionPane.showInputDialog("How many sectors would you like to add for this location?"));
+                    sektori = new ArrayList<>();
+                    int ukupniKapacitetSektora = 0;
+
+                    for (int i = 0; i < brojSektora; i++) {
+                        String nazivSektora = JOptionPane.showInputDialog("Enter the name of the sector " + (i + 1) + ":");
+                        int kapacitetSektora = Integer.parseInt(JOptionPane.showInputDialog("Enter sector capacity: " + nazivSektora + ":"));
+                        ukupniKapacitetSektora += kapacitetSektora;
+
+                        if (ukupniKapacitetSektora > ukupniKapacitet) {
+                            JOptionPane.showMessageDialog(null, "The total capacity of sectors must not exceed the location's capacity.");
+                            ukupniKapacitetSektora -= kapacitetSektora; // Oduzmi zadati kapacitet koji je uzrokovao grešku
+                            i--; // Poništi broj sektora za neispravan unos
+                            continue;
+                        }
+
+                        // Kreiraj novi sektor
+                        Sektor sektor = new Sektor();
+                        sektor.setNaziv(nazivSektora);
+                        sektor.setKapacitet(kapacitetSektora);
+                        sektor.setLokacija(new Lokacija()); // Placeholder, će se ažurirati kasnije
+                        
+                        sektori.add(sektor);
+                    }
                     
-                    // Kreiraj novi sektor
-                    Sektor sektor = new Sektor();
-                    sektor.setNaziv(nazivSektora);
-                    sektor.setKapacitet(kapacitetSektora);
-                    sektor.setLokacija(new Lokacija()); // Placeholder, će se ažurirati kasnije
-                    
-                    sektori.add(sektor);
+                    JOptionPane.showMessageDialog(null, "Sectors have been successfully added. Click 'Save' to save.");
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "Please enter valid numbers.");
                 }
-                
-                JOptionPane.showMessageDialog(null, "Sektori su uspješno dodani. Kliknite na 'Save' za spremanje.");
             }
         });
 
+        // Postavljanje akcije za dugme "Save"
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -130,7 +187,6 @@ public class EditEvent extends JFrame {
                     String naziv = nazivField.getText();
                     String grad = gradField.getText();
                     String adresa = adresaField.getText();
-                    int kapacitet = Integer.parseInt(kapacitetField.getText());
                     String slika = slikaField.getText();
                     
                     // Kreiraj instancu Lokacija
@@ -138,7 +194,7 @@ public class EditEvent extends JFrame {
                     lokacija.setNaziv(naziv);
                     lokacija.setGrad(grad);
                     lokacija.setAdresa(adresa);
-                    lokacija.setKapacitet(kapacitet);
+                    lokacija.setKapacitet(ukupniKapacitet);
                     lokacija.setSlika(slika);
                     
                     // Spremi lokaciju u bazu podataka
@@ -150,15 +206,14 @@ public class EditEvent extends JFrame {
                         sektorDAO.addSektor(sektor);
                     }
                     
-                    JOptionPane.showMessageDialog(null, "Lokacija i sektori su uspješno dodani u bazu podataka.");
+                    JOptionPane.showMessageDialog(null, "Location and sectors have been successfully added to the database.");
                     AdminView view = new AdminView();
                     view.setVisible(true);
                     dispose();
-                    ;
                 } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(null, "Unesite validne brojeve za kapacitet.");
+                    JOptionPane.showMessageDialog(null, "Please enter valid numbers for capacity.");
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(null, "Došlo je do greške: " + ex.getMessage());
+                    JOptionPane.showMessageDialog(null, "An error occurred: " + ex.getMessage());
                 }
             }
         });
@@ -174,9 +229,10 @@ public class EditEvent extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            EditEvent frame = new EditEvent();
-            frame.setVisible(true);
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new EditEvent().setVisible(true);
+            }
         });
     }
 }

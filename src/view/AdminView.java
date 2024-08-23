@@ -131,7 +131,7 @@ public class AdminView extends JFrame {
         
         contentPane.add(ViewButton);
         
-        editButton = new JButton("Edit events");
+        editButton = new JButton("Create Locations");
         editButton.setFont(new Font("Chilanka", Font.PLAIN, 26));
         editButton.setBounds(550, 500, 250, 50);  
         editButton.setForeground(new Color(51, 51, 51));
