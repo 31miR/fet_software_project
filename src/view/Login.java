@@ -146,17 +146,27 @@ public class Login extends JFrame {
                          // Pokušaj prijave kao admin
                          admin = adminController.searchByUserName(username);
                          if (admin != null) {
+                        	 if(admin.getPassword().equals(password)) {                        	 
                              System.out.println("Prijava uspješna!");
-                             return; // Prekida izvršavanje metode ako je prijava uspješna
+                             AdminView view = new AdminView();
+                             view.setVisible(true);
+                             dispose();
+                             
                          }
-
+                         }
                          // Pokušaj prijave kao organizator
                          Organizator organizator;
                          organizator = orgController.searchByUserName(username);
                          if (organizator != null) {
-                         	System.out.println("Prijava uspješna!");
-                             //TODO: switch to OrgView
-                             return; // Prekida izvršavanje metode ako je prijava uspješna
+                        	 if(organizator.getPassword().equals(password)) { 
+                        		 if (organizator.isProfileApproved()) {
+                        			 System.out.println("Prijava uspješna!");
+                                     OrganizatorView view = new OrganizatorView();
+                                     view.setVisible(true);
+                                     dispose();
+                        			    
+                        			}
+                        		}
                          }
 
                          // Pokušaj prijave kao obični korisnik
