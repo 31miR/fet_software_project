@@ -2,6 +2,8 @@ package view;
 
 import model.Dogadjaj;
 import model.DogadjajDAO;
+import model.Lokacija;
+import model.LokacijaDAO;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -30,6 +32,7 @@ public class CreateEvent extends JFrame {
     private JFileChooser fileChooser;
     private JSpinner dateSpinner;
     private JComboBox<String> eventFinishedComboBox;
+    private JComboBox<Lokacija> locationComboBox;
     private JButton ticketDataButton;
     private int maxTickets = 0;
     // Mapiranje tipova i podtipova
@@ -101,21 +104,22 @@ public class CreateEvent extends JFrame {
         contentPane.add(eventDescriptionArea);
         
         
-        // Event Location Label and Field
+     // Event Location Label and Field
         JLabel lblLocation = new JLabel("Location:");
         lblLocation.setForeground(Color.BLACK);
         lblLocation.setFont(new Font("Chilanka", Font.PLAIN, 18));
         lblLocation.setBounds(30, 170, 150, 30);
         contentPane.add(lblLocation);
-     // Sample list of locations (this would typically come from your database)
-        String[] locations = {"Location 1", "Location 2", "Location 3"};
+
+        // Fetch locations from the database
+        LokacijaDAO lokacijaDAO = new LokacijaDAO();
+        java.util.List<Lokacija> locations = lokacijaDAO.getAllLocations();
 
         // Create a JComboBox for location selection
-        JComboBox<String> locationComboBox = new JComboBox<>(locations);
+        locationComboBox = new JComboBox<>(locations.toArray(new Lokacija[0]));
         locationComboBox.setFont(new Font("Chilanka", Font.PLAIN, 18));
         locationComboBox.setBounds(200, 170, 350, 30);
         contentPane.add(locationComboBox);
-      //
         
         
 
@@ -239,13 +243,6 @@ public class CreateEvent extends JFrame {
         paymentOnRegistrationCheckBox.setBackground(new Color(29, 190, 166));
         paymentOnRegistrationCheckBox.setBounds(30, 520, 300, 30);
         contentPane.add(paymentOnRegistrationCheckBox);
-
-        // Event Approved Checkbox
-      //  JCheckBox eventApprovedCheckBox = new JCheckBox("Event Approved");
-        //eventApprovedCheckBox.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        //eventApprovedCheckBox.setBackground(new Color(29, 190, 166));
-        //eventApprovedCheckBox.setBounds(30, 570, 200, 30);
-        //contentPane.add(eventApprovedCheckBox);
         
         // Event Finished ComboBox
         JLabel lblEventFinished = new JLabel("Event Finished:");
@@ -260,21 +257,7 @@ public class CreateEvent extends JFrame {
         eventFinishedComboBox.setBounds(250, 470, 100, 30);
         contentPane.add(eventFinishedComboBox);
 
-        // Add Tickets Button
-        ticketDataButton = new JButton("Add Tickets");
-        ticketDataButton.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        ticketDataButton.setBounds(30, 570, 520, 40);
-        ticketDataButton.setForeground(new Color(51, 51, 51));
-        ticketDataButton.setBackground(Color.decode("#f3f7f8"));
-        ticketDataButton.setBorder(BorderFactory.createLineBorder(Color.decode("#e2e2e2")));
-        ticketDataButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new AddTickets(null).setVisible(true); // Replace null with the Dogadjaj instance if available
-            }
-        });
-        contentPane.add(ticketDataButton);
-        
+     
         
         // Save Button
         saveButton = new JButton("Save");
@@ -317,6 +300,53 @@ public class CreateEvent extends JFrame {
             }
         });
         contentPane.add(saveButton);
+        
+
+        // Add Tickets Button
+        ticketDataButton = new JButton("Add Tickets");
+        ticketDataButton.setFont(new Font("Chilanka", Font.PLAIN, 18));
+        ticketDataButton.setBounds(30, 570, 520, 40);
+        ticketDataButton.setForeground(new Color(51, 51, 51));
+        ticketDataButton.setBackground(Color.decode("#f3f7f8"));
+        ticketDataButton.setBorder(BorderFactory.createLineBorder(Color.decode("#e2e2e2")));
+        ticketDataButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	  if (eventNameField.getText().trim().isEmpty() || 
+            	            eventDescriptionArea.getText().trim().isEmpty() || 
+            	            maxTicketsField.getText().trim().isEmpty() || 
+            	            eventTypeComboBox.getSelectedItem() == null || 
+            	            eventSubtypeComboBox.getSelectedItem() == null || 
+            	            locationComboBox.getSelectedItem() == null || 
+            	            eventImageField.getText().trim().isEmpty()) {
+            	                
+            	            JOptionPane.showMessageDialog(CreateEvent.this, 
+            	                                          "Please fill in all required fields.", 
+            	                                          "Validation Error", 
+            	                                          JOptionPane.ERROR_MESSAGE);
+            	            return; // Stop the action if validation fails
+            	        }
+            	  
+            	DogadjajDAO dao = new DogadjajDAO();
+                Dogadjaj dogadjaj = new Dogadjaj();
+                dogadjaj.setNaziv(eventNameField.getText());
+                dogadjaj.setVrsta(eventTypeComboBox.getSelectedItem().toString());
+                dogadjaj.setPodvrsta(eventSubtypeComboBox.getSelectedItem().toString());
+                dogadjaj.setDatum(new java.sql.Date(((Date) dateSpinner.getValue()).getTime()));
+                dogadjaj.setSlika(eventImageField.getText());
+                dogadjaj.setNaplataPriRegistraciji(paymentOnRegistrationCheckBox.isSelected());
+                dogadjaj.setMaxKartiPoKorisniku(Integer.parseInt(maxTicketsField.getText()));
+                dogadjaj.setZavrsio(eventFinishedComboBox.getSelectedItem().toString().equals("Yes"));
+              //  dogadjaj.setDogadjajApproved(eventApprovedCheckBox.isSelected());
+                Lokacija selectedLocation = (Lokacija) locationComboBox.getSelectedItem();
+                dogadjaj.setLokacija(selectedLocation);
+
+                dao.addDogadjaj(dogadjaj);
+                new AddTickets(dogadjaj,selectedLocation).setVisible(true); // Replace null with the Dogadjaj instance if available
+            }
+        });
+        contentPane.add(ticketDataButton);
+        
 
         // Cancel Button
         cancelButton = new JButton("Cancel");

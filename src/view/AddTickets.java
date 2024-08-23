@@ -2,23 +2,31 @@ package view;
 
 import model.Dogadjaj;
 import model.KartaDAO;
+import model.Lokacija;
 import model.Sektor;
-
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 public class AddTickets extends JFrame {
     private Dogadjaj dogadjaj;
     private KartaDAO kartaDAO;
-    //private SektorDAO sektorDAO;
+    private Lokacija selectedLokacija;
 
-    public AddTickets(Dogadjaj dogadjaj) {
+    public AddTickets(Dogadjaj dogadjaj, Lokacija selectedLokacija) {
         this.dogadjaj = dogadjaj;
         this.kartaDAO = new KartaDAO();
-     //   this.sektorDAO = new SektorDAO();
+        this.selectedLokacija = selectedLokacija;
+        
+        if (selectedLokacija == null) {
+            JOptionPane.showMessageDialog(this, "Selected location cannot be null", 
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            dispose(); // Close the window if no valid location is provided
+            return;
+        }
 
         setTitle("Add Tickets");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -26,73 +34,80 @@ public class AddTickets extends JFrame {
         setResizable(false);
 
         JPanel panel = new JPanel();
-        panel.setLayout(null);
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBackground(new Color(29, 190, 166));
         add(panel);
 
-        JLabel lblSector = new JLabel("Sector:");
-        lblSector.setBounds(30, 30, 100, 30);
-        panel.add(lblSector);
+        // Fetch sectors for the selected location
+        List<Sektor> sektori = selectedLokacija.getSektor();
 
-        JTextField txtSector = new JTextField();
-        txtSector.setBounds(160, 30, 200, 30);
-        panel.add(txtSector);
+        for (Sektor sektor : sektori) {
+            JPanel sectorPanel = new JPanel(new GridLayout(0, 1));
+            sectorPanel.setBorder(BorderFactory.createTitledBorder("Sector: " + sektor.getNaziv()));
+            sectorPanel.setBackground(new Color(29, 190, 166));
 
-        JLabel lblAmount = new JLabel("Amount:");
-        lblAmount.setBounds(30, 80, 100, 30);
-        panel.add(lblAmount);
+            JLabel lblAmount = new JLabel("Amount:");
+            JTextField txtAmount = new JTextField(5);
 
-        JTextField txtAmount = new JTextField();
-        txtAmount.setBounds(160, 80, 200, 30);
-        panel.add(txtAmount);
+            JLabel lblPrice = new JLabel("Price:");
+            JTextField txtPrice = new JTextField(5);
 
-        JLabel lblPrice = new JLabel("Price:");
-        lblPrice.setBounds(30, 130, 100, 30);
-        panel.add(lblPrice);
+            JLabel lblResPrice = new JLabel("Reservation Price:");
+            JTextField txtResPrice = new JTextField(5);
 
-        JTextField txtPrice = new JTextField();
-        txtPrice.setBounds(160, 130, 200, 30);
-        panel.add(txtPrice);
+            JButton btnGenerate = new JButton("Generate Tickets");
+            JButton btnAddIndividually = new JButton("Add Tickets Individually");
 
-        JLabel lblResPrice = new JLabel("Reservation Price:");
-        lblResPrice.setBounds(30, 180, 150, 30);
-        panel.add(lblResPrice);
+            sectorPanel.add(lblAmount);
+            sectorPanel.add(txtAmount);
+            sectorPanel.add(lblPrice);
+            sectorPanel.add(txtPrice);
+            sectorPanel.add(lblResPrice);
+            sectorPanel.add(txtResPrice);
+            sectorPanel.add(btnGenerate);
+            sectorPanel.add(btnAddIndividually);
+            panel.add(sectorPanel);
 
-        JTextField txtResPrice = new JTextField();
-        txtResPrice.setBounds(160, 180, 200, 30);
-        panel.add(txtResPrice);
+            btnGenerate.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        int amount = Integer.parseInt(txtAmount.getText());
+                        int price = Integer.parseInt(txtPrice.getText());
+                        int resPrice = Integer.parseInt(txtResPrice.getText());
 
-        JButton btnAddTickets = new JButton("Add Tickets");
-        btnAddTickets.setBounds(100, 250, 200, 40);
-        panel.add(btnAddTickets);
+                        if (amount > sektor.getKapacitet()) {
+                            JOptionPane.showMessageDialog(AddTickets.this,
+                                    "Cannot generate tickets. The amount exceeds the sector's capacity.");
+                        } else {
+                            // Use the generateTickets method from KartaDAO
+                            kartaDAO.generateTickets(dogadjaj, sektor, amount, price, resPrice);
+                            JOptionPane.showMessageDialog(AddTickets.this, "Tickets generated successfully.");
+                        }
+                    } catch (NumberFormatException ex) {
+                        JOptionPane.showMessageDialog(AddTickets.this, "Please enter valid numbers.");
+                    }
+                }
+            });
 
-        btnAddTickets.addActionListener(new ActionListener() {
+            btnAddIndividually.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                  AddIndividualTickets dialog = new AddIndividualTickets(dogadjaj, sektor, kartaDAO);
+                   dialog.setVisible(true);
+                }
+            });
+        }
+
+        JButton btnClose = new JButton("Close");
+        btnClose.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    String sector = txtSector.getText();
-                    int amount = Integer.parseInt(txtAmount.getText());
-                    int price = Integer.parseInt(txtPrice.getText());
-                    int resPrice = Integer.parseInt(txtResPrice.getText());
-                    	//TO DO
-                    	// Fetch the sector from the database
-                    	//    Sektor sektor = sektorDAO.getSektorByName(sector);
-                    	//   if (sektor == null) {
-                    	//     JOptionPane.showMessageDialog(AddTickets.this, "Sector not found in the database.");
-                    	//   return;
-                    	//    }
-                    // Create a dummy sector object or fetch it from the DB
-                    Sektor sektor = new Sektor(); // In a real scenario, fetch the actual sector from DB
-                    sektor.setNaziv(sector); 
-                    // Generate and persist tickets
-                    kartaDAO.generateTickets(dogadjaj, sektor, amount, price, resPrice);
-
-                    JOptionPane.showMessageDialog(AddTickets.this, "Tickets added successfully.");
-                    dispose(); // Close the AddTickets window
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(AddTickets.this, "Please enter valid numbers.");
-                }
+                dispose();
             }
         });
+        panel.add(btnClose);
+
+        pack();
     }
 }
