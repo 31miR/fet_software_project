@@ -1,4 +1,5 @@
 package view;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -12,6 +13,7 @@ import model.Lokacija;
 import model.Sektor;
 import model.LokacijaDAO;
 import model.SektorDAO;
+import model.Administrator;
 
 public class CreateLocation extends JFrame {
     private JTextField nazivField;
@@ -28,8 +30,11 @@ public class CreateLocation extends JFrame {
     private SektorDAO sektorDAO;
     private List<Sektor> sektori;
     private int ukupniKapacitet;
+    private Administrator admin;
 
-    public CreateLocation() {
+    public CreateLocation(Administrator admin) {
+        this.admin = admin;
+        
         // Postavke prozora
         setTitle("Create Location");
         setBounds(450, 190, 1014, 800);
@@ -44,10 +49,10 @@ public class CreateLocation extends JFrame {
         contentPane.setBackground(new Color(29, 190, 166));
         
         // Prikaz slike
-        ImageIcon imageIcon = new ImageIcon("resources/logo.png"); // Postavi putanju do svoje slike
-        Image image = imageIcon.getImage(); // Transformacija slike
-        Image scaledImage = image.getScaledInstance(300, 300, java.awt.Image.SCALE_SMOOTH); // Promijeni veličinu slike
-        imageIcon = new ImageIcon(scaledImage); // Ponovo kreiraj ImageIcon sa promijenjenom slikom
+        ImageIcon imageIcon = new ImageIcon("resources/logo.png");
+        Image image = imageIcon.getImage();
+        Image scaledImage = image.getScaledInstance(300, 300, java.awt.Image.SCALE_SMOOTH);
+        imageIcon = new ImageIcon(scaledImage);
         
         JLabel label = new JLabel(imageIcon);
         label.setBounds(25, 200, 400, 300);
@@ -66,7 +71,8 @@ public class CreateLocation extends JFrame {
         browseButton = new JButton("Browse..");
         addSectorButton = new JButton("Add Sectors");
         saveButton = new JButton("Save");
-        cancelButton = new JButton("Cancel");
+        cancelButton = new JButton("Back");
+
 
         // Font za komponente
         Font font = new Font("Chilanka", Font.PLAIN, 26);
@@ -108,6 +114,8 @@ public class CreateLocation extends JFrame {
         addSectorButton.setBounds(550, 600, 200, 50);
         saveButton.setBounds(550, 700, 200, 50);
         cancelButton.setBounds(800, 700, 200, 50);
+        
+       
 
         // Dodavanje komponenti na panel
         contentPane.add(nazivLabel);
@@ -157,8 +165,8 @@ public class CreateLocation extends JFrame {
 
                         if (ukupniKapacitetSektora > ukupniKapacitet) {
                             JOptionPane.showMessageDialog(null, "The total capacity of sectors must not exceed the location's capacity.");
-                            ukupniKapacitetSektora -= kapacitetSektora; // Oduzmi zadati kapacitet koji je uzrokovao grešku
-                            i--; // Poništi broj sektora za neispravan unos
+                            ukupniKapacitetSektora -= kapacitetSektora;
+                            i--;
                             continue;
                         }
 
@@ -166,7 +174,7 @@ public class CreateLocation extends JFrame {
                         Sektor sektor = new Sektor();
                         sektor.setNaziv(nazivSektora);
                         sektor.setKapacitet(kapacitetSektora);
-                        sektor.setLokacija(new Lokacija()); // Placeholder, će se ažurirati kasnije
+                        sektor.setLokacija(new Lokacija()); // Placeholder, ažurira se kasnije
                         
                         sektori.add(sektor);
                     }
@@ -207,32 +215,32 @@ public class CreateLocation extends JFrame {
                     }
                     
                     JOptionPane.showMessageDialog(null, "Location and sectors have been successfully added to the database.");
-                    AdminView view = new AdminView();
+                    AdminView view = new AdminView(admin);
                     view.setVisible(true);
                     dispose();
                 } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(null, "Please enter valid numbers for capacity.");
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(null, "An error occurred: " + ex.getMessage());
+                    JOptionPane.showMessageDialog(null, "Please enter valid numbers.");
                 }
             }
         });
 
+        // Postavljanje akcije za dugme "Cancel"
         cancelButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                AdminView view = new AdminView();
+                AdminView view = new AdminView(admin);
                 view.setVisible(true);
                 dispose();
             }
         });
+        
+        
+        
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                new EditEvent().setVisible(true);
-            }
-        });
+        Administrator admin = new Administrator(); // Inicijalizuj Administrator objekat ovde
+        CreateLocation createLocationFrame = new CreateLocation(admin);
+        createLocationFrame.setVisible(true);
     }
 }
