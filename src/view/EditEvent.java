@@ -57,243 +57,197 @@ public class EditEvent extends JFrame {
         // Initialize subtype map
         eventSubtypesMap = new HashMap<>();
         eventSubtypesMap.put("Muzika", new String[]{"Koncert", "Festival", "Ostalo"});
-        eventSubtypesMap.put("Kultura", new String[]{"Izlozba", "Predstava", "Plesna izvedba"});
-        eventSubtypesMap.put("Zabava", new String[]{"Zurka", "Stand-up", "Ostalo"});
-        eventSubtypesMap.put("Sport", new String[]{"Utakmica", "Mec", "Turnir"});
-        eventSubtypesMap.put("Festival", new String[]{"Muzika", "Film", "Hrana i pice"});
-        eventSubtypesMap.put("Konferencija", new String[]{"Poslovna", "Edukativna", "Ostalo"});
-        eventSubtypesMap.put("Workshop", new String[]{"Tehnicki", "Kreativni", "Ostalo"});
-        eventSubtypesMap.put("Ostalo", new String[]{"Drugo"});
+        eventSubtypesMap.put("Kultura", new String[]{"Izložba", "Pozorište", "Ostalo"});
+        eventSubtypesMap.put("Sport", new String[]{"Utakmica", "Trka", "Ostalo"});
 
-        // Event Name Label and Field
+        // Event Name
         JLabel lblEventName = new JLabel("Event Name:");
-        lblEventName.setForeground(Color.BLACK);
-        lblEventName.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        lblEventName.setBounds(30, 30, 150, 30);
+        lblEventName.setFont(new Font("Chilanka", Font.PLAIN, 20));
+        lblEventName.setBounds(20, 20, 150, 30);
         contentPane.add(lblEventName);
 
         eventNameField = new JTextField(event.getNaziv());
         eventNameField.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        eventNameField.setBounds(200, 30, 350, 30);
+        eventNameField.setBounds(180, 20, 400, 30);
         contentPane.add(eventNameField);
 
-        // Date Label and Spinner
-        JLabel lblEventDate = new JLabel("Event Date:");
-        lblEventDate.setForeground(Color.BLACK);
-        lblEventDate.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        lblEventDate.setBounds(30, 220, 150, 30);
-        contentPane.add(lblEventDate);
-
-        Calendar calendar = Calendar.getInstance();
-        SpinnerDateModel model = new SpinnerDateModel(event.getDatum(), null, null, Calendar.DAY_OF_MONTH);
-        dateSpinner = new JSpinner(model);
-        JSpinner.DateEditor editor = new JSpinner.DateEditor(dateSpinner, "dd-MM-yyyy");
-        dateSpinner.setEditor(editor);
-        dateSpinner.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        dateSpinner.setBounds(200, 220, 150, 30);
-        contentPane.add(dateSpinner);
-
-        // Event Description Label and Field
-        JLabel lblEventDescription = new JLabel("Description:");
-        lblEventDescription.setForeground(Color.BLACK);
-        lblEventDescription.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        lblEventDescription.setBounds(30, 80, 150, 30);
+        // Event Description
+        JLabel lblEventDescription = new JLabel("Event Description:");
+        lblEventDescription.setFont(new Font("Chilanka", Font.PLAIN, 20));
+        lblEventDescription.setBounds(20, 60, 200, 30);
         contentPane.add(lblEventDescription);
 
         eventDescriptionArea = new JTextArea(event.getOpis());
         eventDescriptionArea.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        eventDescriptionArea.setBounds(200, 80, 350, 70);
-        contentPane.add(eventDescriptionArea);
+        eventDescriptionArea.setLineWrap(true);
+        eventDescriptionArea.setWrapStyleWord(true);
+        JScrollPane descriptionScrollPane = new JScrollPane(eventDescriptionArea);
+        descriptionScrollPane.setBounds(20, 100, 560, 100);
+        contentPane.add(descriptionScrollPane);
 
-        // Event Location Label and Field
-        JLabel lblLocation = new JLabel("Location:");
-        lblLocation.setForeground(Color.BLACK);
-        lblLocation.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        lblLocation.setBounds(30, 170, 150, 30);
-        contentPane.add(lblLocation);
+        // Event Date
+        JLabel lblEventDate = new JLabel("Event Date:");
+        lblEventDate.setFont(new Font("Chilanka", Font.PLAIN, 20));
+        lblEventDate.setBounds(20, 220, 150, 30);
+        contentPane.add(lblEventDate);
 
-        LokacijaDAO lokacijaDAO = new LokacijaDAO();
-        java.util.List<Lokacija> locations = lokacijaDAO.getAllLocations();
+        dateSpinner = new JSpinner(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_MONTH));
+        dateSpinner.setFont(new Font("Chilanka", Font.PLAIN, 18));
+        JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(dateSpinner, "dd/MM/yyyy HH:mm");
+        dateSpinner.setEditor(dateEditor);
+        dateSpinner.setBounds(180, 220, 200, 30);
+        contentPane.add(dateSpinner);
 
-        locationComboBox = new JComboBox<>(locations.toArray(new Lokacija[0]));
-        locationComboBox.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        locationComboBox.setBounds(200, 170, 350, 30);
-        locationComboBox.setSelectedItem(event.getLokacija());
-        contentPane.add(locationComboBox);
-
-        // Event Type Label and ComboBox
+        // Event Type
         JLabel lblEventType = new JLabel("Event Type:");
-        lblEventType.setForeground(Color.BLACK);
-        lblEventType.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        lblEventType.setBounds(30, 270, 150, 30);
+        lblEventType.setFont(new Font("Chilanka", Font.PLAIN, 20));
+        lblEventType.setBounds(20, 260, 150, 30);
         contentPane.add(lblEventType);
 
-        eventTypeComboBox = new JComboBox<>(new String[]{"Muzika","Kultura","Zabava","Sport", "Festival", "Konferencija", "Workshop","Ostalo"});
+        eventTypeComboBox = new JComboBox<>(new String[]{"Muzika", "Kultura", "Sport"});
         eventTypeComboBox.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        eventTypeComboBox.setBounds(200, 270, 350, 30);
-        eventTypeComboBox.setSelectedItem(event.getVrsta());
+        eventTypeComboBox.setBounds(180, 260, 200, 30);
+        eventTypeComboBox.addActionListener(e -> updateEventSubtypes());
         contentPane.add(eventTypeComboBox);
 
-        // Event Subtype Label and ComboBox
+        // Event Subtype
         JLabel lblEventSubtype = new JLabel("Event Subtype:");
-        lblEventSubtype.setForeground(Color.BLACK);
-        lblEventSubtype.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        lblEventSubtype.setBounds(30, 320, 150, 30);
+        lblEventSubtype.setFont(new Font("Chilanka", Font.PLAIN, 20));
+        lblEventSubtype.setBounds(20, 300, 150, 30);
         contentPane.add(lblEventSubtype);
 
-        eventSubtypeComboBox = new JComboBox<>(getSubtypesForType(event.getVrsta()));
+        eventSubtypeComboBox = new JComboBox<>();
         eventSubtypeComboBox.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        eventSubtypeComboBox.setBounds(200, 320, 350, 30);
-        eventSubtypeComboBox.setSelectedItem(event.getPodvrsta());
+        eventSubtypeComboBox.setBounds(180, 300, 200, 30);
         contentPane.add(eventSubtypeComboBox);
 
-        // Add ActionListener to eventTypeComboBox to update eventSubtypeComboBox
-        eventTypeComboBox.addActionListener(e -> {
-            String selectedType = (String) eventTypeComboBox.getSelectedItem();
-            eventSubtypeComboBox.removeAllItems();
-            for (String subtype : eventSubtypesMap.getOrDefault(selectedType, new String[0])) {
-                eventSubtypeComboBox.addItem(subtype);
-            }
-        });
-
-        // Event Image Label and Field
-        JLabel lblEventImage = new JLabel("Image Location:");
-        lblEventImage.setForeground(Color.BLACK);
-        lblEventImage.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        lblEventImage.setBounds(30, 370, 150, 30);
+        // Event Image
+        JLabel lblEventImage = new JLabel("Event Image:");
+        lblEventImage.setFont(new Font("Chilanka", Font.PLAIN, 20));
+        lblEventImage.setBounds(20, 340, 150, 30);
         contentPane.add(lblEventImage);
 
-        eventImageField = new JTextField(event.getSlika());
+        eventImageField = new JTextField();
         eventImageField.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        eventImageField.setBounds(200, 370, 250, 30);
-        eventImageField.setEditable(false);
+        eventImageField.setBounds(180, 340, 400, 30);
         contentPane.add(eventImageField);
 
         JButton browseButton = new JButton("Browse");
         browseButton.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        browseButton.setBounds(470, 370, 80, 30);
-        browseButton.setForeground(new Color(51, 51, 51));
-        browseButton.setBackground(Color.decode("#f3f7f8"));
-        browseButton.setBorder(BorderFactory.createLineBorder(Color.decode("#e2e2e2")));
-        browseButton.addActionListener(e -> {
-            fileChooser = new JFileChooser();
-            fileChooser.setFileFilter(new FileNameExtensionFilter("Image Files", "jpg", "png", "gif"));
-            int returnValue = fileChooser.showOpenDialog(EditEvent.this);
-            if (returnValue == JFileChooser.APPROVE_OPTION) {
-                File selectedFile = fileChooser.getSelectedFile();
-                String destDir = "resources/event_images/";
-                new File(destDir).mkdirs();
-                String fileExtension = selectedFile.getName().substring(selectedFile.getName().lastIndexOf(".") + 1);
-                String newFileName = "event_" + event.getDogadjaj_id() + "." + fileExtension;
-                File destinationFile = new File(destDir + newFileName);
-                try {
-                    Files.copy(selectedFile.toPath(), destinationFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                    eventImageField.setText(newFileName);
-                } catch (IOException ioException) {
-                    ioException.printStackTrace();
-                }
-            }
-        });
+        browseButton.setBounds(500, 380, 80, 30);
+        browseButton.addActionListener(e -> chooseImageFile());
         contentPane.add(browseButton);
 
-        // Maximum Tickets Label and Field
+        // Location
+        JLabel lblLocation = new JLabel("Location:");
+        lblLocation.setFont(new Font("Chilanka", Font.PLAIN, 20));
+        lblLocation.setBounds(20, 380, 150, 30);
+        contentPane.add(lblLocation);
+
+        LokacijaDAO lokacijaDAO = new LokacijaDAO();
+        java.util.List<Lokacija> locations = lokacijaDAO.getAllLocations();
+        locationComboBox = new JComboBox<>(locations.toArray(new Lokacija[0]));
+        locationComboBox.setFont(new Font("Chilanka", Font.PLAIN, 18));
+        locationComboBox.setBounds(180, 380, 300, 30);
+        contentPane.add(locationComboBox);
+
+        // Max Tickets
         JLabel lblMaxTickets = new JLabel("Max Tickets:");
-        lblMaxTickets.setForeground(Color.BLACK);
-        lblMaxTickets.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        lblMaxTickets.setBounds(30, 420, 150, 30);
+        lblMaxTickets.setFont(new Font("Chilanka", Font.PLAIN, 20));
+        lblMaxTickets.setBounds(20, 420, 150, 30);
         contentPane.add(lblMaxTickets);
 
         maxTicketsField = new JTextField(String.valueOf(event.getMaxKartiPoKorisniku()));
         maxTicketsField.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        maxTicketsField.setBounds(200, 420, 150, 30);
+        maxTicketsField.setBounds(180, 420, 100, 30);
         contentPane.add(maxTicketsField);
 
-        // Payment On Registration CheckBox
+        // Payment on Registration
         paymentOnRegistrationCheckBox = new JCheckBox("Payment on Registration");
-        paymentOnRegistrationCheckBox.setForeground(Color.BLACK);
-        paymentOnRegistrationCheckBox.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        paymentOnRegistrationCheckBox.setBounds(200, 460, 250, 30);
+        paymentOnRegistrationCheckBox.setFont(new Font("Chilanka", Font.PLAIN, 20));
+        paymentOnRegistrationCheckBox.setBounds(20, 460, 300, 30);
         paymentOnRegistrationCheckBox.setSelected(event.isNaplataPriRezervaciji());
         contentPane.add(paymentOnRegistrationCheckBox);
 
-        // Event Finished Label and ComboBox
+        // Event Finished
         JLabel lblEventFinished = new JLabel("Event Finished:");
-        lblEventFinished.setForeground(Color.BLACK);
-        lblEventFinished.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        lblEventFinished.setBounds(30, 510, 150, 30);
+        lblEventFinished.setFont(new Font("Chilanka", Font.PLAIN, 20));
+        lblEventFinished.setBounds(20, 500, 150, 30);
         contentPane.add(lblEventFinished);
 
         eventFinishedComboBox = new JComboBox<>(new String[]{"Yes", "No"});
         eventFinishedComboBox.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        eventFinishedComboBox.setBounds(200, 510, 150, 30);
+        eventFinishedComboBox.setBounds(180, 500, 100, 30);
         eventFinishedComboBox.setSelectedItem(event.isZavrsio() ? "Yes" : "No");
         contentPane.add(eventFinishedComboBox);
 
         // Save Button
         JButton saveButton = new JButton("Save");
-        saveButton.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        saveButton.setBounds(450, 600, 100, 40);
-        saveButton.setForeground(new Color(51, 51, 51));
-        saveButton.setBackground(Color.decode("#f3f7f8"));
-        saveButton.setBorder(BorderFactory.createLineBorder(Color.decode("#e2e2e2")));
+        saveButton.setFont(new Font("Chilanka", Font.PLAIN, 20));
+        saveButton.setBounds(420, 620, 150, 50);
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    updateEvent();
-                    dispose();
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    JOptionPane.showMessageDialog(EditEvent.this, "Error saving event.", "Error", JOptionPane.ERROR_MESSAGE);
-                }
+                saveEvent();
             }
         });
         contentPane.add(saveButton);
 
         // Cancel Button
         JButton cancelButton = new JButton("Cancel");
-        cancelButton.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        cancelButton.setBounds(330, 600, 100, 40);
-        cancelButton.setForeground(new Color(51, 51, 51));
-        cancelButton.setBackground(Color.decode("#f3f7f8"));
-        cancelButton.setBorder(BorderFactory.createLineBorder(Color.decode("#e2e2e2")));
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose();
-            }
-        });
+        cancelButton.setFont(new Font("Chilanka", Font.PLAIN, 20));
+        cancelButton.setBounds(250, 620, 150, 50);
+        cancelButton.addActionListener(e -> dispose());
         contentPane.add(cancelButton);
     }
 
-    private void updateEvent() {
-        String naziv = eventNameField.getText();
-        String opis = eventDescriptionArea.getText();
-        Date datum = ((SpinnerDateModel) dateSpinner.getModel()).getDate();
-        Lokacija lokacija = (Lokacija) locationComboBox.getSelectedItem();
-        String vrsta = (String) eventTypeComboBox.getSelectedItem();
-        String podvrsta = (String) eventSubtypeComboBox.getSelectedItem();
-        String slika = eventImageField.getText();
-        int brojKarata = Integer.parseInt(maxTicketsField.getText());
-        boolean placanjeNaRegistraciji = paymentOnRegistrationCheckBox.isSelected();
-        boolean zavrseno = "Yes".equals(eventFinishedComboBox.getSelectedItem());
-
-        event.setNaziv(naziv);
-        event.setOpis(opis);
-        event.setDatum(datum);
-        event.setLokacija(lokacija);
-        event.setVrsta(vrsta);
-        event.setPodvrsta(podvrsta);
-        event.setSlika(slika);
-        event.setMaxKartiPoKorisniku(brojKarata);
-        event.setNaplataPriRezervaciji(placanjeNaRegistraciji);
-        event.setZavrsio(zavrseno);
-
-        DogadjajDAO dogadjajDAO = new DogadjajDAO();
-        dogadjajDAO.updateDogadjaj(event);
+    private void updateEventSubtypes() {
+        String selectedType = (String) eventTypeComboBox.getSelectedItem();
+        String[] subtypes = eventSubtypesMap.get(selectedType);
+        eventSubtypeComboBox.setModel(new DefaultComboBoxModel<>(subtypes));
     }
 
-    private String[] getSubtypesForType(String eventType) {
-        return eventSubtypesMap.getOrDefault(eventType, new String[0]);
+    private void chooseImageFile() {
+        if (fileChooser == null) {
+            fileChooser = new JFileChooser();
+            fileChooser.setFileFilter(new FileNameExtensionFilter("Image Files", "jpg", "jpeg", "png"));
+        }
+        int result = fileChooser.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            eventImageField.setText(selectedFile.getAbsolutePath());
+            // Optionally copy or move the file to a permanent location
+        }
+    }
+
+    private void saveEvent() {
+        String name = eventNameField.getText();
+        String description = eventDescriptionArea.getText();
+        Date date = (Date) dateSpinner.getValue();
+        String type = (String) eventTypeComboBox.getSelectedItem();
+        String subtype = (String) eventSubtypeComboBox.getSelectedItem();
+        String imagePath = eventImageField.getText();
+        Lokacija location = (Lokacija) locationComboBox.getSelectedItem();
+        int maxTickets = Integer.parseInt(maxTicketsField.getText());
+        boolean paymentOnRegistration = paymentOnRegistrationCheckBox.isSelected();
+        boolean isFinished = "Yes".equals(eventFinishedComboBox.getSelectedItem());
+
+        event.setNaziv(name);
+        event.setOpis(description);
+        event.setDatum(date);
+        event.setVrsta(type);
+        event.setPodvrsta(subtype);
+        event.setSlika(imagePath);
+        event.setLokacija(location);
+        event.setMaxKartiPoKorisniku(maxTickets);
+        event.setNaplataPriRezervaciji(paymentOnRegistration);
+        event.setZavrsio(isFinished);
+
+        // Save changes to database
+        DogadjajDAO dogadjajDAO = new DogadjajDAO();
+        dogadjajDAO.updateDogadjaj(event);
+
+        JOptionPane.showMessageDialog(this, "Event updated successfully!");
+        dispose();
     }
 }

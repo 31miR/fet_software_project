@@ -47,7 +47,7 @@ public class Guest extends JFrame {
         contentPane.add(viewTicketsButton);
 
         // Dugme "Nazad"
-        JButton backButton = new JButton("Nazad");
+        JButton backButton = new JButton("Back");
         backButton.setFont(new Font("Chilanka", Font.PLAIN, 26));
         backButton.setBounds(500, 320, 200, 50);
         backButton.setForeground(new Color(51, 51, 51));
@@ -66,8 +66,8 @@ public class Guest extends JFrame {
     }
 
     private void otvoriPregledDogadjaja() {
-        ViewTickets viewTickets = new ViewTickets(null); // Null za scenarij gosta
-        viewTickets.setVisible(true);
+      //  ViewTickets viewTickets = new ViewTickets(null); // Null za scenarij gosta
+        //viewTickets.setVisible(true);
     }
 
     public static void main(String[] args) {

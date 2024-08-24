@@ -2,7 +2,10 @@ package view;
 
 import javax.swing.*;
 import model.Organizator;
+import model.Dogadjaj;
+
 import java.awt.*;
+import java.util.List;
 
 public class OrganizatorView extends JFrame {
 
@@ -23,21 +26,20 @@ public class OrganizatorView extends JFrame {
         contentPane.setBackground(new Color(29, 190, 166));
         setTitle("Organizator View - " + organizator.getUsername());
 
-        // Prikaz slike
+        // Image Label
         ImageIcon imageIcon = new ImageIcon("resources/logo.png"); 
         Image image = imageIcon.getImage(); 
         Image scaledImage = image.getScaledInstance(300, 300, Image.SCALE_SMOOTH); 
         imageIcon = new ImageIcon(scaledImage); 
-        
         JLabel label = new JLabel(imageIcon);
         label.setBounds(15, 140, 400, 300);
         contentPane.add(label);
 
         // Welcome Label
-        JLabel lblWelcome = new JLabel("Welcome Organizator, " + organizator.getUsername() + "!");
+        JLabel lblWelcome = new JLabel("Welcome Organizator, " + organizator.getName() + "!");
         lblWelcome.setForeground(new Color(95, 95, 95)); 
         lblWelcome.setFont(new Font("Chilanka", Font.ITALIC, 46));
-        lblWelcome.setBounds(300, 12, 600, 95);
+        lblWelcome.setBounds(250, 12, 1000, 95);
         contentPane.add(lblWelcome);
 
         // Create Event Button
@@ -61,8 +63,11 @@ public class OrganizatorView extends JFrame {
         viewEventsButton.setBackground(Color.decode("#f3f7f8"));
         viewEventsButton.setBorder(BorderFactory.createLineBorder(Color.decode("#e2e2e2")));
         viewEventsButton.addActionListener(e -> {
-            //ViewEvent viewEvent = new ViewEvent();
-            //viewEvent.setVisible(true);
+
+            List<Dogadjaj> events = organizator.getDogadjaj();  // Retrieve the list of events associated with the organizer
+            ViewEventOrganizator selectEventWindow = new ViewEventOrganizator(organizator);
+            selectEventWindow.setVisible(true);
+
         });
         contentPane.add(viewEventsButton);
 
@@ -74,8 +79,9 @@ public class OrganizatorView extends JFrame {
         editEventButton.setBackground(Color.decode("#f3f7f8"));
         editEventButton.setBorder(BorderFactory.createLineBorder(Color.decode("#e2e2e2")));
         editEventButton.addActionListener(e -> {
-            //EditEvent editEvent = new EditEvent();
-            //editEvent.setVisible(true);
+            List<Dogadjaj> events = organizator.getDogadjaj();  // Retrieve the list of events associated with the organizer
+            SelectEventWindow selectEventWindow = new SelectEventWindow(organizator);
+            selectEventWindow.setVisible(true);
         });
         contentPane.add(editEventButton);
 
