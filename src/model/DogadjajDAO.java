@@ -26,8 +26,8 @@ public class DogadjajDAO {
 		String limit_part = String.valueOf(start) + ", " + String.valueOf(ammount);
 		EntityManager em = emf.createEntityManager();
 		List<Dogadjaj> ret = em.createQuery("Select a FROM Dogadjaj a INNER JOIN Lokacija b ON "
-				+ "a.lokacija_id = b.lokacija_id WHERE " + where_part + " ORDER BY " + sort_part + " LIMIT "
-				+ limit_part, Dogadjaj.class).getResultList();
+				+ "a.lokacija_id = b.lokacija_id" + (where_part.length() == 0 ? "" : " WHERE " + where_part)
+				+ " ORDER BY " + sort_part + " LIMIT " + limit_part, Dogadjaj.class).getResultList();
 		em.close();
 		return ret;
 	}
