@@ -25,7 +25,7 @@ public class DogadjajDAO {
 		String sort_part = sortBy + " " + (ascending ? "ASC" : "DESC");
 		EntityManager em = emf.createEntityManager();
 		List<Dogadjaj> ret = em.createQuery("Select a FROM Dogadjaj a INNER JOIN Lokacija b ON "
-				+ "a.lokacija_id = b.lokacija_id" + (where_part.length() == 0 ? "" : " WHERE " + where_part)
+				+ "a.lokacija = b.lokacija_id" + (where_part.length() == 0 ? "" : " WHERE " + where_part)
 				+ " ORDER BY " + sort_part, Dogadjaj.class).setFirstResult(start).setMaxResults(ammount).getResultList();
 		em.close();
 		return ret;
