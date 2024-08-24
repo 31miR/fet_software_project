@@ -67,7 +67,9 @@ public class AdminView extends JFrame {
         viewButton.setBounds(550, 400, 250, 50);
         viewButton.setForeground(new Color(51, 51, 51));
         viewButton.addActionListener(e -> {
+
             ViewEvent event = new ViewEvent(admin);
+
             event.setVisible(true);
             dispose();
         });
