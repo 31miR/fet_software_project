@@ -66,16 +66,20 @@ public class ViewProfile extends JFrame {
         contentPane.add(lblTicketsBought);
 
         // Back Button
+
         JButton backButton = new JButton("Back");
+
         backButton.setFont(new Font("Chilanka", Font.PLAIN, 26));
         backButton.setBounds(500, 420, 200, 50);
         backButton.setForeground(new Color(51, 51, 51));
         backButton.setBackground(Color.decode("#f3f7f8"));
         backButton.setBorder(BorderFactory.createLineBorder(Color.decode("#e2e2e2")));
         backButton.addActionListener(e -> {
+
         	
         	KorisnikView back = new KorisnikView(korisnik);
             back.setVisible(true);
+
             dispose();
         });
         contentPane.add(backButton);

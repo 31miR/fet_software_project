@@ -82,6 +82,7 @@ public class Login extends JFrame {
         loginButton.setBorder(BorderFactory.createLineBorder(Color.decode("#e2e2e2")));
         contentPane.add(loginButton);
 
+
         RegisterButton = new JButton("Register as User");
         RegisterButton.setFont(new Font("Chilanka", Font.PLAIN, 26));
         RegisterButton.setBounds(800, 392, 162, 50);
@@ -91,6 +92,7 @@ public class Login extends JFrame {
         contentPane.add(RegisterButton);
         
         RegisterButton = new JButton("Register as User");
+
         RegisterButton.setFont(new Font("Chilanka", Font.PLAIN, 26));
         RegisterButton.setBounds(800, 392, 162, 50);
         RegisterButton.setBackground(Color.decode("#f3f7f8"));
@@ -127,6 +129,7 @@ public class Login extends JFrame {
                         return;
                     }
 
+
                  // Pokušaj prijave kao korisnik
                     Organizator organizator = orgController.searchByUserName(username);
                     
@@ -145,9 +148,11 @@ public class Login extends JFrame {
                     	
                         OrganizatorView orgView = new OrganizatorView(organizator);
                         orgView.setVisible(true);
+
                         dispose();
                         return;
                     }
+
 
 
                     // Pokušaj prijave kao korisnik
@@ -167,11 +172,14 @@ public class Login extends JFrame {
                     	 JOptionPane.showMessageDialog(null, "Profile is pending.");
                     } else {
                     	
+
                         KorisnikView korisnikView = new KorisnikView(korisnik);
                         korisnikView.setVisible(true);
                         dispose();
                         return;
                     }
+
+
 
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -189,6 +197,7 @@ public class Login extends JFrame {
             }
         });
 
+
         guestButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -197,5 +206,6 @@ public class Login extends JFrame {
                 //dispose();
             }
         });
+
     }
 }
