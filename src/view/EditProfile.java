@@ -1,7 +1,7 @@
 package view;
 
+import model.IzmjeneDAO;
 import model.Korisnik;
-import model.KorisnikDAO; // Provjeri da li imaš KorisnikDAO za rad sa bazom
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -12,6 +12,7 @@ import java.awt.event.ActionListener;
 public class EditProfile extends JFrame {
     private static final long serialVersionUID = 1L;
     private Korisnik korisnik;
+    private IzmjeneDAO izmjeneDAO = new IzmjeneDAO();
 
     // Konstruktor
     public EditProfile(Korisnik korisnik) {
@@ -106,7 +107,7 @@ public class EditProfile extends JFrame {
         contentPane.add(addressField);
 
         // Dugme za čuvanje promjena
-        JButton saveButton = new JButton("Save Changes");
+        JButton saveButton = new JButton("Request Changes");
         saveButton.setBounds(500, 470, 200, 50);
         saveButton.setFont(new Font("Chilanka", Font.PLAIN, 26));
         saveButton.setForeground(new Color(51, 51, 51));
@@ -115,19 +116,21 @@ public class EditProfile extends JFrame {
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Ažuriraj korisnik podatke
-                korisnik.setName(nameField.getText());
-                korisnik.setLastName(lastNameField.getText());
-                korisnik.setEmail(emailField.getText());
-                korisnik.setPhone(phoneField.getText());
-                korisnik.setAddress(addressField.getText());
-
-                // Čuvanje promjena u bazu
-                KorisnikDAO korisnikDAO = new KorisnikDAO();
-                korisnikDAO.updateKorisnik(korisnik);
-
-                // Zatvori prozor
-                JOptionPane.showMessageDialog(null, "Profile updated successfully!");
+                if (nameField.getText().length() != 0) {
+                	izmjeneDAO.addChange("Korisnik", korisnik.getUsername(), "name", nameField.getText());
+                }
+                if (lastNameField.getText().length() != 0) {
+                	izmjeneDAO.addChange("Korisnik", korisnik.getUsername(), "lastName", lastNameField.getText());
+                }
+                if (emailField.getText().length() != 0) {
+                	izmjeneDAO.addChange("Korisnik", korisnik.getUsername(), "email", emailField.getText());
+                }
+                if (phoneField.getText().length() != 0) {
+                	izmjeneDAO.addChange("Korisnik", korisnik.getUsername(), "phone", phoneField.getText());
+                }
+                if (addressField.getText().length() != 0) {
+                	izmjeneDAO.addChange("Korisnik", korisnik.getUsername(), "address", addressField.getText());
+                }
                 dispose();
             }
         });
