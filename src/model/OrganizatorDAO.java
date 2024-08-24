@@ -37,8 +37,8 @@ public class OrganizatorDAO {
 	}
 	public List<Organizator> getLimitedPending(int start, int ammount) {
 		EntityManager em = emf.createEntityManager();
-		List<Organizator> ret = em.createQuery("SELECT a FROM Korisnik a", Organizator.class)
-				.setFirstResult(start).setMaxResults(ammount).getResultList();
+		List<Organizator> ret = em.createQuery("SELECT a FROM Organizator a WHERE a.profileApproved = :falseValue", Organizator.class)
+				.setParameter("falseValue", false).setFirstResult(start).setMaxResults(ammount).getResultList();
 		em.close();
 		return ret;
 	}

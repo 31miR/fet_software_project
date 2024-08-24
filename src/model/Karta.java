@@ -11,12 +11,16 @@ public class Karta {
 	private int cijenaRezervacije;
 	private String sjediste;
 	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="sektor_id")
 	private Sektor sektor;
 	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="dogadjaj_id")
 	private Dogadjaj dogadjaj;
 	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="korRezervisao")
 	private Korisnik korRezervisao;
 	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="korKupio")
 	private Korisnik korKupio;
 	public int getKarta_id() {
 		return karta_id;

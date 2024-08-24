@@ -17,9 +17,10 @@ public class Dogadjaj {
 	private String slika; //lokacija slike u projektu
 	private boolean zavrsio;
 	private int maxKartiPoKorisniku;
-	private boolean naplataPriRegistraciji;
+	private boolean naplataPriRezervaciji;
 	private boolean dogadjajApproved;
 	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="organizator_id")
 	private Organizator organizator;
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="lokacija_id")
@@ -80,11 +81,11 @@ public class Dogadjaj {
 	public void setMaxKartiPoKorisniku(int maxKartiPoKorisniku) {
 		this.maxKartiPoKorisniku = maxKartiPoKorisniku;
 	}
-	public boolean isNaplataPriRegistraciji() {
-		return naplataPriRegistraciji;
+	public boolean isNaplataPriRezervaciji() {
+		return naplataPriRezervaciji;
 	}
-	public void setNaplataPriRegistraciji(boolean naplataPriRegistraciji) {
-		this.naplataPriRegistraciji = naplataPriRegistraciji;
+	public void setNaplataPriRezervaciji(boolean naplataPriRezervaciji) {
+		this.naplataPriRezervaciji = naplataPriRezervaciji;
 	}
 	public boolean isDogadjajApproved() {
 		return dogadjajApproved;

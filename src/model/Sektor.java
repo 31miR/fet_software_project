@@ -14,6 +14,7 @@ public class Sektor {
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sektor")
 	private List<Karta> karta;
 	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="lokacija_id")
 	private Lokacija lokacija;
 	public int getSektor_id() {
 		return sektor_id;

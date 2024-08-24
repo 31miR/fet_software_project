@@ -14,7 +14,7 @@ public class Korisnik {
 	private String lastName;
 	private String address;
 	private String phone;
-	private double walletBalance;
+	private int walletBalance;
 	private int brojKupljenihKarti;
 	private boolean profileApproved;
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "korRezervisao")
@@ -63,10 +63,10 @@ public class Korisnik {
 	public void setPhone(String phone) {
 		this.phone = phone;
 	}
-	public double getWalletBalance() {
+	public int getWalletBalance() {
 		return walletBalance;
 	}
-	public void setWalletBalance(double walletBalance) {
+	public void setWalletBalance(int walletBalance) {
 		this.walletBalance = walletBalance;
 	}
 	public int getBrojKupljenihKarti() {
