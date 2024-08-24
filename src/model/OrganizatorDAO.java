@@ -42,4 +42,11 @@ public class OrganizatorDAO {
 		em.close();
 		return ret;
 	}
+	public void deleteorganizator(Organizator organizator) {
+		EntityManager em = emf.createEntityManager();
+		em.getTransaction().begin();
+		em.merge(organizator);
+		em.remove(organizator);
+		em.getTransaction().commit();
+	}
 }

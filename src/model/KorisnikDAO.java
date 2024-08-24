@@ -40,4 +40,11 @@ public class KorisnikDAO {
 		em.close();
 		return ret;
 	}
+	public void deleteKorisnik(Korisnik korisnik) {
+		EntityManager em = emf.createEntityManager();
+		em.getTransaction().begin();
+		em.merge(korisnik);
+		em.remove(korisnik);
+		em.getTransaction().commit();
+	}
 }

@@ -54,4 +54,11 @@ public class DogadjajDAO {
 		em.close();
 		return ret;
 	}
+	public void deleteDogadjaj(Dogadjaj dogadjaj) {
+		EntityManager em = emf.createEntityManager();
+		em.getTransaction().begin();
+		em.merge(dogadjaj);
+		em.remove(dogadjaj);
+		em.getTransaction().commit();
+	}
 }
