@@ -1,7 +1,7 @@
 package view;
 
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,7 +18,8 @@ public class Login extends JFrame {
     private JTextField textField;
     private JPasswordField passwordField;
     private JButton loginButton;
-    private JButton RegisterButton;
+    private JButton registerButtonUser;
+    private JButton registerButtonOrg;
     private JButton guestButton;
 
     private KorisnikDAO userController;
@@ -27,30 +28,29 @@ public class Login extends JFrame {
 
     public Login() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(450, 190, 1014, 597);
+        setBounds(350, 190, 1000, 800); // Povećana veličina prozora za testiranje
         setResizable(false);
         JPanel contentPane = new JPanel();
         contentPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         setContentPane(contentPane);
         contentPane.setLayout(null);
         contentPane.setBackground(new Color(29, 190, 166));
-     
+
         // Prikaz slike
         ImageIcon imageIcon = new ImageIcon("resources/logo.png"); // Postavi putanju do svoje slike
         Image image = imageIcon.getImage(); // Transformacija slike
-        Image scaledImage = image.getScaledInstance(300, 300, java.awt.Image.SCALE_SMOOTH); // Promijeni veličinu slike
+        Image scaledImage = image.getScaledInstance(300, 300, Image.SCALE_SMOOTH); // Promijeni veličinu slike
         imageIcon = new ImageIcon(scaledImage); // Ponovo kreiraj ImageIcon sa promijenjenom slikom
-        
+
         JLabel label = new JLabel(imageIcon);
         label.setBounds(50, 100, 400, 300);
         contentPane.add(label);
-        ;
 
         JLabel lblNewLabel = new JLabel("Dobrodosli u Kartu!");
         lblNewLabel.setForeground(Color.BLACK);
         lblNewLabel.setFont(new Font("Chilanka", Font.ITALIC, 46));
         lblNewLabel.setBounds(500, 12, 600, 95);
-        lblNewLabel.setForeground(new Color(95, 95, 95)); 
+        lblNewLabel.setForeground(new Color(95, 95, 95));
         contentPane.add(lblNewLabel);
 
         JLabel lblUsername = new JLabel("Username:");
@@ -76,33 +76,31 @@ public class Login extends JFrame {
 
         loginButton = new JButton("Login");
         loginButton.setFont(new Font("Chilanka", Font.PLAIN, 26));
-        loginButton.setBounds(545, 392, 162, 50);
+        loginButton.setBounds(550, 392, 250, 50);
         loginButton.setBackground(Color.decode("#f3f7f8"));
         loginButton.setForeground(new Color(51, 51, 51));
         loginButton.setBorder(BorderFactory.createLineBorder(Color.decode("#e2e2e2")));
         contentPane.add(loginButton);
 
+        registerButtonUser = new JButton("Register as User");
+        registerButtonUser.setFont(new Font("Chilanka", Font.PLAIN, 26));
+        registerButtonUser.setBounds(550, 492, 250, 50);
+        registerButtonUser.setBackground(Color.decode("#f3f7f8"));
+        registerButtonUser.setForeground(new Color(51, 51, 51));
+        registerButtonUser.setBorder(BorderFactory.createLineBorder(Color.decode("#e2e2e2")));
+        contentPane.add(registerButtonUser);
 
-        RegisterButton = new JButton("Register as User");
-        RegisterButton.setFont(new Font("Chilanka", Font.PLAIN, 26));
-        RegisterButton.setBounds(800, 392, 162, 50);
-        RegisterButton.setBackground(Color.decode("#f3f7f8"));
-        RegisterButton.setForeground(new Color(51, 51, 51));
-        RegisterButton.setBorder(BorderFactory.createLineBorder(Color.decode("#e2e2e2")));
-        contentPane.add(RegisterButton);
-        
-        RegisterButton = new JButton("Register as User");
-
-        RegisterButton.setFont(new Font("Chilanka", Font.PLAIN, 26));
-        RegisterButton.setBounds(800, 392, 162, 50);
-        RegisterButton.setBackground(Color.decode("#f3f7f8"));
-        RegisterButton.setForeground(new Color(51, 51, 51));
-        RegisterButton.setBorder(BorderFactory.createLineBorder(Color.decode("#e2e2e2")));
-        contentPane.add(RegisterButton);
+        registerButtonOrg = new JButton("Register as Organizator");
+        registerButtonOrg.setFont(new Font("Chilanka", Font.PLAIN, 26));
+        registerButtonOrg.setBounds(550, 592, 250, 50);
+        registerButtonOrg.setBackground(Color.decode("#f3f7f8"));
+        registerButtonOrg.setForeground(new Color(51, 51, 51));
+        registerButtonOrg.setBorder(BorderFactory.createLineBorder(Color.decode("#e2e2e2")));
+        contentPane.add(registerButtonOrg);
 
         guestButton = new JButton("Continue as Guest");
         guestButton.setFont(new Font("Chilanka", Font.PLAIN, 26));
-        guestButton.setBounds(600, 450, 300, 50);
+        guestButton.setBounds(550, 692, 250, 50);
         guestButton.setBackground(Color.decode("#f3f7f8"));
         guestButton.setForeground(new Color(51, 51, 51));
         guestButton.setBorder(BorderFactory.createLineBorder(Color.decode("#e2e2e2")));
@@ -129,57 +127,46 @@ public class Login extends JFrame {
                         return;
                     }
 
-
-                 // Pokušaj prijave kao korisnik
+                    // Pokušaj prijave kao organizator
                     Organizator organizator = orgController.searchByUserName(username);
-                    
-                    if (organizator == null ) {
-
-                        
+                    if (organizator != null) {
+                        if (organizator.getPassword().equals(password)) {
+                            if (organizator.isProfileApproved()) {
+                                OrganizatorView orgView = new OrganizatorView(organizator);
+                                orgView.setVisible(true);
+                                dispose();
+                                return;
+                            } else {
+                                JOptionPane.showMessageDialog(null, "Profile is pending.");
+                                return;
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Password is incorrect.");
+                            return;
+                        }
                     }
-                    else if (!organizator.getPassword().equals(password)){
-                    	
-                    	 JOptionPane.showMessageDialog(null, "Password is incorrect.");
-                    }
-                    else if (!organizator.isProfileApproved()) {
-                    	
-                    	 JOptionPane.showMessageDialog(null, "Profile is pending.");
-                    } else {
-                    	
-                        OrganizatorView orgView = new OrganizatorView(organizator);
-                        orgView.setVisible(true);
-
-                        dispose();
-                        return;
-                    }
-
-
 
                     // Pokušaj prijave kao korisnik
                     Korisnik korisnik = userController.searchByUserName(username);
-                    
-                    if (korisnik == null ) {
-
-                        // Ako nijedna prijava nije uspješna
-                        JOptionPane.showMessageDialog(null, "Profile doesn't exist.");
-                    }
-                    else if (!korisnik.getPassword().equals(password)){
-                    	
-                    	 JOptionPane.showMessageDialog(null, "Password is incorrect.");
-                    }
-                    else if (!korisnik.isProfileApproved()) {
-                    	
-                    	 JOptionPane.showMessageDialog(null, "Profile is pending.");
-                    } else {
-                    	
-
-                        KorisnikView korisnikView = new KorisnikView(korisnik);
-                        korisnikView.setVisible(true);
-                        dispose();
-                        return;
+                    if (korisnik != null) {
+                        if (korisnik.getPassword().equals(password)) {
+                            if (korisnik.isProfileApproved()) {
+                                KorisnikView korisnikView = new KorisnikView(korisnik);
+                                korisnikView.setVisible(true);
+                                dispose();
+                                return;
+                            } else {
+                                JOptionPane.showMessageDialog(null, "Profile is pending.");
+                                return;
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Password is incorrect.");
+                            return;
+                        }
                     }
 
-
+                    // Ako nijedna prijava nije uspješna
+                    JOptionPane.showMessageDialog(null, "Profile doesn't exist.");
 
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -188,7 +175,7 @@ public class Login extends JFrame {
             }
         });
 
-        RegisterButton.addActionListener(new ActionListener() {
+        registerButtonUser.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Register register = new Register();
@@ -197,15 +184,24 @@ public class Login extends JFrame {
             }
         });
 
+        registerButtonOrg.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                RegisterOrg register = new RegisterOrg();
+                register.setVisible(true);
+                dispose();
+            }
+        });
 
         guestButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //GuestView guestView = new GuestView();
-                //guestView.setVisible(true);
-                //dispose();
+                // Prikaz pogleda za goste ako postoji
+                // GuestView guestView = new GuestView();
+                // guestView.setVisible(true);
+                // dispose();
             }
         });
-
     }
+
 }

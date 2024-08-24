@@ -85,10 +85,21 @@ public class AdminView extends JFrame {
             dispose();
         });
         contentPane.add(editButton);
+        
+        JButton changesButton = new JButton("Request Changes");
+        changesButton.setFont(new Font("Chilanka", Font.PLAIN, 26));
+        changesButton.setBounds(550, 600, 250, 50);  
+        changesButton.setForeground(new Color(51, 51, 51));
+        changesButton.addActionListener(e -> {
+            RequestChanges event1 = new RequestChanges();
+            event1.setVisible(true);
+            dispose();
+        });
+        contentPane.add(changesButton);
 
         JButton logoutButton = new JButton("Logout");
         logoutButton.setFont(new Font("Chilanka", Font.PLAIN, 26));  
-        logoutButton.setBounds(550, 600, 250, 50);  
+        logoutButton.setBounds(550, 700, 250, 50);  
         logoutButton.setForeground(new Color(51, 51, 51));
         logoutButton.addActionListener(e -> {
             Login login = new Login();

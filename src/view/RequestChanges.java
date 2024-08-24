@@ -1,5 +1,8 @@
 package view;
 
+import model.Izmjene;
+import model.IzmjeneDAO;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
@@ -8,36 +11,31 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
-import javax.swing.border.EmptyBorder;
 
-import model.Dogadjaj;
-import model.DogadjajDAO;
-
-public class RequestEvents extends JFrame {
+public class RequestChanges extends JFrame {
 
     private static final long serialVersionUID = 1L;
     private JPanel contentPane;
     private JTable table;
     private DefaultTableModel model;
-    private DogadjajDAO dogadjajDAO;
+    private IzmjeneDAO izmjeneDAO;
     private JButton loadMoreButton;
     private int offset = 0; // Varijabla za praćenje pozicije u bazi podataka
 
-    public RequestEvents() {
-        dogadjajDAO = new DogadjajDAO(); // Inicijalizuj DAO
+    public RequestChanges() {
+        izmjeneDAO = new IzmjeneDAO(); // Inicijalizuj DAO
 
-        setTitle("Event Requests");
+        setTitle("Request Changes");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setBounds(450, 190, 800, 600);
+        setBounds(450, 190, 1000, 600);
         setResizable(false);
 
         contentPane = new JPanel();
-        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         contentPane.setLayout(new BorderLayout(0, 0));
         setContentPane(contentPane);
 
         // Kreiraj tabelu
-        String[] columnNames = {"ID", "Event Name", "Status", "Actions"};
+        String[] columnNames = {"TableName","ID", "Column", "Requested Change", "Actions"};
         model = new DefaultTableModel(columnNames, 0);
         table = new JTable(model) {
             @Override
@@ -49,9 +47,9 @@ public class RequestEvents extends JFrame {
             @Override
             public TableCellRenderer getCellRenderer(int row, int column) {
                 if (column == 3) {
-                    return new ButtonRenderer(); // Custom renderer for buttons
+                    return new ButtonRenderer();
                 } else {
-                    return new CustomTableCellRenderer(); // Custom renderer for other columns
+                    return new CustomTableCellRenderer();
                 }
             }
 
@@ -67,7 +65,7 @@ public class RequestEvents extends JFrame {
         // Povećaj visinu redova
         table.setRowHeight(40); // Postavlja visinu svakog reda na 40 piksela
 
-        loadEventRequests();
+        loadChanges();
 
         JScrollPane scrollPane = new JScrollPane(table);
         contentPane.add(scrollPane, BorderLayout.CENTER);
@@ -85,27 +83,32 @@ public class RequestEvents extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 offset += 30; // Povećaj offset da bi se učitali naredni set zahtjeva
-                loadEventRequests();
+                loadChanges();
             }
-            
-            
-            
         });
     }
 
-    private void loadEventRequests() {
-        List<Dogadjaj> eventRequests = dogadjajDAO.getLimitedPending(offset, 30);
-        System.out.println("Fetched events count: " + eventRequests.size()); // Provjerite broj vraćenih događaja
+    private void loadChanges() {
+        List<Izmjene> changes = izmjeneDAO.getLimitedChanges(offset, 30); // Ažuriraj offset u pozivu
 
-        for (Dogadjaj dogadjaj : eventRequests) {
-            System.out.println("Event ID: " + dogadjaj.getDogadjaj_id()); // Provjerite da li događaji imaju ispravan ID
+        // Clear the existing data
+        model.setRowCount(0); // Očisti tabelu prije dodavanja novih redova
+
+        for (Izmjene izmjena : changes) {
+            Object[] rowData = {
+            	izmjena.getImeTabele(),
+                izmjena.getStringIdEntitija(), // Korisničko ime
+                izmjena.getImeKolone(), // Kolona koja se mijenja
+                izmjena.getNovaVrijednost(),    // Nova vrijednost
+                "Buttons"                      // Placeholder for buttons, will be rendered by the custom renderer
+            };
+            model.addRow(rowData); // Dodaj red u tabelu
         }
-        
-        // Ako nema podataka, provjerite da li je offset ispravno postavljen i da li ima podataka u bazi
     }
 
     // Custom renderer for other columns
     private class CustomTableCellRenderer extends JLabel implements TableCellRenderer {
+
         public CustomTableCellRenderer() {
             setOpaque(true); // Make the background visible
         }
@@ -139,13 +142,12 @@ public class RequestEvents extends JFrame {
         public ButtonRenderer() {
             setLayout(new FlowLayout());
 
-            acceptButton = new JButton("Approve");
+            acceptButton = new JButton("Accept");
             rejectButton = new JButton("Reject");
 
             // Obojimo dugmad u sivo
             acceptButton.setBackground(new Color(95, 95, 95));
             rejectButton.setBackground(new Color(95, 95, 95));
-
             // Postavimo boju teksta na dugmadima
             acceptButton.setForeground(Color.WHITE);
             rejectButton.setForeground(Color.WHITE);
@@ -172,7 +174,7 @@ public class RequestEvents extends JFrame {
             panel = new JPanel();
             panel.setLayout(new FlowLayout());
 
-            acceptButton = new JButton("Approve");
+            acceptButton = new JButton("Accept");
             rejectButton = new JButton("Reject");
 
             // Obojimo dugmad u sivo
@@ -186,30 +188,28 @@ public class RequestEvents extends JFrame {
             acceptButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    int row = table.convertRowIndexToModel(table.getSelectedRow());
-                    Dogadjaj selectedEvent = dogadjajDAO.getLimitedPending(0, 30).get(row);
-                    selectedEvent.setDogadjajApproved(true);
-                    dogadjajDAO.updateDogadjaj(selectedEvent);
+                    int row = table.getEditingRow();
+                    Izmjene izmjena = (Izmjene) model.getValueAt(row, 0); // Koristimo objekat iz modela
+                    izmjeneDAO.acceptChange(izmjena);
 
-                    // Remove the row from the table model 
+                    // Remove the row from the table model
                     model.removeRow(row);
 
-                    fireEditingStopped(); // Zaustavi uređivanje nakon klika
+                    //fireEditingStopped(); // Zaustavi uređivanje nakon klika
                 }
             });
 
             rejectButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    int row = table.convertRowIndexToModel(table.getSelectedRow());
-                    Dogadjaj selectedEvent = dogadjajDAO.getLimitedPending(0, 30).get(row);
-                    selectedEvent.setDogadjajApproved(false);
-                    dogadjajDAO.updateDogadjaj(selectedEvent);
+                    int row = table.getEditingRow();
+                    Izmjene izmjena = (Izmjene) model.getValueAt(row, 0); // Koristimo objekat iz modela
+                    izmjeneDAO.deleteChange(izmjena);
 
                     // Remove the row from the table model
                     model.removeRow(row);
 
-                    fireEditingStopped(); // Zaustavi uređivanje nakon klika
+                   // fireEditingStopped(); // Zaustavi uređivanje nakon klika
                 }
             });
 
