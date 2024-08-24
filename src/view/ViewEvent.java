@@ -2,6 +2,8 @@ package view;
 
 import model.Dogadjaj;
 import model.DogadjajDAO;
+import model.AdministratorDAO;
+import model.Administrator;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,12 +17,15 @@ public class ViewEvent extends JFrame {
     private JButton seeMoreButton;
     private int start = 0;
     private final int limit = 5;
+    private Administrator admin; // Dodana varijabla za admina
 
-    public ViewEvent() {
+    // Konstruktor koji prima admin objekt
+    public ViewEvent(Administrator admin) {
+        this.admin = admin; // Postavljanje admina
         dogadjajDAO = new DogadjajDAO();
         setTitle("Karta");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setBounds(450, 210, 800, 600); 
+        setBounds(450, 210, 800, 600);
         setPreferredSize(new Dimension(800, 600));
         setLayout(new BorderLayout());
 
@@ -43,7 +48,7 @@ public class ViewEvent extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 start += limit;
-                dogadjajDAO.getFiltered(null, "datum", true, 0, 5);
+                loadEvents();
             }
         });
 
@@ -51,16 +56,28 @@ public class ViewEvent extends JFrame {
         buttonPanel.add(seeMoreButton);
         add(buttonPanel, BorderLayout.SOUTH);
 
+        // Back Button
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(e -> {
+            AdminView view = new AdminView(admin); // Korištenje proslijeđenog admina
+            view.setVisible(true);
+            dispose();
+        });
+        buttonPanel.add(backButton);
+        add(buttonPanel, BorderLayout.SOUTH);
+   
+
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
-        
-        dogadjajDAO.getFiltered(null, "datum", true, 0, 5);
-        // Load initial events
-       
-       List<Dogadjaj> events = dogadjajDAO.getFiltered(null, "datum", true, 0, 5);
 
-  
+        // Load initial events
+        loadEvents();
+    }
+
+    // Metoda za učitavanje događaja
+    private void loadEvents() {
+        List<Dogadjaj> events = dogadjajDAO.getFiltered(null, "datum", true, start, limit);
         if (events.isEmpty() && start > 0) {
             seeMoreButton.setEnabled(false); // Disable button if no more events
         }
@@ -73,7 +90,6 @@ public class ViewEvent extends JFrame {
             JPanel eventPanel = new JPanel(new GridLayout(1, 2));
             eventPanel.add(new JLabel("Event Name: " + event.getNaziv()));
             eventPanel.add(new JLabel("Date: " + event.getDatum().toString()));
-       
             eventsPanel.add(eventPanel);
         }
 
@@ -82,6 +98,8 @@ public class ViewEvent extends JFrame {
     }
 
     public static void main(String[] args) {
-        new ViewEvent();
+        // Na primjer, možete proslijediti dummy admin objekt
+        Administrator admin = new Administrator(); // Pretpostavlja se da Administrator ima default konstruktor
+        new ViewEvent(admin);
     }
 }

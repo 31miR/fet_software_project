@@ -35,6 +35,8 @@ public class CreateEvent extends JFrame {
     private JComboBox<Lokacija> locationComboBox;
     private JButton ticketDataButton;
     private int maxTickets = 0;
+    private JCheckBox eventApprovedCheckBox;
+    private Lokacija eventLocation;
     // Mapiranje tipova i podtipova
     private Map<String, String[]> eventSubtypesMap;
 
@@ -289,11 +291,11 @@ public class CreateEvent extends JFrame {
                 dogadjaj.setPodvrsta(eventSubtypeComboBox.getSelectedItem().toString());
                 dogadjaj.setDatum(new java.sql.Date(((Date) dateSpinner.getValue()).getTime()));
                 dogadjaj.setSlika(eventImageField.getText());
-                dogadjaj.setNaplataPriRegistraciji(paymentOnRegistrationCheckBox.isSelected());
+                dogadjaj.setNaplataPriRezervaciji(paymentOnRegistrationCheckBox.isSelected());
                 dogadjaj.setMaxKartiPoKorisniku(Integer.parseInt(maxTicketsField.getText()));
                 dogadjaj.setZavrsio(eventFinishedComboBox.getSelectedItem().toString().equals("Yes"));
-              //  dogadjaj.setDogadjajApproved(eventApprovedCheckBox.isSelected());
-             //   dogadjaj.setLokacija(eventLocation).getLokacija();
+          //      dogadjaj.setDogadjajApproved(eventApprovedCheckBox.isSelected());
+                dogadjaj.setLokacija((Lokacija) locationComboBox.getSelectedItem());
                 dao.addDogadjaj(dogadjaj);
                 JOptionPane.showMessageDialog(CreateEvent.this, "Event saved.");
                 dispose(); // Close the window after saving
@@ -334,7 +336,7 @@ public class CreateEvent extends JFrame {
                 dogadjaj.setPodvrsta(eventSubtypeComboBox.getSelectedItem().toString());
                 dogadjaj.setDatum(new java.sql.Date(((Date) dateSpinner.getValue()).getTime()));
                 dogadjaj.setSlika(eventImageField.getText());
-                dogadjaj.setNaplataPriRegistraciji(paymentOnRegistrationCheckBox.isSelected());
+                dogadjaj.setNaplataPriRezervaciji(paymentOnRegistrationCheckBox.isSelected());
                 dogadjaj.setMaxKartiPoKorisniku(Integer.parseInt(maxTicketsField.getText()));
                 dogadjaj.setZavrsio(eventFinishedComboBox.getSelectedItem().toString().equals("Yes"));
               //  dogadjaj.setDogadjajApproved(eventApprovedCheckBox.isSelected());

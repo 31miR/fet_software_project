@@ -67,7 +67,7 @@ public class Register extends JFrame {
         JLabel label = new JLabel(imageIcon);
         label.setBounds(50, 200, 400, 300);
         contentPane.add(label);
-        ;
+        
 
         JLabel lblNewLabel = new JLabel("Dobrodosli u Kartu!");
         lblNewLabel.setForeground(Color.BLACK);

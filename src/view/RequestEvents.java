@@ -91,20 +91,14 @@ public class RequestEvents extends JFrame {
     }
 
     private void loadEventRequests() {
-        List<Dogadjaj> eventRequests = dogadjajDAO.getLimitedPending(offset, 30); // Ažuriraj offset u pozivu
-
-        // Clear the existing data
-        // model.setRowCount(0); // Okomentariši ovu liniju ako želiš dodavati redove umjesto resetiranja tabele
+        List<Dogadjaj> eventRequests = dogadjajDAO.getLimitedPending(offset, 30);
+        System.out.println("Fetched events count: " + eventRequests.size()); // Provjerite broj vraćenih događaja
 
         for (Dogadjaj dogadjaj : eventRequests) {
-            Object[] rowData = {
-                dogadjaj.getDogadjaj_id(),
-                dogadjaj.getNaziv(),
-                dogadjaj.isDogadjajApproved(),
-                "Buttons" // Placeholder for buttons, will be rendered by the custom renderer
-            };
-            model.addRow(rowData); // Dodaj red u tabelu
+            System.out.println("Event ID: " + dogadjaj.getDogadjaj_id()); // Provjerite da li događaji imaju ispravan ID
         }
+        
+        // Ako nema podataka, provjerite da li je offset ispravno postavljen i da li ima podataka u bazi
     }
 
     // Custom renderer for other columns
