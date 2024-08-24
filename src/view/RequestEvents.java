@@ -194,7 +194,7 @@ public class RequestEvents extends JFrame {
                     selectedEvent.setDogadjajApproved(true);
                     dogadjajDAO.updateDogadjaj(selectedEvent);
 
-                    // Remove the row from the table model
+                    // Remove the row from the table model 
                     model.removeRow(row);
 
                     fireEditingStopped(); // Zaustavi uređivanje nakon klika

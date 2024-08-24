@@ -19,7 +19,7 @@ public class ViewEvent extends JFrame {
     public ViewEvent() {
         dogadjajDAO = new DogadjajDAO();
         setTitle("Karta");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setBounds(450, 210, 800, 600); 
         setPreferredSize(new Dimension(800, 600));
         setLayout(new BorderLayout());
