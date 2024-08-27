@@ -1,9 +1,11 @@
-import java.awt.EventQueue;
+package main;
 
 import view.Login;
 
+import java.awt.EventQueue;
+
 public class Main {
-	public void main() {
+	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
