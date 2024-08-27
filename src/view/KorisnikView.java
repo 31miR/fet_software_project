@@ -116,8 +116,10 @@ public class KorisnikView extends JFrame {
         viewTicketsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
                 ViewTickets viewTickets = new ViewTickets(korisnik);
                 viewTickets.setVisible(true);
+
             }
         });
         contentPane.add(viewTicketsButton);
@@ -133,7 +135,6 @@ public class KorisnikView extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Simulacija odjave
-                JOptionPane.showMessageDialog(null, "Logout functionality not implemented.");
                 Login loginView = new Login(); // Provjeri da li postoji Login klasa
                 loginView.setVisible(true);
                 dispose();

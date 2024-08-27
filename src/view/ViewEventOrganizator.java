@@ -61,8 +61,6 @@ public class ViewEventOrganizator extends JFrame {
         // Back Button
         JButton backButton = new JButton("Back");
         backButton.addActionListener(e -> {
-            OrganizatorView view = new OrganizatorView(organizator);
-            view.setVisible(true);
             dispose();
         });
         buttonPanel.add(backButton);

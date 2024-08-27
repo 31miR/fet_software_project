@@ -2,6 +2,7 @@ package view;
 
 import model.Dogadjaj;
 import model.DogadjajDAO;
+import model.IzmjeneDAO;
 import model.Lokacija;
 import model.LokacijaDAO;
 
@@ -10,15 +11,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import javax.swing.filechooser.FileNameExtensionFilter;
+import java.util.*;
 
 public class EditEvent extends JFrame {
     private static final long serialVersionUID = 1L;
@@ -30,15 +23,28 @@ public class EditEvent extends JFrame {
     private JComboBox<String> eventTypeComboBox;
     private JComboBox<String> eventSubtypeComboBox;
     private JTextField eventImageField;
-    private JFileChooser fileChooser;
     private JComboBox<Lokacija> locationComboBox;
     private JTextField maxTicketsField;
     private JCheckBox paymentOnRegistrationCheckBox;
     private JComboBox<String> eventFinishedComboBox;
     private Map<String, String[]> eventSubtypesMap;
+    private IzmjeneDAO izmjeneDAO;
+
+    // Store original values
+    private String originalName;
+    private String originalDescription;
+    private Date originalDate;
+    private String originalType;
+    private String originalSubtype;
+    private String originalImagePath;
+    private Lokacija originalLocation;
+    private int originalMaxTickets;
+    private boolean originalPaymentOnRegistration;
+    private boolean originalIsFinished;
 
     public EditEvent(Dogadjaj event) {
         this.event = event;
+        this.izmjeneDAO = new IzmjeneDAO();
         initialize();
     }
 
@@ -60,13 +66,30 @@ public class EditEvent extends JFrame {
         eventSubtypesMap.put("Kultura", new String[]{"Izložba", "Pozorište", "Ostalo"});
         eventSubtypesMap.put("Sport", new String[]{"Utakmica", "Trka", "Ostalo"});
 
+        // Store original values
+        originalName = event.getNaziv();
+        originalDescription = event.getOpis();
+        originalDate = event.getDatum();
+        originalType = event.getVrsta();
+        originalSubtype = event.getPodvrsta();
+        originalImagePath = event.getSlika();
+        originalLocation = event.getLokacija();
+        originalMaxTickets = event.getMaxKartiPoKorisniku();
+        originalPaymentOnRegistration = event.isNaplataPriRezervaciji();
+        originalIsFinished = event.isZavrsio();
+
+        // Initialize form fields
+        initFormFields();
+    }
+
+    private void initFormFields() {
         // Event Name
         JLabel lblEventName = new JLabel("Event Name:");
         lblEventName.setFont(new Font("Chilanka", Font.PLAIN, 20));
         lblEventName.setBounds(20, 20, 150, 30);
         contentPane.add(lblEventName);
 
-        eventNameField = new JTextField(event.getNaziv());
+        eventNameField = new JTextField(originalName);
         eventNameField.setFont(new Font("Chilanka", Font.PLAIN, 18));
         eventNameField.setBounds(180, 20, 400, 30);
         contentPane.add(eventNameField);
@@ -77,7 +100,7 @@ public class EditEvent extends JFrame {
         lblEventDescription.setBounds(20, 60, 200, 30);
         contentPane.add(lblEventDescription);
 
-        eventDescriptionArea = new JTextArea(event.getOpis());
+        eventDescriptionArea = new JTextArea(originalDescription);
         eventDescriptionArea.setFont(new Font("Chilanka", Font.PLAIN, 18));
         eventDescriptionArea.setLineWrap(true);
         eventDescriptionArea.setWrapStyleWord(true);
@@ -91,7 +114,7 @@ public class EditEvent extends JFrame {
         lblEventDate.setBounds(20, 220, 150, 30);
         contentPane.add(lblEventDate);
 
-        dateSpinner = new JSpinner(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_MONTH));
+        dateSpinner = new JSpinner(new SpinnerDateModel(originalDate, null, null, Calendar.DAY_OF_MONTH));
         dateSpinner.setFont(new Font("Chilanka", Font.PLAIN, 18));
         JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(dateSpinner, "dd/MM/yyyy HH:mm");
         dateSpinner.setEditor(dateEditor);
@@ -107,6 +130,7 @@ public class EditEvent extends JFrame {
         eventTypeComboBox = new JComboBox<>(new String[]{"Muzika", "Kultura", "Sport"});
         eventTypeComboBox.setFont(new Font("Chilanka", Font.PLAIN, 18));
         eventTypeComboBox.setBounds(180, 260, 200, 30);
+        eventTypeComboBox.setSelectedItem(originalType);
         eventTypeComboBox.addActionListener(e -> updateEventSubtypes());
         contentPane.add(eventTypeComboBox);
 
@@ -119,6 +143,8 @@ public class EditEvent extends JFrame {
         eventSubtypeComboBox = new JComboBox<>();
         eventSubtypeComboBox.setFont(new Font("Chilanka", Font.PLAIN, 18));
         eventSubtypeComboBox.setBounds(180, 300, 200, 30);
+        updateEventSubtypes();
+        eventSubtypeComboBox.setSelectedItem(originalSubtype);
         contentPane.add(eventSubtypeComboBox);
 
         // Event Image
@@ -127,16 +153,10 @@ public class EditEvent extends JFrame {
         lblEventImage.setBounds(20, 340, 150, 30);
         contentPane.add(lblEventImage);
 
-        eventImageField = new JTextField();
+        eventImageField = new JTextField(originalImagePath);
         eventImageField.setFont(new Font("Chilanka", Font.PLAIN, 18));
         eventImageField.setBounds(180, 340, 400, 30);
         contentPane.add(eventImageField);
-
-        JButton browseButton = new JButton("Browse");
-        browseButton.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        browseButton.setBounds(500, 380, 80, 30);
-        browseButton.addActionListener(e -> chooseImageFile());
-        contentPane.add(browseButton);
 
         // Location
         JLabel lblLocation = new JLabel("Location:");
@@ -148,6 +168,7 @@ public class EditEvent extends JFrame {
         java.util.List<Lokacija> locations = lokacijaDAO.getAllLocations();
         locationComboBox = new JComboBox<>(locations.toArray(new Lokacija[0]));
         locationComboBox.setFont(new Font("Chilanka", Font.PLAIN, 18));
+        locationComboBox.setSelectedItem(originalLocation);
         locationComboBox.setBounds(180, 380, 300, 30);
         contentPane.add(locationComboBox);
 
@@ -157,7 +178,7 @@ public class EditEvent extends JFrame {
         lblMaxTickets.setBounds(20, 420, 150, 30);
         contentPane.add(lblMaxTickets);
 
-        maxTicketsField = new JTextField(String.valueOf(event.getMaxKartiPoKorisniku()));
+        maxTicketsField = new JTextField(String.valueOf(originalMaxTickets));
         maxTicketsField.setFont(new Font("Chilanka", Font.PLAIN, 18));
         maxTicketsField.setBounds(180, 420, 100, 30);
         contentPane.add(maxTicketsField);
@@ -166,7 +187,7 @@ public class EditEvent extends JFrame {
         paymentOnRegistrationCheckBox = new JCheckBox("Payment on Registration");
         paymentOnRegistrationCheckBox.setFont(new Font("Chilanka", Font.PLAIN, 20));
         paymentOnRegistrationCheckBox.setBounds(20, 460, 300, 30);
-        paymentOnRegistrationCheckBox.setSelected(event.isNaplataPriRezervaciji());
+        paymentOnRegistrationCheckBox.setSelected(originalPaymentOnRegistration);
         contentPane.add(paymentOnRegistrationCheckBox);
 
         // Event Finished
@@ -178,76 +199,91 @@ public class EditEvent extends JFrame {
         eventFinishedComboBox = new JComboBox<>(new String[]{"Yes", "No"});
         eventFinishedComboBox.setFont(new Font("Chilanka", Font.PLAIN, 18));
         eventFinishedComboBox.setBounds(180, 500, 100, 30);
-        eventFinishedComboBox.setSelectedItem(event.isZavrsio() ? "Yes" : "No");
+        eventFinishedComboBox.setSelectedItem(originalIsFinished ? "Yes" : "No");
         contentPane.add(eventFinishedComboBox);
 
-        // Save Button
-        JButton saveButton = new JButton("Save");
-        saveButton.setFont(new Font("Chilanka", Font.PLAIN, 20));
-        saveButton.setBounds(420, 620, 150, 50);
-        saveButton.addActionListener(new ActionListener() {
+     // Save Button
+        JButton btnSave = new JButton("Save Changes");
+        btnSave.setFont(new Font("Chilanka", Font.PLAIN, 20));
+        btnSave.setBounds(160, 550, 200, 40);
+        btnSave.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 saveEvent();
             }
         });
-        contentPane.add(saveButton);
+        contentPane.add(btnSave);
 
         // Cancel Button
-        JButton cancelButton = new JButton("Cancel");
-        cancelButton.setFont(new Font("Chilanka", Font.PLAIN, 20));
-        cancelButton.setBounds(250, 620, 150, 50);
-        cancelButton.addActionListener(e -> dispose());
-        contentPane.add(cancelButton);
+        JButton btnCancel = new JButton("Cancel");
+        btnCancel.setFont(new Font("Chilanka", Font.PLAIN, 20));
+        btnCancel.setBounds(380, 550, 200, 40);
+        btnCancel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();  // Close the current window
+            }
+        });
+        contentPane.add(btnCancel);
     }
 
+    // Method to update the event subtypes based on the selected type
     private void updateEventSubtypes() {
         String selectedType = (String) eventTypeComboBox.getSelectedItem();
         String[] subtypes = eventSubtypesMap.get(selectedType);
         eventSubtypeComboBox.setModel(new DefaultComboBoxModel<>(subtypes));
     }
 
-    private void chooseImageFile() {
-        if (fileChooser == null) {
-            fileChooser = new JFileChooser();
-            fileChooser.setFileFilter(new FileNameExtensionFilter("Image Files", "jpg", "jpeg", "png"));
-        }
-        int result = fileChooser.showOpenDialog(this);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = fileChooser.getSelectedFile();
-            eventImageField.setText(selectedFile.getAbsolutePath());
-            // Optionally copy or move the file to a permanent location
-        }
-    }
-
+    // Method to save the event and track changes
+ 
     private void saveEvent() {
-        String name = eventNameField.getText();
-        String description = eventDescriptionArea.getText();
-        Date date = (Date) dateSpinner.getValue();
-        String type = (String) eventTypeComboBox.getSelectedItem();
-        String subtype = (String) eventSubtypeComboBox.getSelectedItem();
-        String imagePath = eventImageField.getText();
-        Lokacija location = (Lokacija) locationComboBox.getSelectedItem();
-        int maxTickets = Integer.parseInt(maxTicketsField.getText());
-        boolean paymentOnRegistration = paymentOnRegistrationCheckBox.isSelected();
-        boolean isFinished = "Yes".equals(eventFinishedComboBox.getSelectedItem());
+        // Fetching new values from form fields
+        String newName = eventNameField.getText();
+        String newDescription = eventDescriptionArea.getText();
+        Date newDate = (Date) dateSpinner.getValue();
+        String newType = (String) eventTypeComboBox.getSelectedItem();
+        String newSubtype = (String) eventSubtypeComboBox.getSelectedItem();
+        String newImagePath = eventImageField.getText();
+        Lokacija newLocation = (Lokacija) locationComboBox.getSelectedItem();
+        int newMaxTickets = Integer.parseInt(maxTicketsField.getText());
+        boolean newPaymentOnRegistration = paymentOnRegistrationCheckBox.isSelected();
+        boolean newIsFinished = "Yes".equals(eventFinishedComboBox.getSelectedItem());
 
-        event.setNaziv(name);
-        event.setOpis(description);
-        event.setDatum(date);
-        event.setVrsta(type);
-        event.setPodvrsta(subtype);
-        event.setSlika(imagePath);
-        event.setLokacija(location);
-        event.setMaxKartiPoKorisniku(maxTickets);
-        event.setNaplataPriRezervaciji(paymentOnRegistration);
-        event.setZavrsio(isFinished);
+        // Check and save only modified fields
+        if (!newName.equals(originalName)) {
+            izmjeneDAO.addChange("Dogadjaj", String.valueOf(event.getDogadjaj_id()), "naziv", newName);
+        }
+        if (!newDescription.equals(originalDescription)) {
+            izmjeneDAO.addChange("Dogadjaj", String.valueOf(event.getDogadjaj_id()), "opis", newDescription);
+        }
+        if (!newDate.equals(originalDate)) {
+            izmjeneDAO.addChange("Dogadjaj", String.valueOf(event.getDogadjaj_id()), "datum", newDate.toString());
+        }
+        if (!newType.equals(originalType)) {
+            izmjeneDAO.addChange("Dogadjaj", String.valueOf(event.getDogadjaj_id()), "vrsta", newType);
+        }
+        if (!newSubtype.equals(originalSubtype)) {
+            izmjeneDAO.addChange("Dogadjaj", String.valueOf(event.getDogadjaj_id()), "podvrsta", newSubtype);
+        }
+        if (!newImagePath.equals(originalImagePath)) {
+            izmjeneDAO.addChange("Dogadjaj", String.valueOf(event.getDogadjaj_id()), "slika", newImagePath);
+        }
+        if (!newLocation.equals(originalLocation)) {
+            izmjeneDAO.addChange("Dogadjaj", String.valueOf(event.getDogadjaj_id()), "lokacija", newLocation.toString());
+        }
+        if (newMaxTickets != originalMaxTickets) {
+            izmjeneDAO.addChange("Dogadjaj", String.valueOf(event.getDogadjaj_id()), "maxKartiPoKorisniku", String.valueOf(newMaxTickets));
+        }
+        if (newPaymentOnRegistration != originalPaymentOnRegistration) {
+            izmjeneDAO.addChange("Dogadjaj", String.valueOf(event.getDogadjaj_id()), "naplataPriRezervaciji", String.valueOf(newPaymentOnRegistration));
+        }
+        if (newIsFinished != originalIsFinished) {
+            izmjeneDAO.addChange("Dogadjaj", String.valueOf(event.getDogadjaj_id()), "zavrsio", String.valueOf(newIsFinished));
+        }
 
-        // Save changes to database
-        DogadjajDAO dogadjajDAO = new DogadjajDAO();
-        dogadjajDAO.updateDogadjaj(event);
-
-        JOptionPane.showMessageDialog(this, "Event updated successfully!");
+        JOptionPane.showMessageDialog(this, "Changes have been sent for approval.");
         dispose();
     }
+
+    
 }

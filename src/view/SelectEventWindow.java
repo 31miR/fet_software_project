@@ -4,6 +4,7 @@ import model.Dogadjaj;
 import model.DogadjajDAO;
 import model.Organizator;
 
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -24,7 +25,7 @@ public class SelectEventWindow extends JFrame {
         this.dogadjajDAO = new DogadjajDAO();
         setTitle("Select Event to Edit");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setBounds(450, 210, 800, 600);
+        setBounds(450, 190, 1014, 597);
         setPreferredSize(new Dimension(800, 600));
         setLayout(new BorderLayout());
 
@@ -59,8 +60,6 @@ public class SelectEventWindow extends JFrame {
         // Back Button
         JButton backButton = new JButton("Back");
         backButton.addActionListener(e -> {
-            OrganizatorView view = new OrganizatorView(organizator);
-            view.setVisible(true);
             dispose();
         });
         buttonPanel.add(backButton);
@@ -76,7 +75,14 @@ public class SelectEventWindow extends JFrame {
 
     // Method to load events
     private void loadEvents() {
+    	// Prepare the list of filters
+        List<String> filters = new ArrayList<>();
+        filters.add("organizator.username"); // Field name in the filter
+        filters.add(String.valueOf(organizator.getUsername())); // Value of the filter
+
+        // Load events with filters
         List<Dogadjaj> events = dogadjajDAO.getFiltered(new ArrayList<>(), "datum", true, start, limit);
+     
         if (events.isEmpty() && start > 0 ) {
             seeMoreButton.setEnabled(false); // Disable button if no more events
         }
@@ -124,11 +130,5 @@ public class SelectEventWindow extends JFrame {
 
         eventsPanel.revalidate();
         eventsPanel.repaint();
-    }
-
-    public static void main(String[] args) {
-        // Example usage with dummy Organizator object
-        Organizator org = new Organizator(); // Assumes Organizator has a default constructor
-        new SelectEventWindow(org);
     }
 }

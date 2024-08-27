@@ -1,7 +1,7 @@
-
 package view;
 
 import model.Dogadjaj;
+<<<<<<< HEAD
 
 import model.DogadjajDAO;
 import model.Korisnik;
@@ -9,6 +9,11 @@ import model.Organizator;
 import view.BuyTickets;
 import model.Karta;
 import model.KartaDAO;
+=======
+import model.DogadjajDAO;
+import model.Korisnik;
+import model.Organizator;
+>>>>>>> f0cc8f2 (modified event for organizator)
 
 import javax.swing.*;
 import java.awt.*;
@@ -77,6 +82,7 @@ public class ViewTickets extends JFrame {
 
         // Load initial events
         loadEvents();
+
     }
 
     // Method to load events
