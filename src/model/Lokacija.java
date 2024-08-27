@@ -14,9 +14,9 @@ public class Lokacija {
 	private String grad;
 	private String adresa;
 	private String slika; //lokacija slike
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "lokacija")
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "lokacija")
 	private List<Dogadjaj> dogadjaj;
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "lokacija")
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "lokacija")
 	private List<Sektor> sektor;
 	public int getLokacija_id() {
 		return lokacija_id;

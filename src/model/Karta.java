@@ -10,16 +10,16 @@ public class Karta {
 	private int cijena; //store prices as ints, eg. 3.45$ is 345 in here
 	private int cijenaRezervacije;
 	private String sjediste;
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name="sektor_id")
 	private Sektor sektor;
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name="dogadjaj_id")
 	private Dogadjaj dogadjaj;
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name="korRezervisao")
 	private Korisnik korRezervisao;
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name="korKupio")
 	private Korisnik korKupio;
 	public int getKarta_id() {

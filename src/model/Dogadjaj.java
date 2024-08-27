@@ -19,13 +19,13 @@ public class Dogadjaj {
 	private int maxKartiPoKorisniku;
 	private boolean naplataPriRezervaciji;
 	private boolean dogadjajApproved;
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name="organizator_id")
 	private Organizator organizator;
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name="lokacija_id")
 	private Lokacija lokacija;
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "dogadjaj")
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "dogadjaj")
 	private List<Karta> karta;
 	public int getDogadjaj_id() {
 		return dogadjaj_id;
