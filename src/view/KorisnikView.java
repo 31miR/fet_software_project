@@ -116,8 +116,8 @@ public class KorisnikView extends JFrame {
         viewTicketsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // ViewTickets viewTickets = new ViewTickets();
-                // viewTickets.setVisible(true);
+                ViewTickets viewTickets = new ViewTickets(korisnik);
+                viewTickets.setVisible(true);
             }
         });
         contentPane.add(viewTicketsButton);
