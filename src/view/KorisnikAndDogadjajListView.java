@@ -1,15 +1,113 @@
 package view;
 
 import javax.swing.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
+import model.Dogadjaj;
+import model.DogadjajDAO;
 import model.Korisnik;
+import model.LokacijaDAO;
+
+//This is for each individual dogadjaj OK
+class DogadjajPanel extends JPanel {
+	private static final long serialVersionUID = 1L;
+	public DogadjajPanel(Dogadjaj dogadjaj) {
+      setLayout(new BorderLayout());
+      setPreferredSize(new Dimension(600, 200));
+
+      //DODAVANJE SLIKE UZAS
+      JPanel slikaPanel = new JPanel();
+      slikaPanel.setPreferredSize(new Dimension(200, 200)); 
+      slikaPanel.setBackground(Color.PINK);
+      ImageIcon imageIcon = new ImageIcon(dogadjaj.getSlika());
+      Image image = imageIcon.getImage();
+      Image scaledImage = image.getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+      JLabel slikaLabel = new JLabel(new ImageIcon(scaledImage));
+      slikaPanel.add(slikaLabel);
+      add(slikaPanel, BorderLayout.WEST);
+
+      JPanel infoPanel = new JPanel();
+      infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+      
+      JLabel nazivLabel = new JLabel(dogadjaj.getNaziv());
+      nazivLabel.setFont(new Font("Arial", Font.BOLD, 18));
+      infoPanel.add(nazivLabel);
+
+      infoPanel.add(new JLabel(dogadjaj.getOpis()));
+      infoPanel.add(new JLabel(dogadjaj.getDatum().toString()));
+      infoPanel.add(new JLabel(dogadjaj.getVrsta()));
+      infoPanel.add(new JLabel(dogadjaj.getPodvrsta()));
+      infoPanel.add(new JLabel(dogadjaj.isZavrsio() ? "DOGADJAJ JE ZAVRSEN!" : ""));
+      infoPanel.add(new JLabel(dogadjaj.getLokacija().getGrad()));
+
+      // Panel za dugmad
+      JPanel buttonPanel = new JPanel();
+      buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+      JButton detaljiButton = new JButton("Detaljnije informacije");
+      JButton karteButton = new JButton("Slobodne karte");
+
+      buttonPanel.add(detaljiButton);
+      buttonPanel.add(karteButton);
+
+      // Dodaj panele za informacije i dugmad u glavni panel
+      JPanel centerPanel = new JPanel();
+      centerPanel.setLayout(new BorderLayout());
+      centerPanel.add(infoPanel, BorderLayout.CENTER);
+      centerPanel.add(buttonPanel, BorderLayout.SOUTH);
+      
+      add(centerPanel, BorderLayout.CENTER);
+  }
+}
+
+
+class DogadjajListViewPanel extends JPanel {
+	private static final long serialVersionUID = 1L;
+	List<Dogadjaj> dogadjajList;
+	DogadjajListViewPanel(List<Dogadjaj> dogadjajList) {
+		this.dogadjajList = dogadjajList;
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		refreshLayout();
+	}
+	private void refreshLayout() {
+		removeAll();
+		for (Dogadjaj i : dogadjajList) {
+			DogadjajPanel dp = new DogadjajPanel(i);
+			add(dp);
+		}
+		revalidate();
+		repaint();
+	}
+}
 
 public class KorisnikAndDogadjajListView extends JFrame {
     private static final long serialVersionUID = 1L;
-    Korisnik korisnik;
+    private LokacijaDAO lokacijaDAO = new LokacijaDAO();
+    private DogadjajDAO dogadjajDAO = new DogadjajDAO();
+    private Korisnik korisnik;
+    private int dogadjajOffset = 0;
+    private final int PER_PAGE = 5;
+    private Map<String, List<String>> typeToSubType;
+    private JComboBox<String> cityJCB;
+    private JComboBox<String> typeJCB;
+    private JComboBox<String> subTypeJCB;
+    private JCheckBox showFinishedCheckBox;
+    private JTextField searchBarTF;
+    private JButton prevPageButton;
+    private JButton nextPageButton;
+    private List<Dogadjaj> dogadjajList = new ArrayList<Dogadjaj>();
+    DogadjajListViewPanel mainContentPanel;
+    
+    //values which are only allowed to be changed in the searchButtonPressed function! NOWHERE ELSE!!!!
+    List<String> filters;
+    String searchString;
+    
     public KorisnikAndDogadjajListView(Korisnik k) {
     	this.korisnik = k;
         setTitle("Karta - korisnicki panel");
@@ -55,39 +153,51 @@ public class KorisnikAndDogadjajListView extends JFrame {
         JPanel searchPanel = new JPanel();
         searchPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         
-        searchPanel.add(new JComboBox<>(new String[]{"City1", "City2"}));
-        searchPanel.add(new JComboBox<>(new String[]{"Type1", "Type2"}));
-        searchPanel.add(new JComboBox<>(new String[]{"Subtype1", "Subtype2"}));
-        JTextField maxPriceTF = new JTextField("Max Price", 8);
-        addPlaceholderEffect(maxPriceTF, "Max Price");
-        searchPanel.add(maxPriceTF);
-        JTextField minPriceTF = new JTextField("Min Price", 8);
-        addPlaceholderEffect(minPriceTF, "Min Price");
-        searchPanel.add(minPriceTF);
-        JTextField searchBarTF = new JTextField("search bar", 15);
+        updateCityJCB();
+        updateTypeJCB();
+        updateSubTypeJCB();
+        typeJCB.addActionListener((e) -> {
+        	updateSubTypeJCB();
+        });
+        searchPanel.add(cityJCB);
+        searchPanel.add(typeJCB);
+        searchPanel.add(subTypeJCB);
+        searchBarTF = new JTextField("search bar", 15);
         addPlaceholderEffect(searchBarTF, "search bar");
         searchPanel.add(searchBarTF);
+        showFinishedCheckBox = new JCheckBox("prikazi zavrsene dogadjaje");
+        searchPanel.add(showFinishedCheckBox);
         JButton searchButton = new JButton("search");
         searchButton.addActionListener((e) -> {
         	searchButtonPressed();
         });
         searchPanel.add(searchButton);
-
+        
+        /* CODE FOR TESTING, SHOULD BE DELETED
+        
         // Panel za dogadjaje
         JPanel mainContentPanel = new JPanel();
         mainContentPanel.setBackground(Color.BLUE);
         mainContentPanel.setPreferredSize(new Dimension(600, 300)); // size can be adjusted
         // TODO: implement JPanel for dogadjaji, sad-zasad
 
+         */
+        
+        mainContentPanel = new DogadjajListViewPanel(dogadjajList);
+        mainContentPanel.setPreferredSize(new Dimension(600, 1000));
+        
+        
         // Za promjenu stranice
         JPanel bottomPanel = new JPanel();
         bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-        JButton prevPageButton = new JButton("prev page");
+        prevPageButton = new JButton("prev page");
+        prevPageButton.setEnabled(false);
         prevPageButton.addActionListener((e) -> {
         	prevPagePressed();
         });
         bottomPanel.add(prevPageButton);
-        JButton nextPageButton = new JButton("next page");
+        nextPageButton = new JButton("next page");
+        nextPageButton.setEnabled(false);
         nextPageButton.addActionListener((e) -> {
         	nextPagePressed();
         });
@@ -110,17 +220,115 @@ public class KorisnikAndDogadjajListView extends JFrame {
 
         setVisible(true);
     }
-    private void nextPagePressed() {
-		// TODO Auto-generated method stub
-		
+    private void updateCityJCB() {
+		java.util.List<String> cities = lokacijaDAO.getAllCities();
+		cityJCB = new JComboBox<String>();
+		cityJCB.addItem("");
+		for (String i : cities) {
+			cityJCB.addItem(i);
+		}
+	}
+	private void updateSubTypeJCB() {
+		if (subTypeJCB == null) {
+			subTypeJCB = new JComboBox<String>(typeToSubType.get(typeJCB.getSelectedItem()).toArray(new String[0]));
+		}
+		else {
+			subTypeJCB.removeAllItems();
+			for (String i : typeToSubType.get(typeJCB.getSelectedItem())) {
+				subTypeJCB.addItem(i);
+			}
+		}
+	}
+	private void updateTypeJCB() {
+		typeToSubType = dogadjajDAO.getTypeToSubTypeMapping();
+		typeJCB = new JComboBox<String>(typeToSubType.keySet().toArray(new String[0]));
+	}
+	private void nextPagePressed() {
+		dogadjajOffset += PER_PAGE;
+		dogadjajList.removeAll(dogadjajList);
+		List<Dogadjaj> dummy = dogadjajDAO.getFiltered(filters, searchString, "datum", false, dogadjajOffset, PER_PAGE);
+		dogadjajList.addAll(dummy);
+		//for debugging purposes, PLEASE DELETE LATER
+		for (Dogadjaj i : dogadjajList) {
+			System.out.println(i.getNaziv() + " | " + i.getDatum() + " | " + i.getVrsta() + " | " + i.getPodvrsta()
+								+ " | " + i.isZavrsio());
+		}
+		if (dogadjajDAO.getFiltered(filters, searchString, "datum", false, dogadjajOffset + PER_PAGE, PER_PAGE).size() != 0) {
+			nextPageButton.setEnabled(true);
+		}
+		else {
+			nextPageButton.setEnabled(false);
+		}
+		prevPageButton.setEnabled(true);
+		mainContentPanel.revalidate();
+		mainContentPanel.repaint();
 	}
 	private void prevPagePressed() {
-		// TODO Auto-generated method stub
-		
+		dogadjajOffset -= PER_PAGE;
+		dogadjajList.removeAll(dogadjajList);
+		List<Dogadjaj> dummy = dogadjajDAO.getFiltered(filters, searchString, "datum", false, dogadjajOffset, PER_PAGE);
+		dogadjajList.addAll(dummy);
+		//for debugging purposes, PLEASE DELETE LATER
+		for (Dogadjaj i : dogadjajList) {
+			System.out.println(i.getNaziv() + " | " + i.getDatum() + " | " + i.getVrsta() + " | " + i.getPodvrsta()
+								+ " | " + i.isZavrsio());
+		}
+		if (dogadjajDAO.getFiltered(filters, searchString, "datum", false, dogadjajOffset + PER_PAGE, PER_PAGE).size() != 0) {
+			nextPageButton.setEnabled(true);
+		}
+		else {
+			nextPageButton.setEnabled(false);
+		}
+		if (dogadjajOffset == 0) {
+			prevPageButton.setEnabled(false);
+		}
+		else {
+			prevPageButton.setEnabled(true);
+		}
+		mainContentPanel.revalidate();
+		mainContentPanel.repaint();
 	}
 	private void searchButtonPressed() {
-		// TODO Auto-generated method stub
-		
+		dogadjajOffset = 0;
+		String grad = (String) cityJCB.getSelectedItem();
+		String vrsta = (String) typeJCB.getSelectedItem();
+		String podvrsta = (String) subTypeJCB.getSelectedItem();
+		if (searchBarTF.getText().equals("search bar")) {
+			searchString = "";
+		}
+		else {
+			searchString = searchBarTF.getText();
+		}
+		filters = new ArrayList<String>();
+		if (!grad.equals("")) {
+			filters.add("grad");
+			filters.add(grad);
+		}
+		if (!vrsta.equals("")) {
+			filters.add("vrsta");
+			filters.add(vrsta);
+		}
+		if (!podvrsta.equals("")) {
+			filters.add("podvrsta");
+			filters.add(podvrsta);
+		}
+		dogadjajList.removeAll(dogadjajList);
+		List<Dogadjaj> dummy = dogadjajDAO.getFiltered(filters, searchString, "datum", false, dogadjajOffset, PER_PAGE);
+		dogadjajList.addAll(dummy);
+		//for debugging purposes, PLEASE DELETE LATER
+		for (Dogadjaj i : dogadjajList) {
+			System.out.println(i.getNaziv() + " | " + i.getDatum() + " | " + i.getVrsta() + " | " + i.getPodvrsta()
+								+ " | " + i.isZavrsio());
+		}
+		if (dogadjajDAO.getFiltered(filters, searchString, "datum", false, dogadjajOffset + PER_PAGE, PER_PAGE).size() != 0) {
+			nextPageButton.setEnabled(true);
+		}
+		else {
+			nextPageButton.setEnabled(false);
+		}
+		prevPageButton.setEnabled(false);
+		mainContentPanel.revalidate();
+		mainContentPanel.repaint();
 	}
 	private void addPlaceholderEffect(JTextField textField, String placeholder) {
         textField.setForeground(Color.GRAY);
