@@ -3,3 +3,4 @@ bin
 /target/
 /myDB/
 derby.log
+.classpath
