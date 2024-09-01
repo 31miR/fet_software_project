@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import model.Korisnik;
 import model.KorisnikDAO;
@@ -29,7 +31,15 @@ public class WalletBalanceView extends JFrame {
     }
 
     private void initialize() {
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+            	dispose();
+            	KorisnikAndDogadjajListView view = new KorisnikAndDogadjajListView(korisnik);
+            	view.setVisible(true);
+            }
+        });
         setBounds(450, 190, 450, 400);
         setResizable(false);
         JPanel contentPane = new JPanel();
@@ -89,7 +99,7 @@ public class WalletBalanceView extends JFrame {
                     if (enteredID.equals(initializedID) && enteredYear == initializedYear && cvcnum==cvc ) {
                         korisnik.setWalletBalance(korisnik.getWalletBalance() + (int)(balanceToAdd * 100)); 
                         JOptionPane.showMessageDialog(null, "Wallet balance updated!");
-                        KorisnikView view = new KorisnikView(korisnik);
+                        KorisnikAndDogadjajListView view = new KorisnikAndDogadjajListView(korisnik);
                         view.setVisible(true);
                         dispose();
                     } else {
