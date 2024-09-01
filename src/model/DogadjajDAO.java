@@ -2,24 +2,32 @@ package model;
 
 import misc.EntityManagerFactoryHolder;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.*;
 
 
 public class DogadjajDAO {
 	private EntityManagerFactory emf = EntityManagerFactoryHolder.getEntityManagerFactory();
-	public List<Dogadjaj> getFiltered(List<String> filters, String sortBy, boolean ascending, int start, int ammount) {
+	public List<Dogadjaj> getFiltered(List<String> filters, String searchString, String sortBy, boolean ascending,
+										int start, int ammount) {
 		String where_part = "";
+		if (!searchString.equals("")) {
+			where_part += "a.naziv LIKE '%" + searchString + "%'";
+		}
 		for(int i = 0; i < filters.size(); i += 2) {
-			if (i != 0) {
-				where_part += ",";
+			if (!where_part.equals("")) {
+				where_part += " AND ";
 			}
 			if (filters.get(i).equals("grad")) {
-				where_part += "b."+filters.get(i) + "=" + filters.get(i+1);
+				where_part += "b."+filters.get(i) + "='" + filters.get(i+1) + "'";
 			}
 			else {
-				where_part += "a."+filters.get(i) + "=" + filters.get(i+1);
+				where_part += "a."+filters.get(i) + "='" + filters.get(i+1) + "'";
 			}
 		}
 		String sort_part = sortBy + " " + (ascending ? "ASC" : "DESC");
@@ -61,5 +69,26 @@ public class DogadjajDAO {
 		em.merge(dogadjaj);
 		em.remove(dogadjaj);
 		em.getTransaction().commit();
+	}
+	//Every list in map starts with empty string and there is at least one key with empty string!
+	public Map<String, List<String>> getTypeToSubTypeMapping() {
+		Map<String, List<String>> ret = new HashMap<String, List<String>>();
+		List<String> dummy = new ArrayList<>();
+		dummy.add("");
+		ret.put("", dummy);
+		EntityManager em = emf.createEntityManager();
+		List<Object[]> queryResult = em.createQuery("SELECT DISTINCT a.vrsta, a.podvrsta FROM Dogadjaj a", Object[].class).getResultList();
+		for (Object[] i : queryResult) {
+			if (ret.containsKey(String.valueOf(i[0]))) {
+				ret.get(String.valueOf(i[0])).add(String.valueOf(i[1]));
+			}
+			else {
+				dummy = new ArrayList<>();
+				dummy.add("");
+				ret.put(String.valueOf(i[0]), dummy);
+				ret.get(String.valueOf(i[0])).add(String.valueOf(i[1]));
+			}
+		}
+		return ret;
 	}
 }
