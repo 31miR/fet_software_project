@@ -151,8 +151,10 @@ public class Login extends JFrame {
                     if (korisnik != null) {
                         if (korisnik.getPassword().equals(password)) {
                             if (korisnik.isProfileApproved()) {
-                                KorisnikView korisnikView = new KorisnikView(korisnik);
-                                korisnikView.setVisible(true);
+                                //KorisnikView korisnikView = new KorisnikView(korisnik);
+                                //korisnikView.setVisible(true);
+                            	KorisnikAndDogadjajListView view = new KorisnikAndDogadjajListView(korisnik);
+                            	view.setVisible(true);
                                 dispose();
                                 return;
                             } else {
