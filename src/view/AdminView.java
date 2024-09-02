@@ -69,7 +69,6 @@ public class AdminView extends JFrame {
         viewButton.addActionListener(e -> {
 
             ViewEvent event = new ViewEvent(admin);
-
             event.setVisible(true);
             dispose();
         });
@@ -107,6 +106,8 @@ public class AdminView extends JFrame {
             dispose();
         });
         contentPane.add(logoutButton);
+        
+       
     }
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {

@@ -21,6 +21,7 @@ public class RequestEvents extends JFrame {
     private DefaultTableModel model;
     private DogadjajDAO dogadjajDAO;
     private JButton loadMoreButton;
+    private JButton backButton;
     private int offset = 0; // Varijabla za praćenje pozicije u bazi podataka
 
     public RequestEvents() {
@@ -76,6 +77,8 @@ public class RequestEvents extends JFrame {
         JPanel buttonPanel = new JPanel();
         loadMoreButton = new JButton("Load More");
         buttonPanel.add(loadMoreButton);
+       
+        
 
         // Dodaj buttonPanel na dno prozora
         contentPane.add(buttonPanel, BorderLayout.SOUTH);

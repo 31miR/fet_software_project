@@ -41,10 +41,26 @@ public class KorisnikDAO {
 		return ret;
 	}
 	public void deleteKorisnik(Korisnik korisnik) {
-		EntityManager em = emf.createEntityManager();
-		em.getTransaction().begin();
-		em.merge(korisnik);
-		em.remove(korisnik);
-		em.getTransaction().commit();
+	    EntityManager em = emf.createEntityManager();
+	    try {
+	        em.getTransaction().begin();
+	        
+	        // Pronađi entitet u bazi koristeći njegov ID
+	        Korisnik managedKorisnik = em.find(Korisnik.class, korisnik.getUsername());
+	        
+	        if (managedKorisnik != null) {
+	            em.remove(managedKorisnik);
+	        }
+	        
+	        em.getTransaction().commit();
+	    } catch (Exception e) {
+	        if (em.getTransaction().isActive()) {
+	            em.getTransaction().rollback();
+	        }
+	        e.printStackTrace(); // Log or handle the exception as necessary
+	    } finally {
+	        em.close();
+	    }
 	}
+
 }

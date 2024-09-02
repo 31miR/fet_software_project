@@ -62,6 +62,7 @@ public class CreateEvent extends JFrame {
         eventSubtypesMap.put("Festival", new String[]{"Muzika", "Film", "Hrana i pice"});
         eventSubtypesMap.put("Konferencija", new String[]{"Poslovna", "Edukativna", "Ostalo"});
         eventSubtypesMap.put("Workshop", new String[]{"Tehnicki", "Kreativni", "Ostalo"});
+        eventSubtypesMap.put("Film",new String []{"Romantika", "Komedija", "Horor","Akcija","Fantazija"});
         eventSubtypesMap.put("Ostalo", new String[]{"Drugo"});
         
         // Event Name Label and Field
@@ -102,9 +103,13 @@ public class CreateEvent extends JFrame {
 
         JTextArea eventDescriptionArea = new JTextArea();
         eventDescriptionArea.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        eventDescriptionArea.setBounds(200, 80, 350, 70);
-        contentPane.add(eventDescriptionArea);
-        
+        eventDescriptionArea.setWrapStyleWord(true); // Omogući prelamanje riječi
+        eventDescriptionArea.setLineWrap(true); // Omogući prelamanje teksta
+
+        JScrollPane scrollPane = new JScrollPane(eventDescriptionArea);
+        scrollPane.setBounds(200, 80, 350, 70); // Postavi veličinu i poziciju JScrollPane-a
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); // Omogući vertikalno skrolanje
+        contentPane.add(scrollPane);
         
      // Event Location Label and Field
         JLabel lblLocation = new JLabel("Location:");
@@ -132,7 +137,7 @@ public class CreateEvent extends JFrame {
         lblEventType.setBounds(30, 270, 150, 30);
         contentPane.add(lblEventType);
 
-        JComboBox<String> eventTypeComboBox = new JComboBox<>(new String[]{"Muzika","Kultura","Zabava","Sport", "Festival", "Konferencija", "Workshop","Ostalo"});
+        JComboBox<String> eventTypeComboBox = new JComboBox<>(new String[]{"Muzika","Kultura","Zabava","Sport", "Festival", "Konferencija", "Workshop","Film","Ostalo"});
         eventTypeComboBox.setFont(new Font("Chilanka", Font.PLAIN, 18));
         eventTypeComboBox.setBounds(200, 270, 350, 30);
         contentPane.add(eventTypeComboBox);

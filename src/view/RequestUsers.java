@@ -202,6 +202,9 @@ public class RequestUsers extends JFrame {
 
                     // Remove the row from the table model
                     model.removeRow(row);
+                    
+                    // Reload user requests
+                    loadUserRequests();
 
                     fireEditingStopped(); // Zaustavi uređivanje nakon klika
                 }
@@ -210,17 +213,25 @@ public class RequestUsers extends JFrame {
             rejectButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    int row = table.getEditingRow();
-                    Korisnik selectedUser = (Korisnik) model.getValueAt(row, 0); // Koristimo objekat iz modela
-                    selectedUser.setProfileApproved(false);
-                    korisnikDAO.updateKorisnik(selectedUser);
+                    int row = table.getSelectedRow(); // Koristite getSelectedRow() umjesto getEditingRow()
+                    if (row >= 0) {
+                        Korisnik selectedUser = (Korisnik) model.getValueAt(row, 0);
 
-                    // Remove the row from the table model
-                    model.removeRow(row);
+                        // Brisanje korisnika iz baze podataka
+                        korisnikDAO.deleteKorisnik(selectedUser);
 
-                    fireEditingStopped(); // Zaustavi uređivanje nakon klika
+                        // Remove the row from the table model
+                        model.removeRow(row);
+
+                        // Reload user requests (ako želite da tabela prikazuje ažurirane podatke, može se pozvati)
+                        // loadUserRequests();
+
+                        fireEditingStopped(); // Zaustavi uređivanje nakon klika
+                    }
                 }
             });
+
+
 
             panel.add(acceptButton);
             panel.add(rejectButton);
