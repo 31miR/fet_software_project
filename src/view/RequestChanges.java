@@ -1,5 +1,6 @@
 package view;
 
+import model.Administrator;
 import model.Izmjene;
 import model.IzmjeneDAO;
 
@@ -20,9 +21,12 @@ public class RequestChanges extends JFrame {
     private DefaultTableModel model;
     private IzmjeneDAO izmjeneDAO;
     private JButton loadMoreButton;
+    private JButton backButton;
+    private Administrator administrator; // Currently logged-in administrator
     private int offset = 0; // Varijabla za praćenje pozicije u bazi podataka
 
-    public RequestChanges() {
+    public RequestChanges(Administrator administrator) {
+    	this.administrator = administrator; 
         izmjeneDAO = new IzmjeneDAO(); // Inicijalizuj DAO
 
         setTitle("Request Changes");
@@ -74,10 +78,23 @@ public class RequestChanges extends JFrame {
         JPanel buttonPanel = new JPanel();
         loadMoreButton = new JButton("Load More");
         buttonPanel.add(loadMoreButton);
+        
+        
+        backButton = new JButton("Back");
+        buttonPanel.add(backButton);
 
         // Dodaj buttonPanel na dno prozora
         contentPane.add(buttonPanel, BorderLayout.SOUTH);
 
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose(); // Close current window
+                AdminView adminView = new AdminView(administrator); // Return to AdminView with the logged-in administrator
+                adminView.setVisible(true);
+            }
+        });
+        
         // Akcija za dugme
         loadMoreButton.addActionListener(new ActionListener() {
             @Override

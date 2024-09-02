@@ -10,6 +10,8 @@ import java.awt.event.ActionListener;
 import java.util.List;
 import javax.swing.border.EmptyBorder;
 
+import model.Administrator;
+import model.AdministratorDAO;
 import model.Dogadjaj;
 import model.DogadjajDAO;
 
@@ -22,10 +24,13 @@ public class RequestEvents extends JFrame {
     private DogadjajDAO dogadjajDAO;
     private JButton loadMoreButton;
     private JButton backButton;
-    private int offset = 0; // Varijabla za praćenje pozicije u bazi podataka
+    private Administrator administrator; // Currently logged-in administrator
+    private int offset = 0; // Variable to track the position in the database
 
-    public RequestEvents() {
-        dogadjajDAO = new DogadjajDAO(); // Inicijalizuj DAO
+
+    public RequestEvents(Administrator administrator) { // Constructor now accepts Administrator
+        this.administrator = administrator; // Set the administrator
+        dogadjajDAO = new DogadjajDAO(); // Initialize DAO
 
         setTitle("Event Requests");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -37,7 +42,7 @@ public class RequestEvents extends JFrame {
         contentPane.setLayout(new BorderLayout(0, 0));
         setContentPane(contentPane);
 
-        // Kreiraj tabelu
+        // Create table
         String[] columnNames = {"ID", "Event Name", "Status", "Actions"};
         model = new DefaultTableModel(columnNames, 0);
         table = new JTable(model) {
@@ -65,46 +70,52 @@ public class RequestEvents extends JFrame {
             }
         };
 
-        // Povećaj visinu redova
-        table.setRowHeight(40); // Postavlja visinu svakog reda na 40 piksela
+        // Increase row height
+        table.setRowHeight(40);
 
         loadEventRequests();
 
         JScrollPane scrollPane = new JScrollPane(table);
         contentPane.add(scrollPane, BorderLayout.CENTER);
 
-        // Kreiraj panel za dugme na dnu
+        // Create button panel at the bottom
         JPanel buttonPanel = new JPanel();
         loadMoreButton = new JButton("Load More");
         buttonPanel.add(loadMoreButton);
        
         
 
-        // Dodaj buttonPanel na dno prozora
+        backButton = new JButton("Back");
+        buttonPanel.add(backButton);
+
+        // Add buttonPanel to the bottom of the window
         contentPane.add(buttonPanel, BorderLayout.SOUTH);
 
-        // Akcija za dugme
+        // Action for the back button
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose(); // Close current window
+                AdminView adminView = new AdminView(administrator); // Return to AdminView with the logged-in administrator
+                adminView.setVisible(true);
+            }
+        });
+
+        // Action for the Load More button
         loadMoreButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                offset += 30; // Povećaj offset da bi se učitali naredni set zahtjeva
+                offset += 30; // Increase offset to load the next set of requests
                 loadEventRequests();
             }
-            
-            
-            
         });
     }
 
     private void loadEventRequests() {
         List<Dogadjaj> eventRequests = dogadjajDAO.getLimitedPending(offset, 30);
-        System.out.println("Fetched events count: " + eventRequests.size()); // Provjerite broj vraćenih događaja
-
         for (Dogadjaj dogadjaj : eventRequests) {
-            System.out.println("Event ID: " + dogadjaj.getDogadjaj_id()); // Provjerite da li događaji imaju ispravan ID
+            // Process and add each event to the table
         }
-        
-        // Ako nema podataka, provjerite da li je offset ispravno postavljen i da li ima podataka u bazi
     }
 
     // Custom renderer for other columns
@@ -118,16 +129,12 @@ public class RequestEvents extends JFrame {
                                                        boolean isSelected, boolean hasFocus,
                                                        int row, int column) {
             setText(value != null ? value.toString() : "");
-
-            // Bojenje pozadine redova u zeleno
             setBackground(new Color(20, 190, 166));
 
-            // Ako je red selektovan, možeš postaviti drugu boju
             if (isSelected) {
-                setBackground(Color.YELLOW); // Na primjer, žuta boja za selekciju
+                setBackground(Color.YELLOW);
             }
 
-            // Poravnanje teksta
             setHorizontalAlignment(CENTER);
 
             return this;
@@ -141,18 +148,12 @@ public class RequestEvents extends JFrame {
 
         public ButtonRenderer() {
             setLayout(new FlowLayout());
-
             acceptButton = new JButton("Approve");
             rejectButton = new JButton("Reject");
-
-            // Obojimo dugmad u sivo
             acceptButton.setBackground(new Color(95, 95, 95));
             rejectButton.setBackground(new Color(95, 95, 95));
-
-            // Postavimo boju teksta na dugmadima
             acceptButton.setForeground(Color.WHITE);
             rejectButton.setForeground(Color.WHITE);
-
             add(acceptButton);
             add(rejectButton);
         }
@@ -174,15 +175,10 @@ public class RequestEvents extends JFrame {
         public ButtonEditor() {
             panel = new JPanel();
             panel.setLayout(new FlowLayout());
-
             acceptButton = new JButton("Approve");
             rejectButton = new JButton("Reject");
-
-            // Obojimo dugmad u sivo
             acceptButton.setBackground(new Color(95, 95, 95));
             rejectButton.setBackground(new Color(95, 95, 95));
-
-            // Postavimo boju teksta na dugmadima
             acceptButton.setForeground(Color.WHITE);
             rejectButton.setForeground(Color.WHITE);
 
@@ -193,11 +189,8 @@ public class RequestEvents extends JFrame {
                     Dogadjaj selectedEvent = dogadjajDAO.getLimitedPending(0, 30).get(row);
                     selectedEvent.setDogadjajApproved(true);
                     dogadjajDAO.updateDogadjaj(selectedEvent);
-
-                    // Remove the row from the table model 
                     model.removeRow(row);
-
-                    fireEditingStopped(); // Zaustavi uređivanje nakon klika
+                    fireEditingStopped(); // Stop editing after button click
                 }
             });
 
@@ -208,11 +201,8 @@ public class RequestEvents extends JFrame {
                     Dogadjaj selectedEvent = dogadjajDAO.getLimitedPending(0, 30).get(row);
                     selectedEvent.setDogadjajApproved(false);
                     dogadjajDAO.updateDogadjaj(selectedEvent);
-
-                    // Remove the row from the table model
                     model.removeRow(row);
-
-                    fireEditingStopped(); // Zaustavi uređivanje nakon klika
+                    fireEditingStopped(); // Stop editing after button click
                 }
             });
 

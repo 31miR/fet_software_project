@@ -1,40 +1,30 @@
 package view;
 
 import javax.swing.*;
-
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import model.KorisnikDAO;
-import model.OrganizatorDAO;
 import model.AdministratorDAO;
+import model.OrganizatorDAO;
 import model.Korisnik;
-
-import javax.swing.border.LineBorder;
-
 
 public class Register extends JFrame {
 
     private static final long serialVersionUID = 1L;
-    private JLabel label;
     private JPanel contentPane;
 
-    private KorisnikDAO userController;
-    private AdministratorDAO adminController;
-    private OrganizatorDAO orgController;
-    private JTextField textField;
-    private JPasswordField passwordField;
     private JTextField firstNameField;
     private JTextField lastNameField;
     private JTextField emailField;
     private JTextField usernameField;
+    private JPasswordField passwordField;
     private JTextField addressField;
     private JTextField phoneField;
-   
     private JButton registerButton;
-    
+    private JButton backButton;
 
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
@@ -49,7 +39,7 @@ public class Register extends JFrame {
 
     public Register() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(450, 190, 1014, 800); // Povecaj visinu da stane registracija
+        setBounds(450, 190, 1014, 800);
         setResizable(false);
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -59,15 +49,13 @@ public class Register extends JFrame {
         setTitle("Karta");
 
         // Prikaz slike
-        ImageIcon imageIcon = new ImageIcon("resources/logo.png"); // Postavi putanju do svoje slike
-        Image image = imageIcon.getImage(); // Transformacija slike
-        Image scaledImage = image.getScaledInstance(300, 300, java.awt.Image.SCALE_SMOOTH); // Promijeni veličinu slike
-        imageIcon = new ImageIcon(scaledImage); // Ponovo kreiraj ImageIcon sa promijenjenom slikom
-        
+        ImageIcon imageIcon = new ImageIcon("resources/logo.png");
+        Image image = imageIcon.getImage();
+        Image scaledImage = image.getScaledInstance(300, 300, java.awt.Image.SCALE_SMOOTH);
+        imageIcon = new ImageIcon(scaledImage);
         JLabel label = new JLabel(imageIcon);
         label.setBounds(50, 200, 400, 300);
         contentPane.add(label);
-        
 
         JLabel lblNewLabel = new JLabel("Dobrodosli u Kartu!");
         lblNewLabel.setForeground(Color.BLACK);
@@ -75,9 +63,6 @@ public class Register extends JFrame {
         lblNewLabel.setBounds(500, 12, 600, 95);
         lblNewLabel.setForeground(new Color(51, 51, 51));
         contentPane.add(lblNewLabel);
-
-  
-
 
         // Registracijska polja
         JLabel lblFirstName = new JLabel("First Name");
@@ -101,7 +86,7 @@ public class Register extends JFrame {
         lastNameField.setFont(new Font("Chilanka", Font.PLAIN, 32));
         lastNameField.setBounds(650, 230, 281, 50);
         contentPane.add(lastNameField);
-        
+
         JLabel lblusername = new JLabel("Username");
         lblusername.setForeground(new Color(51, 51, 51));
         lblusername.setFont(new Font("Chilanka", Font.PLAIN, 31));
@@ -112,8 +97,8 @@ public class Register extends JFrame {
         usernameField.setFont(new Font("Chilanka", Font.PLAIN, 32));
         usernameField.setBounds(650, 300, 281, 50);
         contentPane.add(usernameField);
-        
-        JLabel lblpassword= new JLabel("Password");
+
+        JLabel lblpassword = new JLabel("Password");
         lblpassword.setForeground(new Color(51, 51, 51));
         lblpassword.setFont(new Font("Chilanka", Font.PLAIN, 31));
         lblpassword.setBounds(450, 370, 150, 52);
@@ -134,7 +119,7 @@ public class Register extends JFrame {
         emailField.setFont(new Font("Chilanka", Font.PLAIN, 32));
         emailField.setBounds(650, 440, 281, 50);
         contentPane.add(emailField);
-        
+
         JLabel lbladdress = new JLabel("Address");
         lbladdress.setForeground(new Color(51, 51, 51));
         lbladdress.setFont(new Font("Chilanka", Font.PLAIN, 31));
@@ -145,8 +130,7 @@ public class Register extends JFrame {
         addressField.setFont(new Font("Chilanka", Font.PLAIN, 32));
         addressField.setBounds(650, 510, 281, 50);
         contentPane.add(addressField);
-        
-        
+
         JLabel lblphone = new JLabel("Phone");
         lblphone.setForeground(new Color(51, 51, 51));
         lblphone.setFont(new Font("Chilanka", Font.PLAIN, 31));
@@ -157,11 +141,8 @@ public class Register extends JFrame {
         phoneField.setFont(new Font("Chilanka", Font.PLAIN, 32));
         phoneField.setBounds(650, 590, 281, 50);
         contentPane.add(phoneField);
-        
-        
-       
-        
 
+        // Dugmad za registraciju i povratak
         registerButton = new JButton("Register");
         registerButton.setFont(new Font("Chilanka", Font.PLAIN, 26));
         registerButton.setBounds(650, 670, 162, 50);
@@ -176,8 +157,6 @@ public class Register extends JFrame {
                 String username = usernameField.getText();
                 String phone = phoneField.getText();
                 String password = new String(passwordField.getPassword());
-                
-                
 
                 try {
                     // Proveri da li su polja ispravno popunjena
@@ -186,7 +165,19 @@ public class Register extends JFrame {
                         return;
                     }
 
-                    //Registruj korisnika
+                    // Provjera da li je telefon broj
+                    if (!phone.matches("\\d+")) {
+                        JOptionPane.showMessageDialog(Register.this, "Phone number can only contain numbers.");
+                        return;
+                    }
+
+                    // Provjera email formata
+                    if (!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$")) {
+                        JOptionPane.showMessageDialog(Register.this, "Invalid email format.");
+                        return;
+                    }
+
+                    // Registruj korisnika
                     Korisnik korisnik = new Korisnik();
                     korisnik.setUsername(username);
                     korisnik.setPassword(password);
@@ -195,31 +186,45 @@ public class Register extends JFrame {
                     korisnik.setLastName(lastName);
                     korisnik.setAddress(address);
                     korisnik.setPhone(phone);
-                   // korisnik.setWalletBalance(0.0); // Ako imaš default vrijednost
-                   // korisnik.setDiscountRate(0.0); // Ako imaš default vrijednost
 
                     // Dodavanje korisnika u bazu
                     KorisnikDAO korisnikDAO = new KorisnikDAO();
                     korisnikDAO.addKorisnik(korisnik);
                     JOptionPane.showMessageDialog(Register.this, "Registration successful!");
 
-                    // Očisti polja nakon uspešne registracijjjjkkkkhhhkkkje
-                     firstNameField.setText("");
-                     lastNameField.setText("");
-                     emailField.setText("");
-                     passwordField.setText("");
-                     usernameField.setText("");
-                     addressField.setText("");
-                     phoneField.setText("");
-                     
+                    // Očisti polja nakon uspešne registracije
+                    firstNameField.setText("");
+                    lastNameField.setText("");
+                    emailField.setText("");
+                    passwordField.setText("");
+                    usernameField.setText("");
+                    addressField.setText("");
+                    phoneField.setText("");
 
                 } catch (Exception err) {
                     JOptionPane.showMessageDialog(Register.this, "An error occurred during registration.");
                 }
             }
         });
-        
+
         contentPane.add(registerButton);
+
+        // Back dugme
+        backButton = new JButton("Back");
+        backButton.setFont(new Font("Chilanka", Font.PLAIN, 26));
+        backButton.setBounds(830, 670, 162, 50);
+        backButton.setForeground(new Color(51, 51, 51));
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose(); // Zatvori trenutni prozor
+                Login login = new Login();
+                login.setVisible(true); // Vrati se na Login ekran
+            }
+        });
+
+        contentPane.add(backButton);
+
         contentPane.setVisible(true);
     }
 }

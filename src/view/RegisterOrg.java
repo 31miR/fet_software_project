@@ -33,7 +33,7 @@ public class RegisterOrg extends JFrame {
     private JTextField usernameField;
     private JTextField addressField;
     private JTextField phoneField;
-   
+    private JButton backButton;
     private JButton registerButton;
     
 
@@ -175,8 +175,6 @@ public class RegisterOrg extends JFrame {
                 String username = usernameField.getText();
                 String phone = phoneField.getText();
                 String password = new String(passwordField.getPassword());
-                
-                
 
                 try {
                     // Proveri da li su polja ispravno popunjena
@@ -185,7 +183,19 @@ public class RegisterOrg extends JFrame {
                         return;
                     }
 
-                    //Registruj korisnika
+                    // Provjera da li je telefon broj
+                    if (!phone.matches("\\d+")) {
+                        JOptionPane.showMessageDialog(RegisterOrg.this, "Phone number can only contain numbers.");
+                        return;
+                    }
+
+                    // Provjera email formata
+                    if (!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$")) {
+                        JOptionPane.showMessageDialog(RegisterOrg.this, "Invalid email format.");
+                        return;
+                    }
+
+                    // Registruj korisnika
                     Organizator organizator = new Organizator();
                     organizator.setUsername(username);
                     organizator.setPassword(password);
@@ -194,8 +204,6 @@ public class RegisterOrg extends JFrame {
                     organizator.setLastName(lastName);
                     organizator.setAddress(address);
                     organizator.setPhone(phone);
-                   // korisnik.setWalletBalance(0.0); // Ako imaš default vrijednost
-                   // korisnik.setDiscountRate(0.0); // Ako imaš default vrijednost
 
                     // Dodavanje korisnika u bazu
                     OrganizatorDAO organizatorDAO = new OrganizatorDAO();
@@ -203,14 +211,13 @@ public class RegisterOrg extends JFrame {
                     JOptionPane.showMessageDialog(RegisterOrg.this, "Registration successful!");
 
                     // Očisti polja nakon uspešne registracije
-                     firstNameField.setText("");
-                     lastNameField.setText("");
-                     emailField.setText("");
-                     passwordField.setText("");
-                     usernameField.setText("");
-                     addressField.setText("");
-                     phoneField.setText("");
-                     
+                    firstNameField.setText("");
+                    lastNameField.setText("");
+                    emailField.setText("");
+                    passwordField.setText("");
+                    usernameField.setText("");
+                    addressField.setText("");
+                    phoneField.setText("");
 
                 } catch (Exception err) {
                     JOptionPane.showMessageDialog(RegisterOrg.this, "An error occurred during registration.");
@@ -219,6 +226,23 @@ public class RegisterOrg extends JFrame {
         });
         
         contentPane.add(registerButton);
+        
+        // Back dugme
+        backButton = new JButton("Back");
+        backButton.setFont(new Font("Chilanka", Font.PLAIN, 26));
+        backButton.setBounds(830, 670, 162, 50);
+        backButton.setForeground(new Color(51, 51, 51));
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose(); // Zatvori trenutni prozor
+                Login login = new Login();
+                login.setVisible(true); // Vrati se na Login ekran
+            }
+        });
+
+        contentPane.add(backButton);
+        
         contentPane.setVisible(true);
     }
 }
