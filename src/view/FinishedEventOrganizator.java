@@ -11,9 +11,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.swing.*;
 
+public class FinishedEventOrganizator extends JFrame {
 
-//View za prikaz aktivnih dogadjaja organizatora
-public class ViewEventOrganizator extends JFrame {
     private DogadjajDAO dogadjajDAO;
     private JPanel eventsPanel;
     private JButton seeMoreButton;
@@ -21,8 +20,8 @@ public class ViewEventOrganizator extends JFrame {
     private final int limit = 5;
     private Organizator organizator;
 
-    public ViewEventOrganizator(Organizator organizator) {
-        this.organizator = organizator;  // Set the organizer
+    public FinishedEventOrganizator(Organizator organizator) {
+        this.organizator = organizator;
         dogadjajDAO = new DogadjajDAO();
         setTitle("Karta");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -32,7 +31,7 @@ public class ViewEventOrganizator extends JFrame {
 
         // Header
         JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JLabel headerLabel = new JLabel("View Active Events");
+        JLabel headerLabel = new JLabel("View Finished Events");
         headerLabel.setFont(new Font("Chilanka", Font.BOLD, 24));
         headerPanel.add(headerLabel);
         add(headerPanel, BorderLayout.NORTH);
@@ -41,7 +40,7 @@ public class ViewEventOrganizator extends JFrame {
         eventsPanel = new JPanel();
         eventsPanel.setLayout(new BoxLayout(eventsPanel, BoxLayout.Y_AXIS));
         JScrollPane scrollPane = new JScrollPane(eventsPanel);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); // Disable horizontal scrolling
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         add(scrollPane, BorderLayout.CENTER);
 
         // See More Button
@@ -62,7 +61,6 @@ public class ViewEventOrganizator extends JFrame {
         JButton backButton = new JButton("Back");
         backButton.addActionListener(e -> dispose());
         buttonPanel.add(backButton);
-        add(buttonPanel, BorderLayout.SOUTH);
 
         pack();
         setLocationRelativeTo(null);
@@ -75,13 +73,13 @@ public class ViewEventOrganizator extends JFrame {
     private void loadEvents() {
         List<Dogadjaj> allEvents = organizator.getDogadjaj();
 
-        // Filter out only active events
-        List<Dogadjaj> activeEvents = allEvents.stream()
-            .filter(event -> !event.isZavrsio())
+        // Filter out only finished events
+        List<Dogadjaj> finishedEvents = allEvents.stream()
+            .filter(Dogadjaj::isZavrsio)
             .collect(Collectors.toList());
 
-        if (activeEvents.isEmpty() && start > 0) {
-            seeMoreButton.setEnabled(false); // Disable button if no more events
+        if (finishedEvents.isEmpty() && start > 0) {
+            seeMoreButton.setEnabled(false);
         }
 
         if (start == 0) {
@@ -89,10 +87,10 @@ public class ViewEventOrganizator extends JFrame {
         }
 
         // Determine end index for pagination
-        int end = Math.min(start + limit, activeEvents.size());
+        int end = Math.min(start + limit, finishedEvents.size());
 
         for (int i = start; i < end; i++) {
-            Dogadjaj event = activeEvents.get(i);
+            Dogadjaj event = finishedEvents.get(i);
 
             JPanel eventPanel = new JPanel(new GridBagLayout());
             eventPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -109,7 +107,7 @@ public class ViewEventOrganizator extends JFrame {
             nameTextArea.setWrapStyleWord(true);
             nameTextArea.setEditable(false);
             nameTextArea.setBackground(new Color(240, 240, 240));
-            nameTextArea.setPreferredSize(new Dimension(350, 30)); // Adjust height if needed
+            nameTextArea.setPreferredSize(new Dimension(350, 30));
             nameTextArea.setBorder(null);
             eventGbc.gridx = 0;
             eventGbc.gridy = 0;
@@ -125,7 +123,7 @@ public class ViewEventOrganizator extends JFrame {
             descTextArea.setWrapStyleWord(true);
             descTextArea.setEditable(false);
             descTextArea.setBackground(new Color(240, 240, 240));
-            descTextArea.setPreferredSize(new Dimension(350, 50)); // Adjust height if needed
+            descTextArea.setPreferredSize(new Dimension(350, 50));
             descTextArea.setBorder(null);
             eventGbc.gridy = 1;
             eventPanel.add(descTextArea, eventGbc);
@@ -133,19 +131,19 @@ public class ViewEventOrganizator extends JFrame {
             // Event Date - Right side
             JLabel dateLabel = new JLabel("Date: " + event.getDatum().toString());
             dateLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-            dateLabel.setPreferredSize(new Dimension(350, 25)); // Fixed width
+            dateLabel.setPreferredSize(new Dimension(350, 25));
             eventGbc.gridx = 1;
             eventGbc.gridy = 0;
             eventGbc.anchor = GridBagConstraints.EAST;
             eventGbc.weightx = 0.5;
-            eventGbc.insets = new Insets(5, 5, 5, 15); // Add extra space to the right
+            eventGbc.insets = new Insets(5, 5, 5, 15);
             eventPanel.add(dateLabel, eventGbc);
 
             // Location Image - Right side
             JLabel imageLabel = new JLabel(new ImageIcon(event.getSlika()));
-            imageLabel.setPreferredSize(new Dimension(350, 50)); // Fixed size for the image
+            imageLabel.setPreferredSize(new Dimension(350, 50));
             eventGbc.gridy = 1;
-            eventGbc.insets = new Insets(5, 5, 5, 15); // Add extra space to the right
+            eventGbc.insets = new Insets(5, 5, 5, 15);
             eventPanel.add(imageLabel, eventGbc);
 
             eventsPanel.add(eventPanel);
@@ -153,8 +151,8 @@ public class ViewEventOrganizator extends JFrame {
         }
 
         // Update the start position for the next batch of events
-        if (end >= activeEvents.size()) {
-            seeMoreButton.setEnabled(false); // Disable button if no more events
+        if (end >= finishedEvents.size()) {
+            seeMoreButton.setEnabled(false);
         }
 
         eventsPanel.revalidate();

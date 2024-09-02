@@ -11,7 +11,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+
+//view za prikaz dogadjaja za odabir koji se zeli urediti
 public class SelectEventWindow extends JFrame {
     private Organizator organizator;
     private DogadjajDAO dogadjajDAO;
@@ -75,14 +78,11 @@ public class SelectEventWindow extends JFrame {
 
     // Method to load events
     private void loadEvents() {
-    	// Prepare the list of filters
-        List<String> filters = new ArrayList<>();
-        filters.add("organizator.username"); // Field name in the filter
-        filters.add(String.valueOf(organizator.getUsername())); // Value of the filter
-
-        // Load events with filters
-        List<Dogadjaj> events = dogadjajDAO.getFiltered(new ArrayList<>(), "datum", true, start, limit);
-     
+   
+        List<Dogadjaj> allevents = organizator.getDogadjaj();
+        List<Dogadjaj> events = allevents.stream()
+                .filter(event -> !event.isZavrsio())
+                .collect(Collectors.toList());
         if (events.isEmpty() && start > 0 ) {
             seeMoreButton.setEnabled(false); // Disable button if no more events
         }

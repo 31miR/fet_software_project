@@ -23,7 +23,7 @@ public class ViewEvent extends JFrame {
     public ViewEvent(Administrator admin) {
         this.admin = admin; // Postavljanje admina
         dogadjajDAO = new DogadjajDAO();
-        setTitle("View Events");
+        setTitle("Karta");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(450, 210, 800, 600);
         setPreferredSize(new Dimension(800, 600));
@@ -133,15 +133,5 @@ public class ViewEvent extends JFrame {
         eventsPanel.repaint();
     }
 
-<<<<<<< HEAD
 
-
-    public static void main(String[] args) {
-        // Na primjer, možete proslijediti dummy admin objekt
-        Administrator admin = new Administrator(); // Pretpostavlja se da Administrator ima default konstruktor
-        new ViewEvent(admin);
-    }
-=======
-   
->>>>>>> cc65ef0 (add unfinished views)
 }
