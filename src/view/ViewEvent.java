@@ -59,11 +59,13 @@ public class ViewEvent extends JFrame {
 
         // Back Button
         JButton backButton = new JButton("Back");
+
         backButton.setBackground(Color.LIGHT_GRAY);
         backButton.addActionListener(e -> {
             AdminView view = new AdminView(admin); // Korištenje proslijeđenog admina
             view.setVisible(true);
             dispose();
+
         });
         buttonPanel.add(backButton);
         add(buttonPanel, BorderLayout.SOUTH);
@@ -131,6 +133,7 @@ public class ViewEvent extends JFrame {
         eventsPanel.repaint();
     }
 
+<<<<<<< HEAD
 
 
     public static void main(String[] args) {
@@ -138,4 +141,7 @@ public class ViewEvent extends JFrame {
         Administrator admin = new Administrator(); // Pretpostavlja se da Administrator ima default konstruktor
         new ViewEvent(admin);
     }
+=======
+   
+>>>>>>> cc65ef0 (add unfinished views)
 }

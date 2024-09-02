@@ -56,7 +56,7 @@ public class AdminView extends JFrame {
         eventButton.setBounds(550, 300, 250, 50);
         eventButton.setForeground(new Color(51, 51, 51));
         eventButton.addActionListener(e -> {
-            RequestEvents event = new RequestEvents();
+            RequestEvents event = new RequestEvents(admin);
             event.setVisible(true);
             dispose();
         });
@@ -90,7 +90,7 @@ public class AdminView extends JFrame {
         changesButton.setBounds(550, 600, 250, 50);  
         changesButton.setForeground(new Color(51, 51, 51));
         changesButton.addActionListener(e -> {
-            RequestChanges event1 = new RequestChanges();
+            RequestChanges event1 = new RequestChanges(admin);
             event1.setVisible(true);
             dispose();
         });

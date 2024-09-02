@@ -117,8 +117,11 @@ public class KorisnikView extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                ViewTickets viewTickets = new ViewTickets(korisnik);
-                viewTickets.setVisible(true);
+                // ViewTickets viewTickets = new ViewTickets(korisnik);
+                // viewTickets.setVisible(true);
+            	
+            	KorisnikAndDogadjajListView view = new KorisnikAndDogadjajListView(korisnik);
+            	view.setVisible(true);
 
             }
         });
