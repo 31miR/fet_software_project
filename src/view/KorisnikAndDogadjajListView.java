@@ -75,7 +75,7 @@ class DogadjajListViewPanel extends JPanel {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		refreshLayout();
 	}
-	private void refreshLayout() {
+	public void refreshLayout() {
 		removeAll();
 		for (Dogadjaj i : dogadjajList) {
 			DogadjajPanel dp = new DogadjajPanel(i);
@@ -260,8 +260,7 @@ public class KorisnikAndDogadjajListView extends JFrame {
 			nextPageButton.setEnabled(false);
 		}
 		prevPageButton.setEnabled(true);
-		mainContentPanel.revalidate();
-		mainContentPanel.repaint();
+		mainContentPanel.refreshLayout();
 	}
 	private void prevPagePressed() {
 		dogadjajOffset -= PER_PAGE;
@@ -285,8 +284,7 @@ public class KorisnikAndDogadjajListView extends JFrame {
 		else {
 			prevPageButton.setEnabled(true);
 		}
-		mainContentPanel.revalidate();
-		mainContentPanel.repaint();
+		mainContentPanel.refreshLayout();
 	}
 	private void searchButtonPressed() {
 		dogadjajOffset = 0;
@@ -312,6 +310,10 @@ public class KorisnikAndDogadjajListView extends JFrame {
 			filters.add("podvrsta");
 			filters.add(podvrsta);
 		}
+		if (!showFinishedCheckBox.isSelected()) {
+			filters.add("zavrsio");
+			filters.add("false");
+		}
 		dogadjajList.removeAll(dogadjajList);
 		List<Dogadjaj> dummy = dogadjajDAO.getFiltered(filters, searchString, "datum", false, dogadjajOffset, PER_PAGE);
 		dogadjajList.addAll(dummy);
@@ -327,8 +329,7 @@ public class KorisnikAndDogadjajListView extends JFrame {
 			nextPageButton.setEnabled(false);
 		}
 		prevPageButton.setEnabled(false);
-		mainContentPanel.revalidate();
-		mainContentPanel.repaint();
+		mainContentPanel.refreshLayout();
 	}
 	private void addPlaceholderEffect(JTextField textField, String placeholder) {
         textField.setForeground(Color.GRAY);
