@@ -248,11 +248,6 @@ public class KorisnikAndDogadjajListView extends JFrame {
 		dogadjajList.removeAll(dogadjajList);
 		List<Dogadjaj> dummy = dogadjajDAO.getFiltered(filters, searchString, "datum", false, dogadjajOffset, PER_PAGE);
 		dogadjajList.addAll(dummy);
-		//for debugging purposes, PLEASE DELETE LATER
-		for (Dogadjaj i : dogadjajList) {
-			System.out.println(i.getNaziv() + " | " + i.getDatum() + " | " + i.getVrsta() + " | " + i.getPodvrsta()
-								+ " | " + i.isZavrsio());
-		}
 		if (dogadjajDAO.getFiltered(filters, searchString, "datum", false, dogadjajOffset + PER_PAGE, PER_PAGE).size() != 0) {
 			nextPageButton.setEnabled(true);
 		}
@@ -267,11 +262,6 @@ public class KorisnikAndDogadjajListView extends JFrame {
 		dogadjajList.removeAll(dogadjajList);
 		List<Dogadjaj> dummy = dogadjajDAO.getFiltered(filters, searchString, "datum", false, dogadjajOffset, PER_PAGE);
 		dogadjajList.addAll(dummy);
-		//for debugging purposes, PLEASE DELETE LATER
-		for (Dogadjaj i : dogadjajList) {
-			System.out.println(i.getNaziv() + " | " + i.getDatum() + " | " + i.getVrsta() + " | " + i.getPodvrsta()
-								+ " | " + i.isZavrsio());
-		}
 		if (dogadjajDAO.getFiltered(filters, searchString, "datum", false, dogadjajOffset + PER_PAGE, PER_PAGE).size() != 0) {
 			nextPageButton.setEnabled(true);
 		}
@@ -317,11 +307,6 @@ public class KorisnikAndDogadjajListView extends JFrame {
 		dogadjajList.removeAll(dogadjajList);
 		List<Dogadjaj> dummy = dogadjajDAO.getFiltered(filters, searchString, "datum", false, dogadjajOffset, PER_PAGE);
 		dogadjajList.addAll(dummy);
-		//for debugging purposes, PLEASE DELETE LATER
-		for (Dogadjaj i : dogadjajList) {
-			System.out.println(i.getNaziv() + " | " + i.getDatum() + " | " + i.getVrsta() + " | " + i.getPodvrsta()
-								+ " | " + i.isZavrsio());
-		}
 		if (dogadjajDAO.getFiltered(filters, searchString, "datum", false, dogadjajOffset + PER_PAGE, PER_PAGE).size() != 0) {
 			nextPageButton.setEnabled(true);
 		}
