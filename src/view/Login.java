@@ -199,9 +199,9 @@ public class Login extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Prikaz pogleda za goste ako postoji
-                // GuestView guestView = new GuestView();
-                // guestView.setVisible(true);
-                // dispose();
+                 Guest guestView = new Guest();
+                 guestView.setVisible(true);
+                 dispose();
             }
         });
     }

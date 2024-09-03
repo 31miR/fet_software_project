@@ -25,4 +25,32 @@ public class SektorDAO {
         em.close();
         return sektori;
     }
+    
+     public Sektor getSektorById(int sektorId) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.find(Sektor.class, sektorId);
+        } finally {
+            em.close();
+        }
+    }
+    
+     public void updateSektor(Sektor sektor) {
+         EntityManager em = emf.createEntityManager();
+         try {
+             em.getTransaction().begin();
+             em.merge(sektor);
+             em.getTransaction().commit();
+         } catch (Exception e) {
+             if (em.getTransaction().isActive()) {
+                 em.getTransaction().rollback();
+             }
+             e.printStackTrace();
+         } finally {
+             em.close();
+         }
+     }
+    
+    
+    
 }
