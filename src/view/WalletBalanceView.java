@@ -18,6 +18,7 @@ public class WalletBalanceView extends JFrame {
     private int initializedYear = 2025;
     private int cvc =123;
     private Korisnik korisnik;
+    private KorisnikDAO korisnikDAO = new KorisnikDAO();
 
     // UI komponente
     private JTextField idCardField;
@@ -50,7 +51,7 @@ public class WalletBalanceView extends JFrame {
 
         setTitle("Add Wallet Balance");
 
-        JLabel idCardLabel = new JLabel("ID Card:");
+        JLabel idCardLabel = new JLabel("Card Number:");
         idCardLabel.setBounds(50, 50, 150, 30);
         contentPane.add(idCardLabel);
 
@@ -97,7 +98,8 @@ public class WalletBalanceView extends JFrame {
 
                     // Provjeri ID i godinu
                     if (enteredID.equals(initializedID) && enteredYear == initializedYear && cvcnum==cvc ) {
-                        korisnik.setWalletBalance(korisnik.getWalletBalance() + (int)(balanceToAdd * 100)); 
+                        korisnik.setWalletBalance(korisnik.getWalletBalance() + (int)(balanceToAdd * 100));
+                        korisnikDAO.updateKorisnik(korisnik);
                         JOptionPane.showMessageDialog(null, "Wallet balance updated!");
                         KorisnikAndDogadjajListView view = new KorisnikAndDogadjajListView(korisnik);
                         view.setVisible(true);
