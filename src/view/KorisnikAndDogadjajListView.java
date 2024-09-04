@@ -215,6 +215,7 @@ public class KorisnikAndDogadjajListView extends JFrame {
 
         // I kao, da mozes skrolat
         JScrollPane scrollPane = new JScrollPane(centerPanel);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         add(scrollPane, BorderLayout.CENTER);
 
