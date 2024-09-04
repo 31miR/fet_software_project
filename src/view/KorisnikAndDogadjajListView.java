@@ -8,6 +8,8 @@ import java.util.Map;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import model.Dogadjaj;
 import model.DogadjajDAO;
@@ -94,6 +96,7 @@ public class KorisnikAndDogadjajListView extends JFrame {
     private int dogadjajOffset = 0;
     private final int PER_PAGE = 5;
     private Map<String, List<String>> typeToSubType;
+    JPanel topPanel;
     private JComboBox<String> cityJCB;
     private JComboBox<String> typeJCB;
     private JComboBox<String> subTypeJCB;
@@ -117,37 +120,9 @@ public class KorisnikAndDogadjajListView extends JFrame {
         setLayout(new BorderLayout());
 
         // Vrh opcije
-        JPanel topPanel = new JPanel();
+        topPanel = new JPanel();
         topPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-
-        topPanel.add(new JLabel(korisnik.getName() + " " + korisnik.getLastName()));
-        topPanel.add(new JLabel(String.valueOf(korisnik.getWalletBalance()/100) + "." + 
-        						String.valueOf(korisnik.getWalletBalance()%100) + "$"));
-        JButton addMoneyButton = new JButton("add money");
-        addMoneyButton.addActionListener((e) -> {
-        	addMoneyButtonPressed();
-        });
-        topPanel.add(addMoneyButton);
-        JButton profileSettingsButton = new JButton("profile settings");
-        profileSettingsButton.addActionListener((e) -> {
-        	profileSettingsButtonPressed();
-        });
-        topPanel.add(profileSettingsButton);
-        JButton boughtTicketsButton = new JButton("bought tickets");
-        boughtTicketsButton.addActionListener((e) -> {
-        	boughtTicketsButtonPressed();
-        });
-        topPanel.add(boughtTicketsButton);
-        JButton reservedTicketsButton = new JButton("reserved tickets");
-        reservedTicketsButton.addActionListener((e) -> {
-        	reservedTicketsButtonPressed();
-        });
-        topPanel.add(reservedTicketsButton);
-        JButton logoutButton = new JButton("log out");
-        logoutButton.addActionListener((e) -> {
-        	logoutButtonPressed();
-        });
-        topPanel.add(logoutButton);
+        updateTopPanel();
 
         // Opcije za pretragu dogadjaja
         JPanel searchPanel = new JPanel();
@@ -355,8 +330,46 @@ public class KorisnikAndDogadjajListView extends JFrame {
 		
 	}
 	private void addMoneyButtonPressed() {
-		WalletBalanceView view = new WalletBalanceView(korisnik);
-		dispose();
+		WalletBalanceView view = new WalletBalanceView(this, korisnik);
+		view.addWindowListener(new WindowAdapter() {
+		    @Override
+		    public void windowClosed(WindowEvent e) {
+		    	updateTopPanel();
+		    }
+		});
 		view.setVisible(true);
+	}
+	private void updateTopPanel() {
+		topPanel.removeAll();
+		topPanel.add(new JLabel(korisnik.getName() + " " + korisnik.getLastName()));
+        topPanel.add(new JLabel(String.valueOf(korisnik.getWalletBalance()/100) + "." + 
+        						String.valueOf(korisnik.getWalletBalance()%100) + "$"));
+        JButton addMoneyButton = new JButton("add money");
+        addMoneyButton.addActionListener((e) -> {
+        	addMoneyButtonPressed();
+        });
+        topPanel.add(addMoneyButton);
+        JButton profileSettingsButton = new JButton("profile settings");
+        profileSettingsButton.addActionListener((e) -> {
+        	profileSettingsButtonPressed();
+        });
+        topPanel.add(profileSettingsButton);
+        JButton boughtTicketsButton = new JButton("bought tickets");
+        boughtTicketsButton.addActionListener((e) -> {
+        	boughtTicketsButtonPressed();
+        });
+        topPanel.add(boughtTicketsButton);
+        JButton reservedTicketsButton = new JButton("reserved tickets");
+        reservedTicketsButton.addActionListener((e) -> {
+        	reservedTicketsButtonPressed();
+        });
+        topPanel.add(reservedTicketsButton);
+        JButton logoutButton = new JButton("log out");
+        logoutButton.addActionListener((e) -> {
+        	logoutButtonPressed();
+        });
+        topPanel.add(logoutButton);
+        topPanel.revalidate();
+        topPanel.repaint();
 	}
 }

@@ -10,7 +10,7 @@ import java.awt.event.WindowEvent;
 import model.Korisnik;
 import model.KorisnikDAO;
 
-public class WalletBalanceView extends JFrame {
+public class WalletBalanceView extends JDialog {
     private static final long serialVersionUID = 1L;
 
     // Inicijalizirani podaci
@@ -26,21 +26,15 @@ public class WalletBalanceView extends JFrame {
     private JTextField walletBalanceField;
     private JTextField cvcField;
 
-    public WalletBalanceView(Korisnik korisnik) {
+    public WalletBalanceView(JFrame parentFrame, Korisnik korisnik) {
+    	super(parentFrame, "Add Wallet Balance", true);
         this.korisnik = korisnik;
         initialize();
+        setLocationRelativeTo(parentFrame);
     }
 
     private void initialize() {
-        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-            	dispose();
-            	KorisnikAndDogadjajListView view = new KorisnikAndDogadjajListView(korisnik);
-            	view.setVisible(true);
-            }
-        });
+        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         setBounds(450, 190, 450, 400);
         setResizable(false);
         JPanel contentPane = new JPanel();
@@ -101,8 +95,6 @@ public class WalletBalanceView extends JFrame {
                         korisnik.setWalletBalance(korisnik.getWalletBalance() + (int)(balanceToAdd * 100));
                         korisnikDAO.updateKorisnik(korisnik);
                         JOptionPane.showMessageDialog(null, "Wallet balance updated!");
-                        KorisnikAndDogadjajListView view = new KorisnikAndDogadjajListView(korisnik);
-                        view.setVisible(true);
                         dispose();
                     } else {
                         JOptionPane.showMessageDialog(null, "Invalid ID card or expiration year. Please try again.");
