@@ -19,53 +19,76 @@ import model.LokacijaDAO;
 //This is for each individual dogadjaj OK
 class DogadjajPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
+	Dogadjaj dogadjaj;
+
 	public DogadjajPanel(Dogadjaj dogadjaj) {
-      setLayout(new BorderLayout());
-      setPreferredSize(new Dimension(600, 200));
+		this.dogadjaj = dogadjaj;
+		setLayout(new BorderLayout());
+		setPreferredSize(new Dimension(600, 200));
+		setMaximumSize(new Dimension(Integer.MAX_VALUE, 200));
 
-      //DODAVANJE SLIKE UZAS
-      JPanel slikaPanel = new JPanel();
-      slikaPanel.setPreferredSize(new Dimension(200, 200)); 
-      slikaPanel.setBackground(Color.PINK);
-      ImageIcon imageIcon = new ImageIcon(dogadjaj.getSlika());
-      Image image = imageIcon.getImage();
-      Image scaledImage = image.getScaledInstance(200, 200, Image.SCALE_SMOOTH);
-      JLabel slikaLabel = new JLabel(new ImageIcon(scaledImage));
-      slikaPanel.add(slikaLabel);
-      add(slikaPanel, BorderLayout.WEST);
+		// DODAVANJE SLIKE UZAS
+		JPanel slikaPanel = new JPanel();
+		slikaPanel.setPreferredSize(new Dimension(200, 200));
+		slikaPanel.setBackground(Color.PINK);
+		ImageIcon imageIcon = new ImageIcon(dogadjaj.getSlika());
+		Image image = imageIcon.getImage();
+		Image scaledImage = image.getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+		JLabel slikaLabel = new JLabel(new ImageIcon(scaledImage));
+		slikaPanel.add(slikaLabel);
+		add(slikaPanel, BorderLayout.WEST);
 
-      JPanel infoPanel = new JPanel();
-      infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
-      
-      JLabel nazivLabel = new JLabel(dogadjaj.getNaziv());
-      nazivLabel.setFont(new Font("Arial", Font.BOLD, 18));
-      infoPanel.add(nazivLabel);
+		JPanel infoPanel = new JPanel();
+		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
 
-      infoPanel.add(new JLabel(dogadjaj.getOpis()));
-      infoPanel.add(new JLabel(dogadjaj.getDatum().toString()));
-      infoPanel.add(new JLabel(dogadjaj.getVrsta()));
-      infoPanel.add(new JLabel(dogadjaj.getPodvrsta()));
-      infoPanel.add(new JLabel(dogadjaj.isZavrsio() ? "DOGADJAJ JE ZAVRSEN!" : ""));
-      infoPanel.add(new JLabel(dogadjaj.getLokacija().getGrad()));
+		JLabel nazivLabel = new JLabel(dogadjaj.getNaziv());
+		nazivLabel.setFont(new Font("Arial", Font.BOLD, 18));
+		infoPanel.add(nazivLabel);
 
-      // Panel za dugmad
-      JPanel buttonPanel = new JPanel();
-      buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		infoPanel.add(new JLabel(dogadjaj.getOpis()));
+		infoPanel.add(new JLabel(dogadjaj.getDatum().toString()));
+		infoPanel.add(new JLabel(dogadjaj.getVrsta()));
+		infoPanel.add(new JLabel(dogadjaj.getPodvrsta()));
+		infoPanel.add(new JLabel(dogadjaj.isZavrsio() ? "DOGADJAJ JE ZAVRSEN!" : ""));
+		infoPanel.add(new JLabel(dogadjaj.getLokacija().getGrad()));
 
-      JButton detaljiButton = new JButton("Detaljnije informacije");
-      JButton karteButton = new JButton("Slobodne karte");
+		// Panel za dugmad
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
-      buttonPanel.add(detaljiButton);
-      buttonPanel.add(karteButton);
+		JButton detaljiButton = new JButton("Detaljnije informacije");
+		detaljiButton.addActionListener((e) -> {
+			detaljiButtonPressed();
+		});
+		JButton karteButton = new JButton("Slobodne karte");
+		karteButton.addActionListener((e) -> {
+			karteButtonPressed();
+		});
+		if (dogadjaj.isZavrsio()) {
+			karteButton.setEnabled(false);
+		}
 
-      // Dodaj panele za informacije i dugmad u glavni panel
-      JPanel centerPanel = new JPanel();
-      centerPanel.setLayout(new BorderLayout());
-      centerPanel.add(infoPanel, BorderLayout.CENTER);
-      centerPanel.add(buttonPanel, BorderLayout.SOUTH);
-      
-      add(centerPanel, BorderLayout.CENTER);
-  }
+		buttonPanel.add(detaljiButton);
+		buttonPanel.add(karteButton);
+
+		// Dodaj panele za informacije i dugmad u glavni panel
+		JPanel centerPanel = new JPanel();
+		centerPanel.setLayout(new BorderLayout());
+		centerPanel.add(infoPanel, BorderLayout.CENTER);
+		centerPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+		add(centerPanel, BorderLayout.CENTER);
+	}
+
+	private void karteButtonPressed() {
+		// TODO Auto-generated method stub
+
+	}
+
+	private void detaljiButtonPressed() {
+		EventDetailsDialogBox view = new EventDetailsDialogBox(dogadjaj);
+		view.setVisible(true);
+	}
 }
 
 
