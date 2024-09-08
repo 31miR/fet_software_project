@@ -210,6 +210,20 @@ INSERT INTO Dogadjaj VALUES (DEFAULT,
     'rostilj123',
     4
 );
+INSERT INTO Dogadjaj VALUES (DEFAULT,
+	'Snjeguljica - Predstava',
+	'Odrzava se predstava koja je kao spin-off Snjeguljice i 7 patuljaka. Glumci koji glume patuljke su bolesni pa ih nema.',
+    '2024-11-27 22:30:00',
+    'Predstava',
+    'Drama',
+    'dogadjajImages/3.jpg',
+    FALSE,
+    1,
+    FALSE,
+    FALSE,
+    'rostilj123',
+    4
+);
 INSERT INTO Karta VALUES (DEFAULT,
 	2000,
 	0,
