@@ -52,10 +52,6 @@ public class DogadjajDAO {
 		em.getTransaction().commit();
 		em.close();
 	} //This function should not be used when requesting updates from Organizator!
-	public int countTickets(Dogadjaj dogadjaj, Sektor sektor, boolean onlyFree) {//if sektor is null, it will count all the cards for Dogadjaj
-		
-		return 0; //TODO: implement this
-	}
 	public List<Dogadjaj> getLimitedPending(int start, int ammount) {
 		EntityManager em = emf.createEntityManager();
 		List<Dogadjaj> ret = em.createQuery("SELECT a FROM Dogadjaj a WHERE a.dogadjajApproved = :falseValue", Dogadjaj.class).setFirstResult(start)

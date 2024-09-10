@@ -22,7 +22,6 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -38,15 +37,11 @@ import model.LokacijaDAO;
 import model.Sektor;
 
 
-class AvailableTicket extends JPanel {
+class ReservedTicket extends JPanel {
 	private static final long serialVersionUID = 1L;
-	AvailableTicketsForDogadjajDialogBox parentDialog;
-	KorisnikDAO korisnikDAO = new KorisnikDAO();
-	KartaDAO kartaDAO = new KartaDAO();
+	ReservedTicketsForUserDialogBox parentDialog;
 	Karta karta;
-	JButton rezervisiButton;
-	JButton kupiButton;
-	public AvailableTicket(AvailableTicketsForDogadjajDialogBox parentDialog, Karta karta) {
+	public ReservedTicket(ReservedTicketsForUserDialogBox parentDialog, Karta karta) {
 		this.parentDialog = parentDialog;
 		this.karta = karta;
 		setLayout(new BorderLayout());
@@ -72,12 +67,12 @@ class AvailableTicket extends JPanel {
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 		
-		rezervisiButton = new JButton("Rezervisi kartu");
-		rezervisiButton.addActionListener((e) -> {
-			rezervisiButtonPressed();
+		JButton otkaziButton = new JButton("Otkazi rezervaciju");
+		otkaziButton.addActionListener((e) -> {
+			otkaziButtonPressed();
 		});
-		buttonPanel.add(rezervisiButton);
-		kupiButton = new JButton("Kupi kartu");
+		buttonPanel.add(otkaziButton);
+		JButton kupiButton = new JButton("Kupi kartu");
 		kupiButton.addActionListener((e) -> {
 			kupiButtonPressed();
 		});
@@ -91,64 +86,35 @@ class AvailableTicket extends JPanel {
 		add(centerPanel, BorderLayout.CENTER);
 	}
 	private void kupiButtonPressed() {
-		Korisnik korisnik = parentDialog.parent.korisnik;
-		double discountRate = Math.pow(0.9, kartaDAO.countBoughtTicketsForUser(korisnik) / 10); //every 10th card gives 10% discount
-		int calculatedPrice = (int)(karta.getCijena() * discountRate);
-		if (korisnik.getWalletBalance() < calculatedPrice) {
-			JOptionPane.showMessageDialog(
-		            parentDialog,
-		            "Nemate dovoljno novca da bi kupili kartu. Cijena karte sa eventualnim popustom je: " +
-            				String.valueOf(calculatedPrice / 100) + "." + String.valueOf(calculatedPrice % 100),
-		            "Oopsie :(",
-		            JOptionPane.INFORMATION_MESSAGE
-		        );
-			return;
-		}
-		int response = JOptionPane.showOptionDialog(
-				parentDialog,
-				"Cijena karte sa eventualnim popustom je: " +
-						String.valueOf(calculatedPrice / 100) + "." + String.valueOf(calculatedPrice % 100),
-				"Zelite li kupiti kartu? ",
-				JOptionPane.DEFAULT_OPTION,
-				JOptionPane.QUESTION_MESSAGE,
-				null,
-				new String[]{"Yes", "No"},
-				"No"
-				);
-		if (response == 1) { //means he pressed no!
-			return;
-		}
-		korisnik.setWalletBalance(korisnik.getWalletBalance() - calculatedPrice);
-		karta.setKorKupio(korisnik);
-		korisnikDAO.updateKorisnik(korisnik);
-		kartaDAO.updateTicket(karta);
-		kupiButton.setEnabled(false);
-		rezervisiButton.setEnabled(false);
+		// TODO Auto-generated method stub
+		
 	}
-	private void rezervisiButtonPressed() {
+	private void otkaziButtonPressed() {
 		// TODO Auto-generated method stub
 		
 	}
 }
 
-public class AvailableTicketsForDogadjajDialogBox extends JDialog {
+public class ReservedTicketsForUserDialogBox extends JDialog {
 	private static final long serialVersionUID = 1L;
 	KorisnikDAO korisnikDAO = new KorisnikDAO();
 	SektorDAO sektorDAO = new SektorDAO();
 	KartaDAO kartaDAO = new KartaDAO();
 	KorisnikAndDogadjajListView parent;
-	Dogadjaj dogadjaj;
 	JPanel topPanel;
 	JPanel mainContentPanel;
-	JComboBox<String> sectorSelector;
-	List<Sektor> sektori;
 	List<Karta> karte;
-    public AvailableTicketsForDogadjajDialogBox(KorisnikAndDogadjajListView parent, Dogadjaj dogadjaj) {
+    public ReservedTicketsForUserDialogBox(KorisnikAndDogadjajListView parent) {
     	super(parent, "Add Wallet Balance", true);
     	this.parent = parent;
-    	this.dogadjaj = dogadjaj;
+    	
+    	//make sure finished events are either removed AND IF NEEDED force the payment of reservation
+    	kartaDAO.forceUserReservedPayment(parent.korisnik);
+    	kartaDAO.removeUserReservedAndPaid(parent.korisnik);
+    	parent.korisnik = korisnikDAO.searchByUserName(parent.korisnik.getUsername());
+    	
     	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        setTitle("Slobodne karte za " + dogadjaj.getNaziv());
+        setTitle("Rezervisane karte - " + parent.korisnik.getName() + " " + parent.korisnik.getLastName());
         setSize(800, 600);
         setMinimumSize(new Dimension(800, 600));
         setLayout(new BorderLayout());
@@ -160,16 +126,6 @@ public class AvailableTicketsForDogadjajDialogBox extends JDialog {
         			+ String.valueOf(parent.korisnik.getWalletBalance() / 100)
         			+ "."
         			+ String.valueOf(parent.korisnik.getWalletBalance() % 100)));
-        
-        sektori = sektorDAO.getAllSectorsInLokacija(dogadjaj.getLokacija());
-        sectorSelector = new JComboBox<>();
-        for (Sektor i : sektori) {
-        	sectorSelector.addItem(i.getNaziv());
-        }
-        sectorSelector.addActionListener((e) -> {
-        	updateTicketList();
-        });
-        topPanel.add(sectorSelector);
         
         mainContentPanel = new JPanel();
         mainContentPanel.setPreferredSize(new Dimension(600, 1000));
@@ -198,16 +154,9 @@ public class AvailableTicketsForDogadjajDialogBox extends JDialog {
     }
     public void updateTicketList() {
     	mainContentPanel.removeAll();
-    	String sectorString = (String)sectorSelector.getSelectedItem();
-    	Sektor sector = sektori.get(0);
-    	for (Sektor i : sektori) {
-    		if (i.getNaziv().equals(sectorString)) {
-    			sector = i;
-    		}
-    	}
-    	karte = kartaDAO.getFreeTickets(dogadjaj, sector);
+    	karte = kartaDAO.getReservedTicketsForUser(parent.korisnik);
     	for (Karta i : karte) {
-    		mainContentPanel.add(new AvailableTicket(this, i));
+    		mainContentPanel.add(new ReservedTicket(this, i));
     	}
     	mainContentPanel.revalidate();
     	mainContentPanel.repaint();

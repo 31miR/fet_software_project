@@ -351,12 +351,24 @@ public class KorisnikAndDogadjajListView extends JFrame {
 		view.setVisible(true);
 	}
 	private void reservedTicketsButtonPressed() {
-		// TODO Auto-generated method stub
-		
+		ReservedTicketsForUserDialogBox view = new ReservedTicketsForUserDialogBox(this);
+		view.addWindowListener(new WindowAdapter() {
+		    @Override
+		    public void windowClosed(WindowEvent e) {
+		    	updateTopPanel();
+		    }
+		});
+		view.setVisible(true);
 	}
 	private void boughtTicketsButtonPressed() {
-		// TODO Auto-generated method stub
-		
+		BoughtTicketsForUserDialogBox view = new BoughtTicketsForUserDialogBox(this);
+		view.addWindowListener(new WindowAdapter() {
+		    @Override
+		    public void windowClosed(WindowEvent e) {
+		    	updateTopPanel();
+		    }
+		});
+		view.setVisible(true);
 	}
 	private void profileSettingsButtonPressed() {
 		// TODO Auto-generated method stub
