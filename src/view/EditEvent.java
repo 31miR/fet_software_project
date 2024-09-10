@@ -1,7 +1,6 @@
 package view;
 
 import model.Dogadjaj;
-import model.DogadjajDAO;
 import model.IzmjeneDAO;
 import model.Lokacija;
 import model.LokacijaDAO;
@@ -13,7 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
 
-public class EditEvent extends JFrame {
+public class EditEvent extends JDialog {
     private static final long serialVersionUID = 1L;
     private Dogadjaj event;
     private JPanel contentPane;
@@ -24,9 +23,9 @@ public class EditEvent extends JFrame {
     private JComboBox<String> eventSubtypeComboBox;
     private JTextField eventImageField;
     private JComboBox<Lokacija> locationComboBox;
+    private Lokacija selectedLocation;
     private JTextField maxTicketsField;
     private JCheckBox paymentOnRegistrationCheckBox;
-    private JComboBox<String> eventFinishedComboBox;
     private Map<String, String[]> eventSubtypesMap;
     private IzmjeneDAO izmjeneDAO;
 
@@ -40,7 +39,7 @@ public class EditEvent extends JFrame {
     private Lokacija originalLocation;
     private int originalMaxTickets;
     private boolean originalPaymentOnRegistration;
-    private boolean originalIsFinished;
+    
 
     public EditEvent(Dogadjaj event) {
         this.event = event;
@@ -49,9 +48,9 @@ public class EditEvent extends JFrame {
     }
 
     private void initialize() {
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setBounds(450, 210, 620, 750);
         setResizable(false);
+        setModal(true);
 
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -76,7 +75,7 @@ public class EditEvent extends JFrame {
         originalLocation = event.getLokacija();
         originalMaxTickets = event.getMaxKartiPoKorisniku();
         originalPaymentOnRegistration = event.isNaplataPriRezervaciji();
-        originalIsFinished = event.isZavrsio();
+       
 
         // Initialize form fields
         initFormFields();
@@ -116,7 +115,7 @@ public class EditEvent extends JFrame {
 
         dateSpinner = new JSpinner(new SpinnerDateModel(originalDate, null, null, Calendar.DAY_OF_MONTH));
         dateSpinner.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(dateSpinner, "dd/MM/yyyy HH:mm");
+        JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(dateSpinner, "yyyy-mm-dd hh:mm:ss");
         dateSpinner.setEditor(dateEditor);
         dateSpinner.setBounds(180, 220, 200, 30);
         contentPane.add(dateSpinner);
@@ -167,11 +166,14 @@ public class EditEvent extends JFrame {
         LokacijaDAO lokacijaDAO = new LokacijaDAO();
         java.util.List<Lokacija> locations = lokacijaDAO.getAllLocations();
         locationComboBox = new JComboBox<>(locations.toArray(new Lokacija[0]));
+        locationComboBox.setRenderer(new LocationRenderer());
         locationComboBox.setFont(new Font("Chilanka", Font.PLAIN, 18));
         locationComboBox.setSelectedItem(originalLocation);
         locationComboBox.setBounds(180, 380, 300, 30);
         contentPane.add(locationComboBox);
 
+        locationComboBox.addActionListener(e -> selectedLocation = (Lokacija) locationComboBox.getSelectedItem());
+        
         // Max Tickets
         JLabel lblMaxTickets = new JLabel("Max Tickets:");
         lblMaxTickets.setFont(new Font("Chilanka", Font.PLAIN, 20));
@@ -190,19 +192,7 @@ public class EditEvent extends JFrame {
         paymentOnRegistrationCheckBox.setSelected(originalPaymentOnRegistration);
         contentPane.add(paymentOnRegistrationCheckBox);
 
-        // Event Finished
-        JLabel lblEventFinished = new JLabel("Event Finished:");
-        lblEventFinished.setFont(new Font("Chilanka", Font.PLAIN, 20));
-        lblEventFinished.setBounds(20, 500, 150, 30);
-        contentPane.add(lblEventFinished);
-
-        eventFinishedComboBox = new JComboBox<>(new String[]{"Yes", "No"});
-        eventFinishedComboBox.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        eventFinishedComboBox.setBounds(180, 500, 100, 30);
-        eventFinishedComboBox.setSelectedItem(originalIsFinished ? "Yes" : "No");
-        contentPane.add(eventFinishedComboBox);
-
-     // Save Button
+        // Save Button
         JButton btnSave = new JButton("Save Changes");
         btnSave.setFont(new Font("Chilanka", Font.PLAIN, 20));
         btnSave.setBounds(160, 550, 200, 40);
@@ -214,17 +204,7 @@ public class EditEvent extends JFrame {
         });
         contentPane.add(btnSave);
 
-        // Cancel Button
-        JButton btnCancel = new JButton("Cancel");
-        btnCancel.setFont(new Font("Chilanka", Font.PLAIN, 20));
-        btnCancel.setBounds(380, 550, 200, 40);
-        btnCancel.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose();  // Close the current window
-            }
-        });
-        contentPane.add(btnCancel);
+        // No more back button
     }
 
     // Method to update the event subtypes based on the selected type
@@ -233,6 +213,8 @@ public class EditEvent extends JFrame {
         String[] subtypes = eventSubtypesMap.get(selectedType);
         eventSubtypeComboBox.setModel(new DefaultComboBoxModel<>(subtypes));
     }
+
+ 
 
     // Method to save the event and track changes
  
@@ -247,7 +229,7 @@ public class EditEvent extends JFrame {
         Lokacija newLocation = (Lokacija) locationComboBox.getSelectedItem();
         int newMaxTickets = Integer.parseInt(maxTicketsField.getText());
         boolean newPaymentOnRegistration = paymentOnRegistrationCheckBox.isSelected();
-        boolean newIsFinished = "Yes".equals(eventFinishedComboBox.getSelectedItem());
+        
 
         // Check and save only modified fields
         if (!newName.equals(originalName)) {
@@ -277,12 +259,19 @@ public class EditEvent extends JFrame {
         if (newPaymentOnRegistration != originalPaymentOnRegistration) {
             izmjeneDAO.addChange("Dogadjaj", String.valueOf(event.getDogadjaj_id()), "naplataPriRezervaciji", String.valueOf(newPaymentOnRegistration));
         }
-        if (newIsFinished != originalIsFinished) {
-            izmjeneDAO.addChange("Dogadjaj", String.valueOf(event.getDogadjaj_id()), "zavrsio", String.valueOf(newIsFinished));
-        }
+        
 
         JOptionPane.showMessageDialog(this, "Changes have been sent for approval.");
+     
         dispose();
+        
+    }
+        private class LocationRenderer extends JLabel implements ListCellRenderer<Lokacija> {
+            @Override
+            public Component getListCellRendererComponent(JList<? extends Lokacija> list, Lokacija value, int index, boolean isSelected, boolean cellHasFocus) {
+                setText(value.getNaziv());
+                return this;
+            }
     }
 
     

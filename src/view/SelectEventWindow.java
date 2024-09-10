@@ -1,23 +1,16 @@
 package view;
+import javax.swing.*;
+
 
 import model.Dogadjaj;
-import model.DogadjajDAO;
 import model.Organizator;
 
-
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
-//view za prikaz dogadjaja za odabir koji se zeli urediti
-public class SelectEventWindow extends JFrame {
+public class SelectEventWindow extends JDialog {
     private Organizator organizator;
-    private DogadjajDAO dogadjajDAO;
     private JPanel eventsPanel;
     private JButton seeMoreButton;
     private int start = 0;
@@ -25,9 +18,9 @@ public class SelectEventWindow extends JFrame {
 
     public SelectEventWindow(Organizator organizator) {
         this.organizator = organizator;
-        this.dogadjajDAO = new DogadjajDAO();
+
         setTitle("Select Event to Edit");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setModal(true);
         setBounds(450, 190, 1014, 597);
         setPreferredSize(new Dimension(800, 600));
         setLayout(new BorderLayout());
@@ -36,7 +29,7 @@ public class SelectEventWindow extends JFrame {
         JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JLabel headerLabel = new JLabel("Select an Event to Edit");
         headerLabel.setFont(new Font("Chilanka", Font.BOLD, 24));
-        headerLabel.setForeground(Color.decode("#29be9a")); // Green color
+        headerLabel.setForeground(Color.decode("#29be9a"));
         headerPanel.add(headerLabel);
         add(headerPanel, BorderLayout.NORTH);
 
@@ -47,77 +40,55 @@ public class SelectEventWindow extends JFrame {
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         add(scrollPane, BorderLayout.CENTER);
 
-        // See More Button
-        seeMoreButton = new JButton("See More");
-        seeMoreButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                start += limit;
-                loadEvents();
-            }
-        });
-
+        // Button Panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        buttonPanel.add(seeMoreButton);
-
-        // Back Button
-        JButton backButton = new JButton("Back");
-        backButton.addActionListener(e -> {
-            dispose();
-        });
-        buttonPanel.add(backButton);
         add(buttonPanel, BorderLayout.SOUTH);
 
-        pack();
-        setLocationRelativeTo(null);
-        setVisible(true);
+        // See More Button
+        seeMoreButton = new JButton("See More");
+        seeMoreButton.addActionListener(e -> {
+            start += limit;
+            loadEvents();
+        });
+        buttonPanel.add(seeMoreButton);
 
         // Load initial events
         loadEvents();
     }
 
-    // Method to load events
     private void loadEvents() {
-   
-        List<Dogadjaj> allevents = organizator.getDogadjaj();
-        List<Dogadjaj> events = allevents.stream()
+        List<Dogadjaj> allEvents = organizator.getDogadjaj().stream()
                 .filter(event -> !event.isZavrsio())
                 .collect(Collectors.toList());
-        if (events.isEmpty() && start > 0 ) {
-            seeMoreButton.setEnabled(false); // Disable button if no more events
+
+        // Disable "See More" if all events are loaded
+        if (start >= allEvents.size()) {
+            seeMoreButton.setEnabled(false);
+            return;
         }
 
+        int end = Math.min(start + limit, allEvents.size());
+
+        // Remove previous events on first load
         if (start == 0) {
-            eventsPanel.removeAll(); // Clear previous events if starting fresh
+            eventsPanel.removeAll();
         }
 
-        for (Dogadjaj event : events) {
+        // Load and display events
+        for (int i = start; i < end; i++) {
+            Dogadjaj event = allEvents.get(i);
             JPanel eventPanel = new JPanel();
             eventPanel.setLayout(new BoxLayout(eventPanel, BoxLayout.Y_AXIS));
-            eventPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.GRAY)); // Line between events
-            eventPanel.setPreferredSize(new Dimension(getWidth(), 150)); // Set a preferred height for the panel
-
-            // Event Name and Date
-            JPanel headerPanel = new JPanel();
-            headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
-            headerPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+            eventPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.GRAY));
 
             JLabel eventNameLabel = new JLabel("<html><b>Event Name:</b> " + event.getNaziv() + "</html>");
             eventNameLabel.setFont(new Font("Chilanka", Font.BOLD, 18));
             JLabel eventDateLabel = new JLabel("<html><b>Date:</b> " + event.getDatum().toString() + "</html>");
             eventDateLabel.setFont(new Font("Chilanka", Font.BOLD, 18));
 
-            headerPanel.add(eventNameLabel);
-            headerPanel.add(eventDateLabel);
+            eventPanel.add(eventNameLabel);
+            eventPanel.add(eventDateLabel);
 
-            // Event Description
-            JLabel eventDescriptionLabel = new JLabel("<html><div style='text-align: left;'>Description: " + event.getOpis() + "</div></html>");
-            eventDescriptionLabel.setFont(new Font("Chilanka", Font.PLAIN, 16));
-
-            eventPanel.add(headerPanel);
-            eventPanel.add(eventDescriptionLabel);
-
-            // Add button to open EditEvent
             JButton editButton = new JButton("Edit Event");
             editButton.addActionListener(e -> {
                 EditEvent editEvent = new EditEvent(event);
@@ -130,5 +101,10 @@ public class SelectEventWindow extends JFrame {
 
         eventsPanel.revalidate();
         eventsPanel.repaint();
+
+        // If all events are loaded, disable "See More"
+        if (end == allEvents.size()) {
+            seeMoreButton.setEnabled(false);
+        }
     }
 }

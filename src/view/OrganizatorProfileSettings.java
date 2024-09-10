@@ -9,146 +9,131 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class OrganizatorProfileSettings extends JFrame {
-	
-	    private static final long serialVersionUID = 1L;
-	    private Organizator organizator;
-	    private IzmjeneDAO izmjeneDAO = new IzmjeneDAO();
+public class OrganizatorProfileSettings extends JDialog {
 
-	    // Konstruktor
-	    public OrganizatorProfileSettings(Organizator organizator) {
-	        this.organizator = organizator;
-	        initialize();
-	    }
+    private static final long serialVersionUID = 1L;
+    private Organizator organizator;
+    private IzmjeneDAO izmjeneDAO = new IzmjeneDAO();
 
-	    private void initialize() {
-	    	
-	  
-	        setTitle("Karta");
-	        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-	        setBounds(450, 190, 1014, 597);
-	        setResizable(false);
+    // Konstruktor
+    public OrganizatorProfileSettings(Organizator organizator) {
+        this.organizator = organizator;
+        initialize();
+    }
 
-	        JPanel contentPane = new JPanel();
-	        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-	        setContentPane(contentPane);
-	        contentPane.setLayout(null);
-	        contentPane.setBackground(new Color(29, 190, 166));
-	        
-	        // Prikaz slike
-	        ImageIcon imageIcon = new ImageIcon("resources/logo.png"); // Postavi putanju do svoje slike
-	        Image image = imageIcon.getImage(); // Transformacija slike
-	        Image scaledImage = image.getScaledInstance(300, 300, java.awt.Image.SCALE_SMOOTH); // Promijeni veličinu slike
-	        imageIcon = new ImageIcon(scaledImage); // Ponovo kreiraj ImageIcon sa promijenjenom slikom
-	        
-	        JLabel label = new JLabel(imageIcon);
-	        label.setBounds(50, 100, 400, 300);
-	        contentPane.add(label);
-	        
+    private void initialize() {
+        setTitle("Karta");
+        setModal(true); // Ensures that it acts as a modal dialog
+        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        setBounds(450, 190, 1014, 597);
+        setResizable(false);
 
-	        // Tekstualni okviri za unos novih podataka
-	        JLabel lblName = new JLabel("Name:");
-	        lblName.setForeground(new Color(51, 51, 51));
-	        lblName.setFont(new Font("Chilanka", Font.PLAIN, 31));
-	        lblName.setBounds(450, 100, 281, 50);
-	        contentPane.add(lblName);
+        JPanel contentPane = new JPanel();
+        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        setContentPane(contentPane);
+        contentPane.setLayout(null);
+        contentPane.setBackground(new Color(29, 190, 166));
 
-	        JTextField nameField = new JTextField(organizator.getName());
-	        nameField.setForeground(new Color(51, 51, 51));
-	        nameField.setFont(new Font("Chilanka", Font.PLAIN, 32));
-	        nameField.setBounds(650, 100, 281, 50);
-	        contentPane.add(nameField);
+        // Prikaz slike
+        ImageIcon imageIcon = new ImageIcon("resources/logo.png"); // Postavi putanju do slike
+        Image image = imageIcon.getImage(); // Transformacija slike
+        Image scaledImage = image.getScaledInstance(300, 300, java.awt.Image.SCALE_SMOOTH); // Promijeni veličinu slike
+        imageIcon = new ImageIcon(scaledImage); // Ponovo kreiraj ImageIcon sa promijenjenom slikom
 
-	        JLabel lblLastName = new JLabel("Last Name:");
-	        lblLastName.setForeground(new Color(51, 51, 51));
-	        lblLastName.setFont(new Font("Chilanka", Font.PLAIN, 31));
-	        lblLastName.setBounds(450, 170, 200, 50);
-	        contentPane.add(lblLastName);
+        JLabel label = new JLabel(imageIcon);
+        label.setBounds(50, 100, 400, 300);
+        contentPane.add(label);
 
-	        JTextField lastNameField = new JTextField(organizator.getLastName());
-	        lastNameField.setForeground(new Color(51, 51, 51));
-	        lastNameField.setFont(new Font("Chilanka", Font.PLAIN, 32));
-	        lastNameField.setBounds(650, 170, 281, 50);
-	        contentPane.add(lastNameField);
+        // Tekstualni okviri za unos novih podataka
+        JLabel lblName = new JLabel("Name:");
+        lblName.setForeground(new Color(51, 51, 51));
+        lblName.setFont(new Font("Chilanka", Font.PLAIN, 31));
+        lblName.setBounds(450, 100, 281, 50);
+        contentPane.add(lblName);
 
-	        JLabel lblEmail = new JLabel("Email:");
-	        lblEmail.setForeground(new Color(51, 51, 51));
-	        lblEmail.setFont(new Font("Chilanka", Font.PLAIN, 31));
-	        lblEmail.setBounds(450, 240, 150, 52);
-	        contentPane.add(lblEmail);
+        JTextField nameField = new JTextField(organizator.getName());
+        nameField.setForeground(new Color(51, 51, 51));
+        nameField.setFont(new Font("Chilanka", Font.PLAIN, 32));
+        nameField.setBounds(650, 100, 281, 50);
+        contentPane.add(nameField);
 
-	        JTextField emailField = new JTextField(organizator.getEmail());
-	        emailField.setForeground(new Color(51, 51, 51));
-	        emailField.setFont(new Font("Chilanka", Font.PLAIN, 32));
-	        emailField.setBounds(650, 240, 281, 50);
-	        contentPane.add(emailField);
+        JLabel lblLastName = new JLabel("Last Name:");
+        lblLastName.setForeground(new Color(51, 51, 51));
+        lblLastName.setFont(new Font("Chilanka", Font.PLAIN, 31));
+        lblLastName.setBounds(450, 170, 200, 50);
+        contentPane.add(lblLastName);
 
-	        JLabel lblPhone = new JLabel("Phone:");
-	        lblPhone.setForeground(new Color(51, 51, 51));
-	        lblPhone.setFont(new Font("Chilanka", Font.PLAIN, 31));
-	        lblPhone.setBounds(450, 310, 150, 52);
-	        contentPane.add(lblPhone);
+        JTextField lastNameField = new JTextField(organizator.getLastName());
+        lastNameField.setForeground(new Color(51, 51, 51));
+        lastNameField.setFont(new Font("Chilanka", Font.PLAIN, 32));
+        lastNameField.setBounds(650, 170, 281, 50);
+        contentPane.add(lastNameField);
 
-	        JTextField phoneField = new JTextField(organizator.getPhone());
-	        phoneField.setForeground(new Color(51, 51, 51));
-	        phoneField.setFont(new Font("Chilanka", Font.PLAIN, 32));
-	        phoneField.setBounds(650, 310, 281, 50);
-	        contentPane.add(phoneField);
+        JLabel lblEmail = new JLabel("Email:");
+        lblEmail.setForeground(new Color(51, 51, 51));
+        lblEmail.setFont(new Font("Chilanka", Font.PLAIN, 31));
+        lblEmail.setBounds(450, 240, 150, 52);
+        contentPane.add(lblEmail);
 
-	        JLabel lblAddress = new JLabel("Address:");
-	        lblAddress.setForeground(new Color(51, 51, 51));
-	        lblAddress.setFont(new Font("Chilanka", Font.PLAIN, 31));
-	        lblAddress.setBounds(450, 380, 150, 52);
-	        contentPane.add(lblAddress);
+        JTextField emailField = new JTextField(organizator.getEmail());
+        emailField.setForeground(new Color(51, 51, 51));
+        emailField.setFont(new Font("Chilanka", Font.PLAIN, 32));
+        emailField.setBounds(650, 240, 281, 50);
+        contentPane.add(emailField);
 
-	        JTextField addressField = new JTextField(organizator.getAddress());
-	        addressField.setForeground(new Color(51, 51, 51));
-	        addressField.setFont(new Font("Chilanka", Font.PLAIN, 32));
-	        addressField.setBounds(650, 380, 281, 50);
-	        contentPane.add(addressField);
+        JLabel lblPhone = new JLabel("Phone:");
+        lblPhone.setForeground(new Color(51, 51, 51));
+        lblPhone.setFont(new Font("Chilanka", Font.PLAIN, 31));
+        lblPhone.setBounds(450, 310, 150, 52);
+        contentPane.add(lblPhone);
 
-	        // Dugme za čuvanje promjena
-	        JButton saveButton = new JButton("Request Changes");
-	        saveButton.setBounds(500, 470, 250, 50);
-	        saveButton.setFont(new Font("Chilanka", Font.PLAIN, 26));
-	        saveButton.setForeground(new Color(51, 51, 51));
-	        saveButton.setBackground(Color.decode("#f3f7f8"));
-	        saveButton.setBorder(BorderFactory.createLineBorder(Color.decode("#e2e2e2")));
-	        saveButton.addActionListener(new ActionListener() {
-	            @Override
-	            public void actionPerformed(ActionEvent e) {
-	                if (nameField.getText().length() != 0) {
-	                	izmjeneDAO.addChange("Korisnik", organizator.getUsername(), "name", nameField.getText());
-	                }
-	                if (lastNameField.getText().length() != 0) {
-	                	izmjeneDAO.addChange("Korisnik", organizator.getUsername(), "lastName", lastNameField.getText());
-	                }
-	                if (emailField.getText().length() != 0) {
-	                	izmjeneDAO.addChange("Korisnik", organizator.getUsername(), "email", emailField.getText());
-	                }
-	                if (phoneField.getText().length() != 0) {
-	                	izmjeneDAO.addChange("Korisnik", organizator.getUsername(), "phone", phoneField.getText());
-	                }
-	                if (addressField.getText().length() != 0) {
-	                	izmjeneDAO.addChange("Korisnik", organizator.getUsername(), "address", addressField.getText());
-	                }
-	                dispose();
-	            }
-	        });
-	        contentPane.add(saveButton);
-	        
-	        // Back Button
-	        JButton backButton = new JButton("Back");
-	        backButton.setFont(new Font("Chilanka", Font.PLAIN, 26));
-	        backButton.setBounds(770, 470, 200, 50);
-	        backButton.setForeground(new Color(51, 51, 51));
-	        backButton.setBackground(Color.decode("#f3f7f8"));
-	        backButton.setBorder(BorderFactory.createLineBorder(Color.decode("#e2e2e2")));
-	        backButton.addActionListener(e -> {
-	            dispose();
-	        });
-	        contentPane.add(backButton);
-	    }
-	    
-	 }
+        JTextField phoneField = new JTextField(organizator.getPhone());
+        phoneField.setForeground(new Color(51, 51, 51));
+        phoneField.setFont(new Font("Chilanka", Font.PLAIN, 32));
+        phoneField.setBounds(650, 310, 281, 50);
+        contentPane.add(phoneField);
 
+        JLabel lblAddress = new JLabel("Address:");
+        lblAddress.setForeground(new Color(51, 51, 51));
+        lblAddress.setFont(new Font("Chilanka", Font.PLAIN, 31));
+        lblAddress.setBounds(450, 380, 150, 52);
+        contentPane.add(lblAddress);
+
+        JTextField addressField = new JTextField(organizator.getAddress());
+        addressField.setForeground(new Color(51, 51, 51));
+        addressField.setFont(new Font("Chilanka", Font.PLAIN, 32));
+        addressField.setBounds(650, 380, 281, 50);
+        contentPane.add(addressField);
+
+        // Dugme za čuvanje promjena
+        JButton saveButton = new JButton("Request Changes");
+        saveButton.setBounds(500, 470, 250, 50);
+        saveButton.setFont(new Font("Chilanka", Font.PLAIN, 26));
+        saveButton.setForeground(new Color(51, 51, 51));
+        saveButton.setBackground(Color.decode("#f3f7f8"));
+        saveButton.setBorder(BorderFactory.createLineBorder(Color.decode("#e2e2e2")));
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Provera i slanje promena samo ako su se vrednosti promenile
+                if (!nameField.getText().equals(organizator.getName()) && !nameField.getText().isEmpty()) {
+                    izmjeneDAO.addChange("Organizator", organizator.getUsername(), "name", nameField.getText());
+                }
+                if (!lastNameField.getText().equals(organizator.getLastName()) && !lastNameField.getText().isEmpty()) {
+                    izmjeneDAO.addChange("Organizator", organizator.getUsername(), "lastName", lastNameField.getText());
+                }
+                if (!emailField.getText().equals(organizator.getEmail()) && !emailField.getText().isEmpty()) {
+                    izmjeneDAO.addChange("Organizator", organizator.getUsername(), "email", emailField.getText());
+                }
+                if (!phoneField.getText().equals(organizator.getPhone()) && !phoneField.getText().isEmpty()) {
+                    izmjeneDAO.addChange("Organizator", organizator.getUsername(), "phone", phoneField.getText());
+                }
+                if (!addressField.getText().equals(organizator.getAddress()) && !addressField.getText().isEmpty()) {
+                    izmjeneDAO.addChange("Organizator", organizator.getUsername(), "address", addressField.getText());
+                }
+                dispose(); // Zatvaranje prozora nakon slanja promjena
+            }
+        });
+        contentPane.add(saveButton);
+    }
+}

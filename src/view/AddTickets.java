@@ -1,35 +1,37 @@
 package view;
 
+import javax.swing.*;
+
 import model.Dogadjaj;
 import model.KartaDAO;
 import model.Lokacija;
 import model.Sektor;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-public class AddTickets extends JFrame {
+public class AddTickets extends JDialog {
     private Dogadjaj dogadjaj;
     private KartaDAO kartaDAO;
     private Lokacija selectedLokacija;
+    private boolean ticketsAdded = false;
 
-    public AddTickets(Dogadjaj dogadjaj, Lokacija selectedLokacija) {
+    public AddTickets(Frame parent, Dogadjaj dogadjaj, Lokacija selectedLokacija) {
+        super(parent, "Add Tickets", true);
         this.dogadjaj = dogadjaj;
         this.kartaDAO = new KartaDAO();
         this.selectedLokacija = selectedLokacija;
-        
+
         if (selectedLokacija == null) {
-            JOptionPane.showMessageDialog(this, "Selected location cannot be null", 
-                    "Error", JOptionPane.ERROR_MESSAGE);
-            dispose(); // Close the window if no valid location is provided
+            JOptionPane.showMessageDialog(this, "Selected location cannot be null", "Error", JOptionPane.ERROR_MESSAGE);
+            dispose();
             return;
         }
 
         setTitle("Add Tickets");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         setBounds(450, 210, 400, 400);
         setResizable(false);
 
@@ -38,7 +40,6 @@ public class AddTickets extends JFrame {
         panel.setBackground(new Color(29, 190, 166));
         add(panel);
 
-        // Fetch sectors for the selected location
         List<Sektor> sektori = selectedLokacija.getSektor();
 
         for (Sektor sektor : sektori) {
@@ -56,7 +57,6 @@ public class AddTickets extends JFrame {
             JTextField txtResPrice = new JTextField(5);
 
             JButton btnGenerate = new JButton("Generate Tickets");
-            JButton btnAddIndividually = new JButton("Add Tickets Individually");
 
             sectorPanel.add(lblAmount);
             sectorPanel.add(txtAmount);
@@ -65,49 +65,42 @@ public class AddTickets extends JFrame {
             sectorPanel.add(lblResPrice);
             sectorPanel.add(txtResPrice);
             sectorPanel.add(btnGenerate);
-            sectorPanel.add(btnAddIndividually);
             panel.add(sectorPanel);
 
-            btnGenerate.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    try {
-                        int amount = Integer.parseInt(txtAmount.getText());
-                        int price = Integer.parseInt(txtPrice.getText());
-                        int resPrice = Integer.parseInt(txtResPrice.getText());
+            btnGenerate.addActionListener(e -> {
+                try {
+                    int amount = Integer.parseInt(txtAmount.getText());
+                    int price = Integer.parseInt(txtPrice.getText());
+                    int resPrice = Integer.parseInt(txtResPrice.getText());
 
-                        if (amount > sektor.getKapacitet()) {
-                            JOptionPane.showMessageDialog(AddTickets.this,
-                                    "Cannot generate tickets. The amount exceeds the sector's capacity.");
-                        } else {
-                            // Use the generateTickets method from KartaDAO
-                            kartaDAO.generateTickets(dogadjaj, sektor, amount, price, resPrice);
-                            JOptionPane.showMessageDialog(AddTickets.this, "Tickets generated successfully.");
-                        }
-                    } catch (NumberFormatException ex) {
-                        JOptionPane.showMessageDialog(AddTickets.this, "Please enter valid numbers.");
+                    if (amount > sektor.getKapacitet()) {
+                        JOptionPane.showMessageDialog(AddTickets.this,
+                                "Cannot generate tickets. The amount exceeds the sector's capacity.");
+                    } else {
+                        kartaDAO.generateTickets(dogadjaj, sektor, amount, price, resPrice);
+                        JOptionPane.showMessageDialog(AddTickets.this, "Tickets generated successfully.");
+                        ticketsAdded = true; // Mark tickets as added
                     }
-                }
-            });
-
-            btnAddIndividually.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                  AddIndividualTickets dialog = new AddIndividualTickets(dogadjaj, sektor, kartaDAO);
-                   dialog.setVisible(true);
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(AddTickets.this, "Please enter valid numbers.");
                 }
             });
         }
 
         JButton btnClose = new JButton("Close");
-        btnClose.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose();
+        btnClose.addActionListener(e -> {
+            if (ticketsAdded) {
+                dispose(); // Close dialog if tickets were added
+            } else {
+                JOptionPane.showMessageDialog(AddTickets.this, "No tickets were added.");
             }
         });
         panel.add(btnClose);
 
-        pack();
+        pack(); // Adjust the size of the dialog
+    }
+
+    public boolean isTicketsAdded() {
+        return ticketsAdded;
     }
 }

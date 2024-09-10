@@ -5,13 +5,11 @@ import model.Organizator;
 import model.Dogadjaj;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.swing.*;
 
-public class FinishedEventOrganizator extends JFrame {
+public class FinishedEventOrganizator extends JDialog {
 
     private DogadjajDAO dogadjajDAO;
     private JPanel eventsPanel;
@@ -20,14 +18,16 @@ public class FinishedEventOrganizator extends JFrame {
     private final int limit = 5;
     private Organizator organizator;
 
-    public FinishedEventOrganizator(Organizator organizator) {
+    public FinishedEventOrganizator(Frame owner,Organizator organizator) {
+    	super(owner, "View Finished Events", true);  // Modal dialog with title
         this.organizator = organizator;
         dogadjajDAO = new DogadjajDAO();
-        setTitle("Karta");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(450, 210, 800, 600);
+        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        
         setPreferredSize(new Dimension(800, 600));
         setLayout(new BorderLayout());
+       
+        
 
         // Header
         JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -45,29 +45,21 @@ public class FinishedEventOrganizator extends JFrame {
 
         // See More Button
         seeMoreButton = new JButton("See More");
-        seeMoreButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                start += limit;
-                loadEvents();
-            }
+        seeMoreButton.addActionListener(e -> {
+            start += limit;
+            loadEvents();
         });
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         buttonPanel.add(seeMoreButton);
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // Back Button
-        JButton backButton = new JButton("Back");
-        backButton.addActionListener(e -> dispose());
-        buttonPanel.add(backButton);
+        // Load initial events before showing dialog
+        loadEvents();
 
         pack();
-        setLocationRelativeTo(null);
-        setVisible(true);
-
-        // Load initial events
-        loadEvents();
+        setLocationRelativeTo(owner);  // Center relative to owner window
+        setVisible(true);  //
     }
 
     private void loadEvents() {
@@ -77,10 +69,6 @@ public class FinishedEventOrganizator extends JFrame {
         List<Dogadjaj> finishedEvents = allEvents.stream()
             .filter(Dogadjaj::isZavrsio)
             .collect(Collectors.toList());
-
-        if (finishedEvents.isEmpty() && start > 0) {
-            seeMoreButton.setEnabled(false);
-        }
 
         if (start == 0) {
             eventsPanel.removeAll(); // Clear previous events if starting from the beginning
@@ -153,9 +141,12 @@ public class FinishedEventOrganizator extends JFrame {
         // Update the start position for the next batch of events
         if (end >= finishedEvents.size()) {
             seeMoreButton.setEnabled(false);
+        } else {
+            seeMoreButton.setEnabled(true);
         }
 
         eventsPanel.revalidate();
         eventsPanel.repaint();
     }
+
 }

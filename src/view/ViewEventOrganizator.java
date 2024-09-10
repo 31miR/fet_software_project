@@ -6,14 +6,11 @@ import model.Dogadjaj;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.swing.*;
 
-
-//View za prikaz aktivnih dogadjaja organizatora
-public class ViewEventOrganizator extends JFrame {
+public class ViewEventOrganizator extends JDialog {  // Extend JDialog instead of JFrame
     private DogadjajDAO dogadjajDAO;
     private JPanel eventsPanel;
     private JButton seeMoreButton;
@@ -21,12 +18,12 @@ public class ViewEventOrganizator extends JFrame {
     private final int limit = 5;
     private Organizator organizator;
 
-    public ViewEventOrganizator(Organizator organizator) {
-        this.organizator = organizator;  // Set the organizer
+    public ViewEventOrganizator(Frame owner, Organizator organizator) {
+        super(owner, "View Active Events", true);  // Modal dialog with title
+        this.organizator = organizator;
         dogadjajDAO = new DogadjajDAO();
-        setTitle("Karta");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(450, 210, 800, 600);
+        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        
         setPreferredSize(new Dimension(800, 600));
         setLayout(new BorderLayout());
 
@@ -41,36 +38,28 @@ public class ViewEventOrganizator extends JFrame {
         eventsPanel = new JPanel();
         eventsPanel.setLayout(new BoxLayout(eventsPanel, BoxLayout.Y_AXIS));
         JScrollPane scrollPane = new JScrollPane(eventsPanel);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); // Disable horizontal scrolling
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         add(scrollPane, BorderLayout.CENTER);
 
         // See More Button
         seeMoreButton = new JButton("See More");
-        seeMoreButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                start += limit;
-                loadEvents();
-            }
+        seeMoreButton.addActionListener(e -> {
+            start += limit;
+            loadEvents();
         });
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         buttonPanel.add(seeMoreButton);
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // Back Button
-        JButton backButton = new JButton("Back");
-        backButton.addActionListener(e -> dispose());
-        buttonPanel.add(backButton);
-        add(buttonPanel, BorderLayout.SOUTH);
+        // Load initial events before showing dialog
+        loadEvents();
 
         pack();
-        setLocationRelativeTo(null);
-        setVisible(true);
-
-        // Load initial events
-        loadEvents();
+        setLocationRelativeTo(owner);  // Center relative to owner window
+        setVisible(true);  // Show dialog after components are loaded
     }
+
 
     private void loadEvents() {
         List<Dogadjaj> allEvents = organizator.getDogadjaj();
@@ -79,10 +68,6 @@ public class ViewEventOrganizator extends JFrame {
         List<Dogadjaj> activeEvents = allEvents.stream()
             .filter(event -> !event.isZavrsio())
             .collect(Collectors.toList());
-
-        if (activeEvents.isEmpty() && start > 0) {
-            seeMoreButton.setEnabled(false); // Disable button if no more events
-        }
 
         if (start == 0) {
             eventsPanel.removeAll(); // Clear previous events if starting from the beginning
@@ -155,9 +140,13 @@ public class ViewEventOrganizator extends JFrame {
         // Update the start position for the next batch of events
         if (end >= activeEvents.size()) {
             seeMoreButton.setEnabled(false); // Disable button if no more events
+        } else {
+            seeMoreButton.setEnabled(true);
         }
 
         eventsPanel.revalidate();
         eventsPanel.repaint();
     }
+
+
 }

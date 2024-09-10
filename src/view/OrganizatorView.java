@@ -2,10 +2,8 @@ package view;
 
 import javax.swing.*;
 import model.Organizator;
-import model.Dogadjaj;
 
 import java.awt.*;
-import java.util.List;
 
 public class OrganizatorView extends JFrame {
 
@@ -55,7 +53,7 @@ public class OrganizatorView extends JFrame {
         });
         contentPane.add(createEventButton);
 
-        // View Active Events Button (previously "View Events")
+        // View Active Events Button
         JButton viewActiveEventsButton = new JButton("View Active Events");
         viewActiveEventsButton.setFont(new Font("Chilanka", Font.PLAIN, 26));
         viewActiveEventsButton.setBounds(500, 220, 270, 50);
@@ -63,12 +61,12 @@ public class OrganizatorView extends JFrame {
         viewActiveEventsButton.setBackground(Color.decode("#f3f7f8"));
         viewActiveEventsButton.setBorder(BorderFactory.createLineBorder(Color.decode("#e2e2e2")));
         viewActiveEventsButton.addActionListener(e -> {
-            List<Dogadjaj> events = organizator.getDogadjaj();  // Retrieve the list of events associated with the organizer
-            ViewEventOrganizator selectEventWindow = new ViewEventOrganizator(organizator);
-            selectEventWindow.setVisible(true);
+            // Create the dialog, passing the current frame (this) as the owner
+            ViewEventOrganizator viewActiveEventsDialog = new ViewEventOrganizator(this, organizator);
+          //  viewActiveEventsDialog.setVisible(true);
         });
         contentPane.add(viewActiveEventsButton);
-       
+
         // View Finished Events Button
         JButton viewFinishedEventsButton = new JButton("View Finished Events");
         viewFinishedEventsButton.setFont(new Font("Chilanka", Font.PLAIN, 26));
@@ -77,10 +75,9 @@ public class OrganizatorView extends JFrame {
         viewFinishedEventsButton.setBackground(Color.decode("#f3f7f8"));
         viewFinishedEventsButton.setBorder(BorderFactory.createLineBorder(Color.decode("#e2e2e2")));
         viewFinishedEventsButton.addActionListener(e -> {
-            // Code to display finished events goes here
-            List<Dogadjaj> finishedEvents = organizator.getDogadjaj();  // You may need to filter this list to show only finished events
-           FinishedEventOrganizator viewFinishedEventsWindow = new FinishedEventOrganizator(organizator);
-              viewFinishedEventsWindow.setVisible(true);
+            // Create the dialog, passing the current frame (this) as the owner
+            FinishedEventOrganizator viewFinishedEventsDialog = new FinishedEventOrganizator(this, organizator);
+           // viewFinishedEventsDialog.setVisible(true);
         });
         contentPane.add(viewFinishedEventsButton);
 
@@ -92,7 +89,6 @@ public class OrganizatorView extends JFrame {
         editEventButton.setBackground(Color.decode("#f3f7f8"));
         editEventButton.setBorder(BorderFactory.createLineBorder(Color.decode("#e2e2e2")));
         editEventButton.addActionListener(e -> {
-            List<Dogadjaj> events = organizator.getDogadjaj();  // Retrieve the list of events associated with the organizer
             SelectEventWindow selectEventWindow = new SelectEventWindow(organizator);
             selectEventWindow.setVisible(true);
         });
@@ -111,8 +107,8 @@ public class OrganizatorView extends JFrame {
             dispose();
         });
         contentPane.add(logoutButton);
-        
-        //Profile settings
+
+        // Profile settings
         JButton profileButton = new JButton("Profile settings");
         profileButton.setFont(new Font("Chilanka", Font.PLAIN, 26));
         profileButton.setBounds(780, 120, 200, 50);
@@ -120,9 +116,11 @@ public class OrganizatorView extends JFrame {
         profileButton.setBackground(Color.decode("#f3f7f8"));
         profileButton.setBorder(BorderFactory.createLineBorder(Color.decode("#e2e2e2")));
         profileButton.addActionListener(e -> {
-         OrganizatorProfileSettings settings = new OrganizatorProfileSettings(organizator);
-         settings.setVisible(true);
-         });
+            OrganizatorProfileSettings dialog = new OrganizatorProfileSettings( organizator);  // Prosledi trenutni okvir kao vlasnika
+           dialog.setVisible(true);  // Prikazi dijalog
+        });
         contentPane.add(profileButton);
+
+       
     }
 }

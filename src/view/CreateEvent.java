@@ -1,12 +1,15 @@
 package view;
 
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.JTextComponent;
+
 import model.Dogadjaj;
 import model.DogadjajDAO;
 import model.Lokacija;
 import model.LokacijaDAO;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,30 +21,27 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.swing.filechooser.FileNameExtensionFilter;
-
+import java.util.List;
 
 public class CreateEvent extends JFrame {
-    private static final long serialVersionUID = 1L;
-    private DogadjajDAO dogadjajController;
     private JPanel contentPane;
+    private JComboBox<Lokacija> locationComboBox;
+    private Lokacija selectedLocation;
+    private JTextField eventNameField;
+    private JTextArea eventDescriptionArea;
+    private JSpinner dateSpinner;
     private JButton saveButton;
     private JButton cancelButton;
-    private JTextField eventImageField;
-    private JFileChooser fileChooser;
-    private JSpinner dateSpinner;
-    private JComboBox<String> eventFinishedComboBox;
-    private JComboBox<Lokacija> locationComboBox;
     private JButton ticketDataButton;
-    private int maxTickets = 0;
-    private JCheckBox eventApprovedCheckBox;
-    private Lokacija eventLocation;
-    // Mapiranje tipova i podtipova
+    private JFileChooser fileChooser;
     private Map<String, String[]> eventSubtypesMap;
+    private DogadjajDAO dogadjajDAO;
+    private Dogadjaj dogadjaj; // Dogadjaj object to be used later
+	private Container maxTicketsField;
+	private JTextComponent eventImageField;
 
     public CreateEvent() {
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Zatvori samo trenutni prozor
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setBounds(450, 210, 620, 750);
         setResizable(false);
 
@@ -49,11 +49,9 @@ public class CreateEvent extends JFrame {
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         setContentPane(contentPane);
         contentPane.setLayout(null);
-        contentPane.setBackground(new Color(29, 190, 166)); 
-        setTitle("Karta");
-
-
-        // Inicijalizacija mape sa tipovima i podtipovima
+        contentPane.setBackground(new Color(29, 190, 166));
+        setTitle("Create Event");
+        
         eventSubtypesMap = new HashMap<>();
         eventSubtypesMap.put("Muzika", new String[]{"Koncert", "Festival", "Ostalo"});
         eventSubtypesMap.put("Kultura", new String[]{"Izlozba", "Predstava", "Plesna izvedba"});
@@ -64,7 +62,7 @@ public class CreateEvent extends JFrame {
         eventSubtypesMap.put("Workshop", new String[]{"Tehnicki", "Kreativni", "Ostalo"});
         eventSubtypesMap.put("Film",new String []{"Romantika", "Komedija", "Horor","Akcija","Fantazija"});
         eventSubtypesMap.put("Ostalo", new String[]{"Drugo"});
-        
+
         // Event Name Label and Field
         JLabel lblEventName = new JLabel("Event Name:");
         lblEventName.setForeground(Color.BLACK);
@@ -76,23 +74,6 @@ public class CreateEvent extends JFrame {
         eventNameField.setFont(new Font("Chilanka", Font.PLAIN, 18));
         eventNameField.setBounds(200, 30, 350, 30);
         contentPane.add(eventNameField);
-        // Date Label and Spinner
-        JLabel lblEventDate = new JLabel("Event Date:");
-        lblEventDate.setForeground(Color.BLACK);
-        lblEventDate.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        lblEventDate.setBounds(30, 220, 150, 30);
-        contentPane.add(lblEventDate);
-
-        Calendar calendar = Calendar.getInstance();
-        SpinnerDateModel model = new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_MONTH);
-        dateSpinner = new JSpinner(model);
-        JSpinner.DateEditor editor = new JSpinner.DateEditor(dateSpinner, "dd-MM-yyyy");
-        dateSpinner.setEditor(editor);
-        dateSpinner.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        dateSpinner.setBounds(200, 220, 150, 30);
-        contentPane.add(dateSpinner);
-
-
 
         // Event Description Label and Field
         JLabel lblEventDescription = new JLabel("Description:");
@@ -103,34 +84,50 @@ public class CreateEvent extends JFrame {
 
         JTextArea eventDescriptionArea = new JTextArea();
         eventDescriptionArea.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        eventDescriptionArea.setWrapStyleWord(true); // Omogući prelamanje riječi
-        eventDescriptionArea.setLineWrap(true); // Omogući prelamanje teksta
+        eventDescriptionArea.setWrapStyleWord(true); 
+        eventDescriptionArea.setLineWrap(true); 
 
         JScrollPane scrollPane = new JScrollPane(eventDescriptionArea);
-        scrollPane.setBounds(200, 80, 350, 70); // Postavi veličinu i poziciju JScrollPane-a
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); // Omogući vertikalno skrolanje
+        scrollPane.setBounds(200, 80, 350, 70); 
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); 
         contentPane.add(scrollPane);
         
-     // Event Location Label and Field
+        
+        
+        // Date Label and Spinner
+        JLabel lblEventDate = new JLabel("Event Date:");
+        lblEventDate.setForeground(Color.BLACK);
+        lblEventDate.setFont(new Font("Chilanka", Font.PLAIN, 18));
+        lblEventDate.setBounds(30, 220, 150, 30);
+        contentPane.add(lblEventDate);
+
+        Calendar calendar = Calendar.getInstance();
+        SpinnerDateModel model = new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_MONTH);
+        dateSpinner = new JSpinner(model);
+        JSpinner.DateEditor editor = new JSpinner.DateEditor(dateSpinner, "yyyy-mm-dd hh:mm:ss");
+        dateSpinner.setEditor(editor);
+        dateSpinner.setFont(new Font("Chilanka", Font.PLAIN, 18));
+        dateSpinner.setBounds(200, 220, 210, 30);
+        contentPane.add(dateSpinner);
+
+        // Location Label and ComboBox
         JLabel lblLocation = new JLabel("Location:");
         lblLocation.setForeground(Color.BLACK);
         lblLocation.setFont(new Font("Chilanka", Font.PLAIN, 18));
         lblLocation.setBounds(30, 170, 150, 30);
         contentPane.add(lblLocation);
 
-        // Fetch locations from the database
         LokacijaDAO lokacijaDAO = new LokacijaDAO();
-        java.util.List<Lokacija> locations = lokacijaDAO.getAllLocations();
-
-        // Create a JComboBox for location selection
+        List<Lokacija> locations = lokacijaDAO.getAllLocations();
         locationComboBox = new JComboBox<>(locations.toArray(new Lokacija[0]));
+        locationComboBox.setRenderer(new LocationRenderer());
         locationComboBox.setFont(new Font("Chilanka", Font.PLAIN, 18));
         locationComboBox.setBounds(200, 170, 350, 30);
         contentPane.add(locationComboBox);
-        
-        
 
-        // Event Type Label and ComboBox
+        locationComboBox.addActionListener(e -> selectedLocation = (Lokacija) locationComboBox.getSelectedItem());
+        fileChooser = new JFileChooser();
+        // Event Type and Subtype
         JLabel lblEventType = new JLabel("Event Type:");
         lblEventType.setForeground(Color.BLACK);
         lblEventType.setFont(new Font("Chilanka", Font.PLAIN, 18));
@@ -142,7 +139,6 @@ public class CreateEvent extends JFrame {
         eventTypeComboBox.setBounds(200, 270, 350, 30);
         contentPane.add(eventTypeComboBox);
 
-        // Event Subtype Label and ComboBox
         JLabel lblEventSubtype = new JLabel("Event Subtype:");
         lblEventSubtype.setForeground(Color.BLACK);
         lblEventSubtype.setFont(new Font("Chilanka", Font.PLAIN, 18));
@@ -153,27 +149,20 @@ public class CreateEvent extends JFrame {
         eventSubtypeComboBox.setFont(new Font("Chilanka", Font.PLAIN, 18));
         eventSubtypeComboBox.setBounds(200, 320, 350, 30);
         contentPane.add(eventSubtypeComboBox);
-        
-        // Add ActionListener to eventTypeComboBox to update eventSubtypeComboBox
-        eventTypeComboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String selectedType = (String) eventTypeComboBox.getSelectedItem();
-                String[] subtypes = eventSubtypesMap.get(selectedType);
 
-                eventSubtypeComboBox.removeAllItems();
-                if (subtypes != null) {
-                    for (String subtype : subtypes) {
-                        eventSubtypeComboBox.addItem(subtype);
-                    }
+        eventTypeComboBox.addActionListener(e -> {
+            String selectedType = (String) eventTypeComboBox.getSelectedItem();
+            String[] subtypes = eventSubtypesMap.get(selectedType);
+
+            eventSubtypeComboBox.removeAllItems();
+            if (subtypes != null) {
+                for (String subtype : subtypes) {
+                    eventSubtypeComboBox.addItem(subtype);
                 }
             }
         });
-
-        // Trigger the initial population of subtypes
-        eventTypeComboBox.setSelectedIndex(0);
-
-        // Event Image Label and Field
+        
+        // Image Field and Browse Button
         JLabel lblEventImage = new JLabel("Image Location:");
         lblEventImage.setForeground(Color.BLACK);
         lblEventImage.setFont(new Font("Chilanka", Font.PLAIN, 18));
@@ -189,189 +178,102 @@ public class CreateEvent extends JFrame {
         JButton browseButton = new JButton("Browse");
         browseButton.setFont(new Font("Chilanka", Font.PLAIN, 18));
         browseButton.setBounds(470, 370, 80, 30);
-        browseButton.setForeground(new Color(51, 51, 51));
-        browseButton.setBackground(Color.decode("#f3f7f8"));
-        browseButton.setBorder(BorderFactory.createLineBorder(Color.decode("#e2e2e2")));
-        browseButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                fileChooser = new JFileChooser();
-                fileChooser.setFileFilter(new FileNameExtensionFilter("Image Files", "jpg", "png", "gif"));
-                int returnValue = fileChooser.showOpenDialog(CreateEvent.this);
-                if (returnValue == JFileChooser.APPROVE_OPTION) {
-                    File selectedFile = fileChooser.getSelectedFile();
-
-                    // Define the destination directory
-                    String destDir = "resources/event_images/";
-
-                    // Create the directory if it doesn't exist
-                    new File(destDir).mkdirs();
-
-                    // Generate a new file name using the location ID and a custom identifier
-                    int locationId = 123; // Replace with actual location ID from Lokacija class
-                    String customIdentifier = "event_image"; // Your custom identifier
-                    String fileExtension = selectedFile.getName().substring(selectedFile.getName().lastIndexOf("."));
-                    String newFileName = customIdentifier + "_location_" + locationId + fileExtension;
-
-                    // Define the destination file path
-                    String destFilePath = destDir + newFileName;
-
-                    try {
-                        // Copy the file to the destination with the new file name
-                        Files.copy(selectedFile.toPath(), new File(destFilePath).toPath(), StandardCopyOption.REPLACE_EXISTING);
-
-                        // Update the eventImageField with the new file path
-                        eventImageField.setText(destFilePath);
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                        JOptionPane.showMessageDialog(CreateEvent.this, "Failed to copy the file.", "Error", JOptionPane.ERROR_MESSAGE);
-                    }
-                }
+        browseButton.addActionListener(e -> {
+            fileChooser = new JFileChooser();
+            fileChooser.setFileFilter(new FileNameExtensionFilter("Image Files", "jpg", "png", "gif"));
+            int returnValue = fileChooser.showOpenDialog(CreateEvent.this);
+            if (returnValue == JFileChooser.APPROVE_OPTION) {
+                File selectedFile = fileChooser.getSelectedFile();
+                eventImageField.setText(selectedFile.getAbsolutePath());
             }
         });
-
-        contentPane.add(browseButton);
-
-        // Max Tickets Per User Label and Field
+        
         JLabel lblMaxTickets = new JLabel("Max Tickets:");
         lblMaxTickets.setForeground(Color.BLACK);
         lblMaxTickets.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        lblMaxTickets.setBounds(30, 420, 150, 30);
+        lblMaxTickets.setBounds(30, 460, 150, 30);
         contentPane.add(lblMaxTickets);
 
-        JTextField maxTicketsField = new JTextField();
+        maxTicketsField = new JTextField();
         maxTicketsField.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        maxTicketsField.setBounds(200, 420, 350, 30);
+        maxTicketsField.setBounds(200, 460, 350, 30);
         contentPane.add(maxTicketsField);
+    
+        contentPane.add(browseButton);
 
-        // Payment on Registration Checkbox
-        JCheckBox paymentOnRegistrationCheckBox = new JCheckBox("Payment on Registration");
-        paymentOnRegistrationCheckBox.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        paymentOnRegistrationCheckBox.setBackground(new Color(29, 190, 166));
-        paymentOnRegistrationCheckBox.setBounds(30, 520, 300, 30);
-        contentPane.add(paymentOnRegistrationCheckBox);
-        
-        // Event Finished ComboBox
-        JLabel lblEventFinished = new JLabel("Event Finished:");
-        lblEventFinished.setForeground(Color.BLACK);
-        lblEventFinished.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        lblEventFinished.setBounds(30, 470, 200, 30);
-        contentPane.add(lblEventFinished);
-
-        String[] finishedOptions = {"Yes", "No"};
-        eventFinishedComboBox = new JComboBox<>(finishedOptions);
-        eventFinishedComboBox.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        eventFinishedComboBox.setBounds(250, 470, 100, 30);
-        contentPane.add(eventFinishedComboBox);
-
-     
-        
-        // Save Button
-        saveButton = new JButton("Save");
-        saveButton.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        saveButton.setBounds(200, 650, 150, 40);
-        saveButton.setForeground(new Color(51, 51, 51));
-        saveButton.setBackground(Color.decode("#f3f7f8"));
-        saveButton.setBorder(BorderFactory.createLineBorder(Color.decode("#e2e2e2")));
-        saveButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-            	 if (eventNameField.getText().trim().isEmpty() || 
-            	            eventDescriptionArea.getText().trim().isEmpty() || 
-            	            maxTicketsField.getText().trim().isEmpty() || 
-            	            eventTypeComboBox.getSelectedItem() == null || 
-            	            eventSubtypeComboBox.getSelectedItem() == null) {
-            	            
-            	            JOptionPane.showMessageDialog(CreateEvent.this, 
-            	                                          "All fields must be filled.", 
-            	                                          "Validation Error", 
-            	                                          JOptionPane.ERROR_MESSAGE);
-            	            return; // Stop the save process
-            	        }
-            	
-            	DogadjajDAO dao = new DogadjajDAO();
-                Dogadjaj dogadjaj = new Dogadjaj();
-                dogadjaj.setNaziv(eventNameField.getText());
-                dogadjaj.setVrsta(eventTypeComboBox.getSelectedItem().toString());
-                dogadjaj.setPodvrsta(eventSubtypeComboBox.getSelectedItem().toString());
-                dogadjaj.setDatum(new java.sql.Date(((Date) dateSpinner.getValue()).getTime()));
-                dogadjaj.setSlika(eventImageField.getText());
-                dogadjaj.setNaplataPriRezervaciji(paymentOnRegistrationCheckBox.isSelected());
-                dogadjaj.setMaxKartiPoKorisniku(Integer.parseInt(maxTicketsField.getText()));
-                dogadjaj.setZavrsio(eventFinishedComboBox.getSelectedItem().toString().equals("Yes"));
-          //      dogadjaj.setDogadjajApproved(eventApprovedCheckBox.isSelected());
-                dogadjaj.setLokacija((Lokacija) locationComboBox.getSelectedItem());
-                dao.addDogadjaj(dogadjaj);
-                JOptionPane.showMessageDialog(CreateEvent.this, "Event saved.");
-                dispose(); // Close the window after saving
-            }
-        });
-        contentPane.add(saveButton);
-        
-
-        // Add Tickets Button
         ticketDataButton = new JButton("Add Tickets");
         ticketDataButton.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        ticketDataButton.setBounds(30, 570, 520, 40);
-        ticketDataButton.setForeground(new Color(51, 51, 51));
-        ticketDataButton.setBackground(Color.decode("#f3f7f8"));
-        ticketDataButton.setBorder(BorderFactory.createLineBorder(Color.decode("#e2e2e2")));
-        ticketDataButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-            	  if (eventNameField.getText().trim().isEmpty() || 
-            	            eventDescriptionArea.getText().trim().isEmpty() || 
-            	            maxTicketsField.getText().trim().isEmpty() || 
-            	            eventTypeComboBox.getSelectedItem() == null || 
-            	            eventSubtypeComboBox.getSelectedItem() == null || 
-            	            locationComboBox.getSelectedItem() == null || 
-            	            eventImageField.getText().trim().isEmpty()) {
-            	                
-            	            JOptionPane.showMessageDialog(CreateEvent.this, 
-            	                                          "Please fill in all required fields.", 
-            	                                          "Validation Error", 
-            	                                          JOptionPane.ERROR_MESSAGE);
-            	            return; // Stop the action if validation fails
-            	        }
-            	  
-            	DogadjajDAO dao = new DogadjajDAO();
-                Dogadjaj dogadjaj = new Dogadjaj();
+        ticketDataButton.setBounds(220, 550, 200, 35);
+        ticketDataButton.addActionListener(e -> {
+            if (selectedLocation != null) {
+                dogadjaj = new Dogadjaj();
                 dogadjaj.setNaziv(eventNameField.getText());
-                dogadjaj.setVrsta(eventTypeComboBox.getSelectedItem().toString());
-                dogadjaj.setPodvrsta(eventSubtypeComboBox.getSelectedItem().toString());
-                dogadjaj.setDatum(new java.sql.Date(((Date) dateSpinner.getValue()).getTime()));
-                dogadjaj.setSlika(eventImageField.getText());
-                dogadjaj.setNaplataPriRezervaciji(paymentOnRegistrationCheckBox.isSelected());
-                dogadjaj.setMaxKartiPoKorisniku(Integer.parseInt(maxTicketsField.getText()));
-                dogadjaj.setZavrsio(eventFinishedComboBox.getSelectedItem().toString().equals("Yes"));
-              //  dogadjaj.setDogadjajApproved(eventApprovedCheckBox.isSelected());
-                Lokacija selectedLocation = (Lokacija) locationComboBox.getSelectedItem();
+                dogadjaj.setOpis(eventDescriptionArea.getText());
+                dogadjaj.setDatum((Date) dateSpinner.getValue());
                 dogadjaj.setLokacija(selectedLocation);
+                try {
+                    dogadjaj.setSlika(saveEventImage());
+                } catch (IOException e1) {
+                    JOptionPane.showMessageDialog(this, "Error saving image: " + e1.getMessage());
+                }
 
-                dao.addDogadjaj(dogadjaj);
-                new AddTickets(dogadjaj,selectedLocation).setVisible(true); // Replace null with the Dogadjaj instance if available
+                AddTickets dialog = new AddTickets(CreateEvent.this, dogadjaj, selectedLocation);
+                dialog.setVisible(true);
+                if (dialog.isTicketsAdded()) {
+                    saveButton.setEnabled(true); // Enable save button if tickets are added
+                }
+            } else {
+                JOptionPane.showMessageDialog(CreateEvent.this, "Please select a location first.");
             }
         });
         contentPane.add(ticketDataButton);
         
 
-        // Cancel Button
+        saveButton = new JButton("Save");
+        saveButton.setBounds(220, 650, 120, 35);
+        saveButton.setFont(new Font("Chilanka", Font.PLAIN, 18));
+        saveButton.setEnabled(false); // Initially disabled
+        saveButton.addActionListener(e -> saveEvent());
+        contentPane.add(saveButton);
+
         cancelButton = new JButton("Cancel");
         cancelButton.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        cancelButton.setBounds(400, 650, 150, 40);
-        cancelButton.setForeground(new Color(51, 51, 51));
-        cancelButton.setBackground(Color.decode("#f3f7f8"));
-        cancelButton.setBorder(BorderFactory.createLineBorder(Color.decode("#e2e2e2")));
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose(); // Close the window when Cancel is clicked
-            }
-        });
+        cancelButton.setBounds(350, 650, 120, 35);
+        cancelButton.addActionListener(e -> dispose());
         contentPane.add(cancelButton);
+
+        // Initialize DogadjajDAO
+        dogadjajDAO = new DogadjajDAO();
     }
 
-    public static void main(String[] args) {
-        new CreateEvent().setVisible(true);
+    private void saveEvent() {
+        if (dogadjaj == null) {
+            JOptionPane.showMessageDialog(this, "No event data to save.");
+            return;
+        }
+
+        try {
+            // Save the Dogadjaj object
+            dogadjajDAO.addDogadjaj(dogadjaj);
+            JOptionPane.showMessageDialog(this, "Event created successfully!");
+            dispose();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error saving event: " + e.getMessage());
+        }
+    }
+
+    private String saveEventImage() throws IOException {
+        File source = fileChooser.getSelectedFile();
+        String fileName = "event_" + selectedLocation.getLokacija_id() + "_" + source.getName();
+        File destination = new File("event_images/" + fileName);
+        Files.copy(source.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        return fileName;
+    }
+    private class LocationRenderer extends JLabel implements ListCellRenderer<Lokacija> {
+        @Override
+        public Component getListCellRendererComponent(JList<? extends Lokacija> list, Lokacija value, int index, boolean isSelected, boolean cellHasFocus) {
+            setText(value.getNaziv());
+            return this;
+        }
     }
 }
