@@ -2,6 +2,8 @@ package model;
 
 import misc.EntityManagerFactoryHolder;
 
+import java.util.List;
+
 import javax.persistence.*;
 
 
@@ -42,5 +44,13 @@ public class KartaDAO {
 		em.merge(karta.getSektor());
 		em.getTransaction().commit();
 		em.close();
+	}
+	public List<Karta> getFreeTickets(Dogadjaj dogadjaj, Sektor sektor) {
+		EntityManager em = emf.createEntityManager();
+		List<Karta> ret = em.createQuery("SELECT a FROM Karta a WHERE a.dogadjaj = :dogadjaj AND a.sektor = :sektor", Karta.class)
+				.setParameter("dogadjaj", dogadjaj).setParameter("sektor", sektor)
+				.getResultList();
+		em.close();
+		return ret;
 	}
 }

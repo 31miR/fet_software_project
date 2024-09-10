@@ -51,6 +51,11 @@ public class SektorDAO {
          }
      }
     
-    
-    
+     public List<Sektor> getAllSectorsInLokacija(Lokacija lokacija) {
+    	 EntityManager em = emf.createEntityManager();
+    	 List<Sektor> ret = em.createQuery("SELECT a FROM Sektor a WHERE a.lokacija = :lokacija", Sektor.class)
+    			 			.setParameter("lokacija", lokacija).getResultList();
+    	 em.close();
+    	 return ret;
+     }
 }

@@ -20,9 +20,11 @@ import model.LokacijaDAO;
 class DogadjajPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	Dogadjaj dogadjaj;
+	KorisnikAndDogadjajListView parent;
 
-	public DogadjajPanel(Dogadjaj dogadjaj) {
+	public DogadjajPanel(KorisnikAndDogadjajListView parent, Dogadjaj dogadjaj) {
 		this.dogadjaj = dogadjaj;
+		this.parent = parent;
 		setLayout(new BorderLayout());
 		setPreferredSize(new Dimension(600, 200));
 		setMaximumSize(new Dimension(Integer.MAX_VALUE, 200));
@@ -81,8 +83,14 @@ class DogadjajPanel extends JPanel {
 	}
 
 	private void karteButtonPressed() {
-		// TODO Auto-generated method stub
-
+		AvailableTicketsForDogadjajDialogBox view = new AvailableTicketsForDogadjajDialogBox(parent, dogadjaj);
+		view.addWindowListener(new WindowAdapter() {
+		    @Override
+		    public void windowClosed(WindowEvent e) {
+		    	parent.updateTopPanel();
+		    }
+		});
+		view.setVisible(true);
 	}
 
 	private void detaljiButtonPressed() {
@@ -95,15 +103,17 @@ class DogadjajPanel extends JPanel {
 class DogadjajListViewPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	List<Dogadjaj> dogadjajList;
-	DogadjajListViewPanel(List<Dogadjaj> dogadjajList) {
+	KorisnikAndDogadjajListView parent;
+	DogadjajListViewPanel(List<Dogadjaj> dogadjajList, KorisnikAndDogadjajListView parent) {
 		this.dogadjajList = dogadjajList;
+		this.parent = parent;
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		refreshLayout();
 	}
 	public void refreshLayout() {
 		removeAll();
 		for (Dogadjaj i : dogadjajList) {
-			DogadjajPanel dp = new DogadjajPanel(i);
+			DogadjajPanel dp = new DogadjajPanel(parent, i);
 			add(dp);
 		}
 		revalidate();
@@ -115,7 +125,7 @@ public class KorisnikAndDogadjajListView extends JFrame {
     private static final long serialVersionUID = 1L;
     private LokacijaDAO lokacijaDAO = new LokacijaDAO();
     private DogadjajDAO dogadjajDAO = new DogadjajDAO();
-    private Korisnik korisnik;
+    public Korisnik korisnik;
     private int dogadjajOffset = 0;
     private final int PER_PAGE = 5;
     private Map<String, List<String>> typeToSubType;
@@ -181,7 +191,7 @@ public class KorisnikAndDogadjajListView extends JFrame {
 
          */
         
-        mainContentPanel = new DogadjajListViewPanel(dogadjajList);
+        mainContentPanel = new DogadjajListViewPanel(dogadjajList, this);
         mainContentPanel.setPreferredSize(new Dimension(600, 1000));
         
         
@@ -362,7 +372,7 @@ public class KorisnikAndDogadjajListView extends JFrame {
 		});
 		view.setVisible(true);
 	}
-	private void updateTopPanel() {
+	public void updateTopPanel() {
 		topPanel.removeAll();
 		topPanel.add(new JLabel(korisnik.getName() + " " + korisnik.getLastName()));
         topPanel.add(new JLabel(String.valueOf(korisnik.getWalletBalance()/100) + "." + 
