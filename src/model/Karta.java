@@ -5,7 +5,7 @@ import javax.persistence.*;
 @Entity
 public class Karta {
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int karta_id;
 	private int cijena; //store prices as ints, eg. 3.45$ is 345 in here
 	private int cijenaRezervacije;

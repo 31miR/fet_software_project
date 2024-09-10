@@ -7,7 +7,7 @@ import javax.persistence.*;
 @Entity
 public class Dogadjaj {
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int dogadjaj_id;
 	private String naziv;
 	private String opis;

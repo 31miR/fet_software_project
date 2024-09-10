@@ -7,7 +7,7 @@ import javax.persistence.*;
 @Entity
 public class Lokacija {
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int lokacija_id;
 	private String naziv;
 	private int kapacitet;
