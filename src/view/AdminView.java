@@ -45,7 +45,7 @@ public class AdminView extends JFrame {
         requestButton.setBounds(550, 200, 250, 50);
         requestButton.setForeground(new Color(51, 51, 51));
         requestButton.addActionListener(e -> {
-            RequestUsers event = new RequestUsers();
+            RequestUsers event = new RequestUsers(admin);
             event.setVisible(true);
             dispose();
         });
