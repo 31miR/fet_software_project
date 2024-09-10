@@ -27,7 +27,6 @@ public class RequestEvents extends JFrame {
     private Administrator administrator; // Currently logged-in administrator
     private int offset = 0; // Variable to track the position in the database
 
-
     public RequestEvents(Administrator administrator) { // Constructor now accepts Administrator
         this.administrator = administrator; // Set the administrator
         dogadjajDAO = new DogadjajDAO(); // Initialize DAO
@@ -82,8 +81,6 @@ public class RequestEvents extends JFrame {
         JPanel buttonPanel = new JPanel();
         loadMoreButton = new JButton("Load More");
         buttonPanel.add(loadMoreButton);
-       
-        
 
         backButton = new JButton("Back");
         buttonPanel.add(backButton);
@@ -113,13 +110,24 @@ public class RequestEvents extends JFrame {
 
     private void loadEventRequests() {
         List<Dogadjaj> eventRequests = dogadjajDAO.getLimitedPending(offset, 30);
-        for (Dogadjaj dogadjaj : eventRequests) {
-            // Process and add each event to the table
+
+        System.out.println("Fetched events count: " + eventRequests.size()); // Provjerite broj vraćenih događaja
+
+        // Očisti postojeće redove pre dodavanja novih
+        model.setRowCount(0);
+
+        for (Dogadjaj dogadjaj1 : eventRequests) {
+            model.addRow(new Object[]{
+                dogadjaj1.getDogadjaj_id(),
+                dogadjaj1.getNaziv(), // Pretpostavljam da 'getNaziv' metoda postoji u Dogadjaj klasi
+                dogadjaj1.isDogadjajApproved() ? "Approved" : "Pending", // Pretpostavljam da 'isDogadjajApproved' metoda postoji u Dogadjaj klasi
+                "" // Placeholder za dugmad
+            });
         }
     }
 
     // Custom renderer for other columns
-    private class CustomTableCellRenderer extends JLabel implements TableCellRenderer {
+    class CustomTableCellRenderer extends JLabel implements TableCellRenderer {
         public CustomTableCellRenderer() {
             setOpaque(true); // Make the background visible
         }
@@ -142,7 +150,7 @@ public class RequestEvents extends JFrame {
     }
 
     // Custom renderer for buttons
-    private class ButtonRenderer extends JPanel implements TableCellRenderer {
+    class ButtonRenderer extends JPanel implements TableCellRenderer {
         private JButton acceptButton;
         private JButton rejectButton;
 
@@ -167,10 +175,11 @@ public class RequestEvents extends JFrame {
     }
 
     // Custom editor for buttons
-    private class ButtonEditor extends AbstractCellEditor implements TableCellEditor {
+    class ButtonEditor extends AbstractCellEditor implements TableCellEditor {
         private JPanel panel;
         private JButton acceptButton;
         private JButton rejectButton;
+        private int row;
 
         public ButtonEditor() {
             panel = new JPanel();
@@ -185,8 +194,8 @@ public class RequestEvents extends JFrame {
             acceptButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    int row = table.convertRowIndexToModel(table.getSelectedRow());
-                    Dogadjaj selectedEvent = dogadjajDAO.getLimitedPending(0, 30).get(row);
+                    row = table.convertRowIndexToModel(table.getSelectedRow());
+                    Dogadjaj selectedEvent = dogadjajDAO.getLimitedPending(offset, 30).get(row);
                     selectedEvent.setDogadjajApproved(true);
                     dogadjajDAO.updateDogadjaj(selectedEvent);
                     model.removeRow(row);
@@ -197,8 +206,8 @@ public class RequestEvents extends JFrame {
             rejectButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    int row = table.convertRowIndexToModel(table.getSelectedRow());
-                    Dogadjaj selectedEvent = dogadjajDAO.getLimitedPending(0, 30).get(row);
+                    row = table.convertRowIndexToModel(table.getSelectedRow());
+                    Dogadjaj selectedEvent = dogadjajDAO.getLimitedPending(offset, 30).get(row);
                     selectedEvent.setDogadjajApproved(false);
                     dogadjajDAO.updateDogadjaj(selectedEvent);
                     model.removeRow(row);
@@ -213,6 +222,7 @@ public class RequestEvents extends JFrame {
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value,
                                                      boolean isSelected, int row, int column) {
+            this.row = row; // Postavi trenutni red
             return panel;
         }
 
