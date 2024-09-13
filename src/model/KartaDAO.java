@@ -115,4 +115,13 @@ public class KartaDAO {
 		em.close();
 		return (int)ret;
 	}
+	//basically bought + reserved
+	public int countTakenTicketsForUserGivenDogadjaj(Korisnik korisnik, Dogadjaj dogadjaj) {
+		EntityManager em = emf.createEntityManager();
+		long ret = (long)em.createQuery("SELECT COUNT(a) FROM Karta a WHERE (a.korRezervisao = :korisnik "
+				+ "OR a.korKupio = :korisnik) AND a.dogadjaj = :dogadjaj", Long.class).setParameter("korisnik", korisnik)
+				.setParameter("dogadjaj", dogadjaj).getSingleResult();
+		em.close();
+		return (int)ret;
+	}
 }
