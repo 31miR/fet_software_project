@@ -128,20 +128,16 @@ public class ReservedTicketsForUserDialogBox extends JDialog {
         			+ String.valueOf(parent.korisnik.getWalletBalance() % 100)));
         
         mainContentPanel = new JPanel();
+        mainContentPanel.setLayout(new BoxLayout(mainContentPanel, BoxLayout.Y_AXIS));
         mainContentPanel.setPreferredSize(new Dimension(600, 1000));
         
         updateTicketList();
 
-        // uvezivanje YAY
-        JPanel centerPanel = new JPanel();
-        centerPanel.setLayout(new BorderLayout());
-        centerPanel.add(mainContentPanel, BorderLayout.CENTER);
-
         add(topPanel, BorderLayout.NORTH);
-        add(centerPanel, BorderLayout.CENTER);
+        add(mainContentPanel, BorderLayout.CENTER);
 
         // I kao, da mozes skrolat
-        JScrollPane scrollPane = new JScrollPane(centerPanel);
+        JScrollPane scrollPane = new JScrollPane(mainContentPanel);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         add(scrollPane, BorderLayout.CENTER);

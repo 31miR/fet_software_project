@@ -43,6 +43,7 @@ class AvailableTicket extends JPanel {
 	AvailableTicketsForDogadjajDialogBox parentDialog;
 	KorisnikDAO korisnikDAO = new KorisnikDAO();
 	KartaDAO kartaDAO = new KartaDAO();
+	DogadjajDAO dogadjajDAO = new DogadjajDAO();
 	Karta karta;
 	JButton rezervisiButton;
 	JButton kupiButton;
@@ -94,6 +95,16 @@ class AvailableTicket extends JPanel {
 		Korisnik korisnik = parentDialog.parent.korisnik;
 		double discountRate = Math.pow(0.9, kartaDAO.countBoughtTicketsForUser(korisnik) / 10); //every 10th card gives 10% discount
 		int calculatedPrice = (int)(karta.getCijena() * discountRate);
+		if (kartaDAO.countTakenTicketsForUserGivenDogadjaj(korisnik, karta.getDogadjaj()) >= karta.getDogadjaj().getMaxKartiPoKorisniku()) {
+			JOptionPane.showMessageDialog(
+		            parentDialog,
+		            "Vec ste kupili/rezervisali maksimalan broj karti za dati dogadaj. Maksimalan broj karti je: "
+		            	+String.valueOf(karta.getDogadjaj().getMaxKartiPoKorisniku()),
+		            "Oopsie :(",
+		            JOptionPane.INFORMATION_MESSAGE
+		        );
+			return;
+		}
 		if (korisnik.getWalletBalance() < calculatedPrice) {
 			JOptionPane.showMessageDialog(
 		            parentDialog,
@@ -124,10 +135,62 @@ class AvailableTicket extends JPanel {
 		kartaDAO.updateTicket(karta);
 		kupiButton.setEnabled(false);
 		rezervisiButton.setEnabled(false);
+		parentDialog.updateWalletBalanceLabel();
 	}
 	private void rezervisiButtonPressed() {
-		// TODO Auto-generated method stub
-		
+		Korisnik korisnik = parentDialog.parent.korisnik;
+		if (kartaDAO.countTakenTicketsForUserGivenDogadjaj(korisnik, karta.getDogadjaj()) >= karta.getDogadjaj().getMaxKartiPoKorisniku()) {
+			JOptionPane.showMessageDialog(
+		            parentDialog,
+		            "Vec ste kupili/rezervisali maksimalan broj karti za dati dogadaj. Maksimalan broj karti je: "
+		            	+String.valueOf(karta.getDogadjaj().getMaxKartiPoKorisniku()),
+		            "Oopsie :(",
+		            JOptionPane.INFORMATION_MESSAGE
+		        );
+			return;
+		}
+		if (!karta.getDogadjaj().isNaplataPriRezervaciji() && korisnik.getWalletBalance() < 0) {
+			JOptionPane.showMessageDialog(
+		            parentDialog,
+		            "Vase stanje racuna je u minusu i ne mozete izvrsiti nikakvu kupnju ili rezervaciju zbog toga!",
+		            "Oopsie :(",
+		            JOptionPane.INFORMATION_MESSAGE
+		        );
+			return;
+		}
+		if (karta.getDogadjaj().isNaplataPriRezervaciji() && korisnik.getWalletBalance() < karta.getCijenaRezervacije()) {
+			JOptionPane.showMessageDialog(
+		            parentDialog,
+		            "Nemate dovoljno novca da izvrsite rezervaciju!",
+		            "Oopsie :(",
+		            JOptionPane.INFORMATION_MESSAGE
+		        );
+			return;
+		}
+		if (karta.getDogadjaj().isNaplataPriRezervaciji()) {
+			int response = JOptionPane.showOptionDialog(
+					parentDialog,
+					"Rezervacija se naplaćuje unaprijed, cijena naplate je: " +
+							String.valueOf(karta.getCijenaRezervacije() / 100) + "."
+							+ String.valueOf(karta.getCijenaRezervacije() % 100),
+					"Zelite li rezervisati kartu? ",
+					JOptionPane.DEFAULT_OPTION,
+					JOptionPane.QUESTION_MESSAGE,
+					null,
+					new String[]{"Yes", "No"},
+					"No"
+					);
+			if (response == 1) { //means he pressed no!
+				return;
+			}
+			korisnik.setWalletBalance(korisnik.getWalletBalance() - karta.getCijenaRezervacije());
+		}
+		karta.setKorRezervisao(korisnik);
+		korisnikDAO.updateKorisnik(korisnik);
+		kartaDAO.updateTicket(karta);
+		kupiButton.setEnabled(false);
+		rezervisiButton.setEnabled(false);
+		parentDialog.updateWalletBalanceLabel();
 	}
 }
 
@@ -139,6 +202,7 @@ public class AvailableTicketsForDogadjajDialogBox extends JDialog {
 	KorisnikAndDogadjajListView parent;
 	Dogadjaj dogadjaj;
 	JPanel topPanel;
+	JLabel walletBalanceLabel;
 	JPanel mainContentPanel;
 	JComboBox<String> sectorSelector;
 	List<Sektor> sektori;
@@ -156,10 +220,9 @@ public class AvailableTicketsForDogadjajDialogBox extends JDialog {
         topPanel = new JPanel();
         topPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         
-        topPanel.add(new JLabel("Stanje racuna: "
-        			+ String.valueOf(parent.korisnik.getWalletBalance() / 100)
-        			+ "."
-        			+ String.valueOf(parent.korisnik.getWalletBalance() % 100)));
+        walletBalanceLabel = new JLabel();
+        updateWalletBalanceLabel();
+        topPanel.add(walletBalanceLabel);
         
         sektori = sektorDAO.getAllSectorsInLokacija(dogadjaj.getLokacija());
         sectorSelector = new JComboBox<>();
@@ -172,20 +235,16 @@ public class AvailableTicketsForDogadjajDialogBox extends JDialog {
         topPanel.add(sectorSelector);
         
         mainContentPanel = new JPanel();
+        mainContentPanel.setLayout(new BoxLayout(mainContentPanel, BoxLayout.Y_AXIS));
         mainContentPanel.setPreferredSize(new Dimension(600, 1000));
         
         updateTicketList();
 
-        // uvezivanje YAY
-        JPanel centerPanel = new JPanel();
-        centerPanel.setLayout(new BorderLayout());
-        centerPanel.add(mainContentPanel, BorderLayout.CENTER);
-
         add(topPanel, BorderLayout.NORTH);
-        add(centerPanel, BorderLayout.CENTER);
+        add(mainContentPanel, BorderLayout.CENTER);
 
         // I kao, da mozes skrolat
-        JScrollPane scrollPane = new JScrollPane(centerPanel);
+        JScrollPane scrollPane = new JScrollPane(mainContentPanel);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         add(scrollPane, BorderLayout.CENTER);
@@ -211,5 +270,11 @@ public class AvailableTicketsForDogadjajDialogBox extends JDialog {
     	}
     	mainContentPanel.revalidate();
     	mainContentPanel.repaint();
+    }
+    public void updateWalletBalanceLabel() {
+        walletBalanceLabel.setText("Stanje racuna: "
+            + String.valueOf(parent.korisnik.getWalletBalance() / 100)
+            + "." 
+            + String.valueOf(parent.korisnik.getWalletBalance() % 100));
     }
 }
