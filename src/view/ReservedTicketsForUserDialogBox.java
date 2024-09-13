@@ -22,6 +22,7 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -41,6 +42,10 @@ class ReservedTicket extends JPanel {
 	private static final long serialVersionUID = 1L;
 	ReservedTicketsForUserDialogBox parentDialog;
 	Karta karta;
+	KorisnikDAO korisnikDAO = new KorisnikDAO();
+	KartaDAO kartaDAO = new KartaDAO();
+	JButton kupiButton;
+	JButton otkaziButton;
 	public ReservedTicket(ReservedTicketsForUserDialogBox parentDialog, Karta karta) {
 		this.parentDialog = parentDialog;
 		this.karta = karta;
@@ -67,12 +72,12 @@ class ReservedTicket extends JPanel {
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 		
-		JButton otkaziButton = new JButton("Otkazi rezervaciju");
+		otkaziButton = new JButton("Otkazi rezervaciju");
 		otkaziButton.addActionListener((e) -> {
 			otkaziButtonPressed();
 		});
 		buttonPanel.add(otkaziButton);
-		JButton kupiButton = new JButton("Kupi kartu");
+		kupiButton = new JButton("Kupi kartu");
 		kupiButton.addActionListener((e) -> {
 			kupiButtonPressed();
 		});
@@ -86,12 +91,92 @@ class ReservedTicket extends JPanel {
 		add(centerPanel, BorderLayout.CENTER);
 	}
 	private void kupiButtonPressed() {
-		// TODO Auto-generated method stub
-		
+		Korisnik korisnik = parentDialog.parent.korisnik;
+		double discountRate = Math.pow(0.9, kartaDAO.countBoughtTicketsForUser(korisnik) / 10);
+		//if naplata pri rezervaciji, return the money taken from user for the raservation back to him
+		int calculatedPrice = (int)(karta.getCijena()*discountRate)
+				- (karta.getDogadjaj().isNaplataPriRezervaciji() ? karta.getCijenaRezervacije() : 0);
+		if (korisnik.getWalletBalance() < calculatedPrice && calculatedPrice > 0) {
+			JOptionPane.showMessageDialog(
+		            parentDialog,
+		            "Nemate dovoljno novca da izvršite kupovinu, kolicina novca potrebna za kupnju je: "
+		            	+String.valueOf(calculatedPrice / 100) + "." + String.valueOf(Math.abs(calculatedPrice) % 100),
+		            "Oopsie :(",
+		            JOptionPane.INFORMATION_MESSAGE
+		        );
+			return;
+		}
+		int returnalAmmount = karta.getDogadjaj().isNaplataPriRezervaciji() ? karta.getCijenaRezervacije() : 0;
+		int priceWithoutReturnal = calculatedPrice + returnalAmmount;
+		int response = JOptionPane.showOptionDialog(
+				parentDialog,
+				"Cijena karte sa eventualnim popustom je: "
+						+ String.valueOf(priceWithoutReturnal / 100) + "." + String.valueOf(priceWithoutReturnal % 100)
+						+ (returnalAmmount == 0 ? "" : ", Kolicina novca koja se vraca (koja je data pri rezervaciji): "
+							+ String.valueOf(returnalAmmount / 100) + "." + String.valueOf(returnalAmmount % 100)
+							+ ", Krajnja cijena: " + String.valueOf(calculatedPrice / 100) + "."
+							+ String.valueOf(Math.abs(calculatedPrice) % 100)),
+				"Zelite li kupiti kartu? ",
+				JOptionPane.DEFAULT_OPTION,
+				JOptionPane.QUESTION_MESSAGE,
+				null,
+				new String[]{"Yes", "No"},
+				"No"
+				);
+		if (response == 1) { //means he pressed no!
+			return;
+		}
+		korisnik.setWalletBalance(korisnik.getWalletBalance() - calculatedPrice);
+		karta.setKorRezervisao(null);
+		karta.setKorKupio(korisnik);
+		korisnikDAO.updateKorisnik(korisnik);
+		kartaDAO.updateTicket(karta);
+		kupiButton.setEnabled(false);
+		otkaziButton.setEnabled(false);
+		parentDialog.updateWalletBalanceLabel();
 	}
 	private void otkaziButtonPressed() {
-		// TODO Auto-generated method stub
-		
+		Korisnik korisnik = parentDialog.parent.korisnik;
+		if (karta.getDogadjaj().isNaplataPriRezervaciji()) {
+			int response = JOptionPane.showOptionDialog(
+					parentDialog,
+					"Jeste li sigurni da zelite otkazati rezervaciju",
+					"Zelite li otkazati rezervaciju?",
+					JOptionPane.DEFAULT_OPTION,
+					JOptionPane.QUESTION_MESSAGE,
+					null,
+					new String[]{"Da", "Ne"},
+					"Ne"
+					);
+			if (response == 1) { //means he pressed no!
+				return;
+			}
+		}
+		else {
+			int response = JOptionPane.showOptionDialog(
+					parentDialog,
+					"Jeste li sigurni da zelite otkazati rezervaciju?" + (karta.getCijenaRezervacije() == 0 ? ""
+							: " Rezervacija ce vam ipak biti naplacena ukoliko to ucinite. Cijena: "
+								+ String.valueOf(karta.getCijenaRezervacije() / 100) + "."
+								+ String.valueOf(karta.getCijenaRezervacije() % 100)),
+					"Zelite li otkazati rezervaciju?",
+					JOptionPane.DEFAULT_OPTION,
+					JOptionPane.QUESTION_MESSAGE,
+					null,
+					new String[]{"Da", "Ne"},
+					"Ne"
+					);
+			if (response == 1) { //means he pressed no!
+				return;
+			}
+			korisnik.setWalletBalance(korisnik.getWalletBalance() - karta.getCijenaRezervacije());
+		}
+		karta.setKorRezervisao(null);
+		korisnikDAO.updateKorisnik(korisnik);
+		kartaDAO.updateTicket(karta);
+		kupiButton.setEnabled(false);
+		otkaziButton.setEnabled(false);
+		parentDialog.updateWalletBalanceLabel();
 	}
 }
 
@@ -103,6 +188,7 @@ public class ReservedTicketsForUserDialogBox extends JDialog {
 	KorisnikAndDogadjajListView parent;
 	JPanel topPanel;
 	JPanel mainContentPanel;
+	JLabel walletBalanceLabel;
 	List<Karta> karte;
     public ReservedTicketsForUserDialogBox(KorisnikAndDogadjajListView parent) {
     	super(parent, "Add Wallet Balance", true);
@@ -122,10 +208,9 @@ public class ReservedTicketsForUserDialogBox extends JDialog {
         topPanel = new JPanel();
         topPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         
-        topPanel.add(new JLabel("Stanje racuna: "
-        			+ String.valueOf(parent.korisnik.getWalletBalance() / 100)
-        			+ "."
-        			+ String.valueOf(parent.korisnik.getWalletBalance() % 100)));
+        walletBalanceLabel = new JLabel();
+        updateWalletBalanceLabel();
+        topPanel.add(walletBalanceLabel);
         
         mainContentPanel = new JPanel();
         mainContentPanel.setLayout(new BoxLayout(mainContentPanel, BoxLayout.Y_AXIS));
@@ -156,5 +241,11 @@ public class ReservedTicketsForUserDialogBox extends JDialog {
     	}
     	mainContentPanel.revalidate();
     	mainContentPanel.repaint();
+    }
+    public void updateWalletBalanceLabel() {
+        walletBalanceLabel.setText("Stanje racuna: "
+            + String.valueOf(parent.korisnik.getWalletBalance() / 100)
+            + "." 
+            + String.valueOf(parent.korisnik.getWalletBalance() % 100));
     }
 }
