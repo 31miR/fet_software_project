@@ -224,6 +224,20 @@ INSERT INTO Dogadjaj VALUES (DEFAULT,
     'rostilj123',
     4
 );
+INSERT INTO Dogadjaj VALUES (DEFAULT,
+	'Elone, molim te kupi sve karte',
+	'Ovo nije nikakav dogadjaj, samo bih volio da elon kupi sve karte. Elone, znam da koristis aplikaciju. Kupi karte da sebi mogu kupiti plejku za rodjendan',
+    '2024-11-22 00:00:00',
+    'Predstava',
+    'Drama',
+    'dogadjajImages/3.jpg',
+    FALSE,
+    10000,
+    TRUE,
+    TRUE,
+    'rostilj123',
+    2
+);
 INSERT INTO Karta VALUES (DEFAULT,
 	2000,
 	0,
@@ -347,6 +361,510 @@ INSERT INTO Karta VALUES (DEFAULT,
     'neodredjeno',
     7,
     3,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
+    null,
+    null
+);
+INSERT INTO Karta VALUES (DEFAULT,
+	2500,
+	2000,
+    'neodredjeno',
+    3,
+    10,
     null,
     null
 );
