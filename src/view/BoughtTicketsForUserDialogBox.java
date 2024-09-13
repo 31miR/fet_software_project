@@ -10,6 +10,8 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,11 +22,17 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
 
 import model.Dogadjaj;
 import model.DogadjajDAO;
@@ -81,8 +89,32 @@ class BoughtTicket extends JPanel {
 		add(centerPanel, BorderLayout.CENTER);
 	}
 	private void generisiPDFButtonPressed() {
-		// TODO Auto-generated method stub
-		
+		JFileChooser fileChooser = new JFileChooser();
+	    fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+	    int result = fileChooser.showSaveDialog(null);
+	    if (result == JFileChooser.APPROVE_OPTION) {
+	        File selectedFolder = fileChooser.getSelectedFile();
+	        String path = selectedFolder.getAbsolutePath();
+	        
+	        // Koristi novi API iz iText 7
+	        try {
+	            PdfWriter writer = new PdfWriter(path + "/ticket_" + String.valueOf(karta.getKarta_id()) + ".pdf");
+	            PdfDocument pdf = new PdfDocument(writer);
+	            Document document = new Document(pdf);
+	            
+	            // Dodaj podatke o karti
+	            document.add(new Paragraph("Cijena karte: " + String.valueOf(karta.getCijena() / 100) + "."
+	            		+ String.valueOf(karta.getCijena() % 100)));
+	            document.add(new Paragraph("Sjediste: " + karta.getSjediste()));
+	            document.add(new Paragraph("Sektor: " + karta.getSektor().getNaziv()));
+	            document.add(new Paragraph("Dogadjaj: " + karta.getDogadjaj().getNaziv()));
+	            document.add(new Paragraph("Datum: " + karta.getDogadjaj().getDatum()));
+	            
+	            document.close();
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	    }
 	}
 }
 
