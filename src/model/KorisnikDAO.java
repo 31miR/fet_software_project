@@ -33,10 +33,10 @@ public class KorisnikDAO {
 		em.getTransaction().commit();
 		em.close();
 	}
-	public List<Korisnik> getLimitedPending(int start, int ammount) {
+	public List<Korisnik> getPending() {
 		EntityManager em = emf.createEntityManager();
 		List<Korisnik> ret = em.createQuery("SELECT a FROM Korisnik a WHERE a.profileApproved = :falseValue", Korisnik.class)
-				.setParameter("falseValue", false).setFirstResult(start).setMaxResults(ammount).getResultList();
+				.setParameter("falseValue", false).getResultList();
 		em.close();
 		return ret;
 	}

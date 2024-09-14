@@ -35,18 +35,33 @@ public class OrganizatorDAO {
 		em.getTransaction().commit();
 		em.close();
 	}
-	public List<Organizator> getLimitedPending(int start, int ammount) {
+	public List<Organizator> getPending() {
 		EntityManager em = emf.createEntityManager();
 		List<Organizator> ret = em.createQuery("SELECT a FROM Organizator a WHERE a.profileApproved = :falseValue", Organizator.class)
-				.setParameter("falseValue", false).setFirstResult(start).setMaxResults(ammount).getResultList();
+				.setParameter("falseValue", false).getResultList();
 		em.close();
 		return ret;
 	}
-	public void deleteorganizator(Organizator organizator) {
-		EntityManager em = emf.createEntityManager();
-		em.getTransaction().begin();
-		em.merge(organizator);
-		em.remove(organizator);
-		em.getTransaction().commit();
+	public void deleteOrganizator(Organizator organizator) {
+	    EntityManager em = emf.createEntityManager();
+	    try {
+	        em.getTransaction().begin();
+	        
+	        // Pronađi entitet u bazi koristeći njegov ID
+	        Organizator managedOrganizator = em.find(Organizator.class, organizator.getUsername());
+	        
+	        if (managedOrganizator != null) {
+	            em.remove(managedOrganizator);
+	        }
+	        
+	        em.getTransaction().commit();
+	    } catch (Exception e) {
+	        if (em.getTransaction().isActive()) {
+	            em.getTransaction().rollback();
+	        }
+	        e.printStackTrace(); // Log or handle the exception as necessary
+	    } finally {
+	        em.close();
+	    }
 	}
 }
