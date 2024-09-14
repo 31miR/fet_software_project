@@ -23,6 +23,7 @@ public class AddTickets extends JDialog {
     private List<Karta> createdTickets = new ArrayList<>(); // List to keep track of created tickets
 
     public AddTickets(Dogadjaj dogadjaj, Lokacija selectedLokacija) {
+    	super((JFrame)null, "Add tickets", true);
         this.dogadjaj = dogadjaj;
         this.kartaDAO = new KartaDAO();
         this.selectedLokacija = selectedLokacija;
