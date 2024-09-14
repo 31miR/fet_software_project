@@ -6,6 +6,8 @@ import model.Karta;
 import model.KartaDAO;
 import model.Lokacija;
 import model.Sektor;
+import model.SektorDAO;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,6 +17,7 @@ import java.util.List;
 public class AddTickets extends JDialog {
     private Dogadjaj dogadjaj;
     private KartaDAO kartaDAO;
+    private SektorDAO sektorDAO = new SektorDAO();
     private Lokacija selectedLokacija;
     private boolean ticketsAdded = false;
     private List<Karta> createdTickets = new ArrayList<>(); // List to keep track of created tickets
@@ -40,7 +43,7 @@ public class AddTickets extends JDialog {
         panel.setBackground(new Color(29, 190, 166));
         add(panel);
 
-        List<Sektor> sektori = selectedLokacija.getSektor();
+        List<Sektor> sektori = sektorDAO.getAllSectorsInLokacija(selectedLokacija);
 
         for (Sektor sektor : sektori) {
             JPanel sectorPanel = new JPanel(new GridLayout(0, 1));

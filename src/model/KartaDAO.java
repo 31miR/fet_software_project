@@ -24,12 +24,8 @@ public class KartaDAO {
 			dummy.setDogadjaj(dogadjaj);
 			dummy.setSektor(sektor);
 			dummy.setSjediste("neodredjeno");
-			dogadjaj.getKarta().add(dummy);
-			sektor.getKarta().add(dummy);
 			em.getTransaction().begin();
 			em.persist(dummy);
-			em.merge(dogadjaj);
-			em.merge(sektor);
 			em.getTransaction().commit();
 		}
 		em.close();
@@ -123,5 +119,17 @@ public class KartaDAO {
 				.setParameter("dogadjaj", dogadjaj).getSingleResult();
 		em.close();
 		return (int)ret;
+	}
+	public void deleteFreeTicketsForDogadjaj(Dogadjaj dogadjaj) {
+		EntityManager em = emf.createEntityManager();
+		em.getTransaction().begin();
+		List<Karta> tickets = em.createQuery("SELECT a FROM Karta a WHERE a.dogadjaj = :dogadjaj AND "
+				+ "a.korKupio IS NULL AND a.korRezervisao IS NULL", Karta.class)
+				.setParameter("dogadjaj", dogadjaj).getResultList();
+		for (Karta i : tickets) {
+			em.remove(i);
+		}
+		em.getTransaction().commit();
+		em.close();
 	}
 }

@@ -8,8 +8,10 @@ import javax.swing.text.JTextComponent;
 
 import model.Dogadjaj;
 import model.DogadjajDAO;
+import model.KartaDAO;
 import model.Lokacija;
 import model.LokacijaDAO;
+import model.Organizator;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -37,15 +39,17 @@ public class CreateEvent extends JDialog {
     private JButton ticketDataButton;
     private JFileChooser fileChooser;
     private Map<String, String[]> eventSubtypesMap;
-    private DogadjajDAO dogadjajDAO;
+    private DogadjajDAO dogadjajDAO = new DogadjajDAO();
+    private KartaDAO kartaDAO = new KartaDAO();
     private Dogadjaj dogadjaj; // Dogadjaj object to be used later
 	private JTextField maxTicketsField;
 	private JTextComponent eventImageField;
 	private JCheckBox paymentOnRegistrationCheckBox;
-
+	private Organizator organizator;
 	
 
-	    public CreateEvent() {
+	    public CreateEvent(Organizator organizator) {
+	    	this.organizator = organizator;
 	        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	        setBounds(450, 210, 620, 750);
 	        setResizable(false);
@@ -233,6 +237,7 @@ public class CreateEvent extends JDialog {
 	            if (validateFields()) {
 	                try {
 	                    String imagePath = saveEventImage();
+	                    dogadjaj = new Dogadjaj();
 	                    dogadjaj.setDatum((Date) dateSpinner.getValue());
 	                    dogadjaj.setOpis(eventDescriptionArea.getText().trim());
 	                    dogadjaj.setLokacija((Lokacija) locationComboBox.getSelectedItem());
@@ -241,6 +246,7 @@ public class CreateEvent extends JDialog {
 	                    dogadjaj.setVrsta((String) eventTypeComboBox.getSelectedItem());
 	                    dogadjaj.setPodvrsta((String) eventSubtypeComboBox.getSelectedItem());
 	                    dogadjaj.setNaziv(eventNameField.getText().trim());
+	                    dogadjaj.setOrganizator(organizator);
 
 	                    if (imagePath != null) {
 	                        dogadjaj.setSlika(imagePath);
@@ -248,10 +254,20 @@ public class CreateEvent extends JDialog {
 
 	                    // Save the event using DogadjajDAO
 	                    dogadjajDAO.addDogadjaj(dogadjaj);
+	                    
+	                    //THIS IS EXPERIMENTAL
+	                    AddTickets dialog = new AddTickets( dogadjaj, selectedLocation);
+	                    dialog.setVisible(true);
+	                    //THIS IS THE END
+	                    
 	                    JOptionPane.showMessageDialog(CreateEvent.this, "Event saved successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
 	                    dispose();
 	                } catch (IOException e1) {
+	                	e1.printStackTrace();
 	                    JOptionPane.showMessageDialog(CreateEvent.this, "Error saving image: " + e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	                    dogadjajDAO.updateDogadjaj(dogadjaj);
+	                    dogadjajDAO.deleteDogadjaj(dogadjaj);
+	                    kartaDAO.deleteFreeTicketsForDogadjaj(dogadjaj);
 	                }
 	            }
 	        });
@@ -309,7 +325,7 @@ public class CreateEvent extends JDialog {
 	            return null;
 	        }
 	        File file = new File(eventImageField.getText().trim());
-	        String newFileName = "event_images/" + file.getName();
+	        String newFileName = "./resources/event_images/" + file.getName();
 	        File newFile = new File(newFileName);
 	        Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 	        return newFileName;

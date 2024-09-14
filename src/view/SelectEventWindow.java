@@ -16,7 +16,7 @@ public class SelectEventWindow extends JDialog {
     private JButton seeMoreButton;
     private int start = 0;
     private final int limit = 5;
-    private IzmjeneDAO izmjeneDAO;
+    private IzmjeneDAO izmjeneDAO = new IzmjeneDAO();
     
 
     public SelectEventWindow(Organizator organizator) {
@@ -110,7 +110,6 @@ public class SelectEventWindow extends JDialog {
                 
                 if (response == JOptionPane.YES_OPTION) {
                     // Mark the event as finished
-                    event.setZavrsio(true);
                     izmjeneDAO.addChange("Dogadjaj", String.valueOf(event.getDogadjaj_id()), "zavrsio", "true");
                     JOptionPane.showMessageDialog(this, "Event has been marked as finished.");
                     dispose();

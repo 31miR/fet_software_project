@@ -48,7 +48,7 @@ public class OrganizatorView extends JFrame {
         createEventButton.setBackground(Color.decode("#f3f7f8"));
         createEventButton.setBorder(BorderFactory.createLineBorder(Color.decode("#e2e2e2")));
         createEventButton.addActionListener(e -> {
-            CreateEvent createEvent = new CreateEvent();
+            CreateEvent createEvent = new CreateEvent(organizator);
             createEvent.setVisible(true);
         });
         contentPane.add(createEventButton);
