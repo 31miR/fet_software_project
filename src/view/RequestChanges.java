@@ -1,248 +1,154 @@
 package view;
 
-import model.Administrator;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Image;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+
+import model.Dogadjaj;
+import model.DogadjajDAO;
 import model.Izmjene;
 import model.IzmjeneDAO;
+import model.SektorDAO;
+import model.Karta;
+import model.KartaDAO;
+import model.Korisnik;
+import model.KorisnikDAO;
+import model.LokacijaDAO;
+import model.Organizator;
+import model.OrganizatorDAO;
+import model.Sektor;
 
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableCellEditor;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.List;
 
-public class RequestChanges extends JFrame {
+class ChangesRequestPanel extends JPanel {
+	private static final long serialVersionUID = 1L;
+	RequestChanges parentDialog;
+	IzmjeneDAO izmjeneDAO = new IzmjeneDAO();
+	DogadjajDAO dogadjajDAO = new DogadjajDAO();
+	JButton odbijButton;
+	JButton prihvatiButton;
+	Izmjene izmjene;
+	public ChangesRequestPanel(RequestChanges parentDialog, Izmjene izmjene) {
+		this.parentDialog = parentDialog;
+		this.izmjene = izmjene;
+		setLayout(new BorderLayout());
+		setPreferredSize(new Dimension(600, 100));
+		setMaximumSize(new Dimension(Integer.MAX_VALUE, 200));
 
-    private static final long serialVersionUID = 1L;
-    private JPanel contentPane;
-    private JTable table;
-    private DefaultTableModel model;
-    private IzmjeneDAO izmjeneDAO;
-    private JButton loadMoreButton;
-    private JButton backButton;
-    private Administrator administrator; // Currently logged-in administrator
-    private int offset = 0; // Varijabla za praćenje pozicije u bazi podataka
+		JPanel infoPanel = new JPanel();
+		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
 
-    public RequestChanges(Administrator administrator) {
-    	this.administrator = administrator; 
-        izmjeneDAO = new IzmjeneDAO(); // Inicijalizuj DAO
+		infoPanel.add(new JLabel("Table name: " + izmjene.getImeTabele()));
+		infoPanel.add(new JLabel("Entity id: " + izmjene.getStringIdEntitija()));
+		if (izmjene.getImeTabele().equals("Dogadjaj")) {
+			Dogadjaj dogadjaj = dogadjajDAO.searchById(Integer.parseInt(izmjene.getStringIdEntitija()));
+			infoPanel.add(new JLabel("Event name is: " + dogadjaj.getNaziv()));
+		}
+		infoPanel.add(new JLabel("Column name: " + izmjene.getImeKolone()));
+		infoPanel.add(new JLabel("New value: " + izmjene.getNovaVrijednost()));
+		
+		
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		
+		odbijButton = new JButton("decline event");
+		odbijButton.addActionListener((e) -> {
+			odbijButtonPressed();
+		});
+		buttonPanel.add(odbijButton);
+		prihvatiButton = new JButton("accept event");
+		prihvatiButton.addActionListener((e) -> {
+			prihvatiButtonPressed();
+		});
+		buttonPanel.add(prihvatiButton);
 
-        setTitle("Request Changes");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setBounds(450, 190, 1000, 600);
-        setResizable(false);
+		JPanel centerPanel = new JPanel();
+		centerPanel.setLayout(new BorderLayout());
+		centerPanel.add(infoPanel, BorderLayout.CENTER);
+		centerPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-        contentPane = new JPanel();
-        contentPane.setLayout(new BorderLayout(0, 0));
-        setContentPane(contentPane);
+		add(centerPanel, BorderLayout.CENTER);
+	}
+	private void prihvatiButtonPressed() {
+		izmjeneDAO.acceptChange(izmjene);
+		prihvatiButton.setEnabled(false);
+		odbijButton.setEnabled(false);
+	}
+	private void odbijButtonPressed() {
+		izmjeneDAO.deleteChange(izmjene);
+		prihvatiButton.setEnabled(false);
+		odbijButton.setEnabled(false);
+	}
+}
 
-        // Kreiraj tabelu
-        String[] columnNames = {"TableName","ID", "Column", "Requested Change", "Actions"};
-        model = new DefaultTableModel(columnNames, 0);
-        table = new JTable(model) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                // Only Actions column is editable (for buttons)
-                return column == 3;
-            }
+public class RequestChanges extends JDialog {
+	private static final long serialVersionUID = 1L;
+	SektorDAO sektorDAO = new SektorDAO();
+	KartaDAO kartaDAO = new KartaDAO();
+	DogadjajDAO dogadjajDAO = new DogadjajDAO();
+	IzmjeneDAO izmjeneDAO = new IzmjeneDAO();
+	AdminView parent;
+	JPanel topPanel;
+	JLabel walletBalanceLabel;
+	JPanel mainContentPanel;
+    public RequestChanges(AdminView parent) {
+    	super(parent, "Event requests", true);
+    	this.parent = parent;
+    	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        setTitle("Edit requests:");
+        setSize(800, 600);
+        setMinimumSize(new Dimension(800, 600));
+        setLayout(new BorderLayout());
 
-            @Override
-            public TableCellRenderer getCellRenderer(int row, int column) {
-                if (column == 3) {
-                    return new ButtonRenderer();
-                } else {
-                    return new CustomTableCellRenderer();
-                }
-            }
-
-            @Override
-            public TableCellEditor getCellEditor(int row, int column) {
-                if (column == 3) {
-                    return new ButtonEditor(); // Custom editor for buttons
-                }
-                return super.getCellEditor(row, column);
-            }
-        };
-
-        // Povećaj visinu redova
-        table.setRowHeight(40); // Postavlja visinu svakog reda na 40 piksela
-
-        loadChanges();
-
-        JScrollPane scrollPane = new JScrollPane(table);
-        contentPane.add(scrollPane, BorderLayout.CENTER);
-
-        // Kreiraj panel za dugme na dnu
-        JPanel buttonPanel = new JPanel();
-        loadMoreButton = new JButton("Load More");
-        buttonPanel.add(loadMoreButton);
+        topPanel = new JPanel();
+        topPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         
+        mainContentPanel = new JPanel();
+        mainContentPanel.setLayout(new BoxLayout(mainContentPanel, BoxLayout.Y_AXIS));
+        mainContentPanel.setPreferredSize(new Dimension(600, 1000));
         
-        backButton = new JButton("Back");
-        buttonPanel.add(backButton);
+        updateRequestList();
 
-        // Dodaj buttonPanel na dno prozora
-        contentPane.add(buttonPanel, BorderLayout.SOUTH);
+        add(topPanel, BorderLayout.NORTH);
+        add(mainContentPanel, BorderLayout.CENTER);
 
-        backButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose(); // Close current window
-                AdminView adminView = new AdminView(administrator); // Return to AdminView with the logged-in administrator
-                adminView.setVisible(true);
-            }
-        });
-        
-        // Akcija za dugme
-        loadMoreButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                offset += 30; // Povećaj offset da bi se učitali naredni set zahtjeva
-                loadChanges();
-            }
-        });
+        // I kao, da mozes skrolat
+        JScrollPane scrollPane = new JScrollPane(mainContentPanel);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        add(scrollPane, BorderLayout.CENTER);
     }
-
-    private void loadChanges() {
-        List<Izmjene> changes = izmjeneDAO.getLimitedChanges(offset, 30); // Ažuriraj offset u pozivu
-
-        // Clear the existing data
-        model.setRowCount(0); // Očisti tabelu prije dodavanja novih redova
-
-        for (Izmjene izmjena : changes) {
-            Object[] rowData = {
-            	izmjena.getImeTabele(),
-                izmjena.getStringIdEntitija(), // Korisničko ime
-                izmjena.getImeKolone(), // Kolona koja se mijenja
-                izmjena.getNovaVrijednost(),    // Nova vrijednost
-                "Buttons"                      // Placeholder for buttons, will be rendered by the custom renderer
-            };
-            model.addRow(rowData); // Dodaj red u tabelu
-        }
-    }
-
-    // Custom renderer for other columns
-    private class CustomTableCellRenderer extends JLabel implements TableCellRenderer {
-
-        public CustomTableCellRenderer() {
-            setOpaque(true); // Make the background visible
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                                                       boolean isSelected, boolean hasFocus,
-                                                       int row, int column) {
-            setText(value != null ? value.toString() : "");
-
-            // Bojenje pozadine redova u zeleno
-            setBackground(new Color(20, 190, 166));
-
-            // Ako je red selektovan, možeš postaviti drugu boju
-            if (isSelected) {
-                setBackground(Color.YELLOW); // Na primjer, žuta boja za selekciju
-            }
-
-            // Poravnanje teksta
-            setHorizontalAlignment(CENTER);
-
-            return this;
-        }
-    }
-
-    // Custom renderer for buttons
-    private class ButtonRenderer extends JPanel implements TableCellRenderer {
-        private JButton acceptButton;
-        private JButton rejectButton;
-
-        public ButtonRenderer() {
-            setLayout(new FlowLayout());
-
-            acceptButton = new JButton("Accept");
-            rejectButton = new JButton("Reject");
-
-            // Obojimo dugmad u sivo
-            acceptButton.setBackground(new Color(95, 95, 95));
-            rejectButton.setBackground(new Color(95, 95, 95));
-            // Postavimo boju teksta na dugmadima
-            acceptButton.setForeground(Color.WHITE);
-            rejectButton.setForeground(Color.WHITE);
-
-            add(acceptButton);
-            add(rejectButton);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                                                       boolean isSelected, boolean hasFocus,
-                                                       int row, int column) {
-            return this;
-        }
-    }
-
-    // Custom editor for buttons
-    private class ButtonEditor extends AbstractCellEditor implements TableCellEditor {
-        private JPanel panel;
-        private JButton acceptButton;
-        private JButton rejectButton;
-
-        public ButtonEditor() {
-            panel = new JPanel();
-            panel.setLayout(new FlowLayout());
-
-            acceptButton = new JButton("Accept");
-            rejectButton = new JButton("Reject");
-
-            // Obojimo dugmad u sivo
-            acceptButton.setBackground(new Color(95, 95, 95));
-            rejectButton.setBackground(new Color(95, 95, 95));
-
-            // Postavimo boju teksta na dugmadima
-            acceptButton.setForeground(Color.WHITE);
-            rejectButton.setForeground(Color.WHITE);
-
-            acceptButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    int row = table.getEditingRow();
-                    Izmjene izmjena = (Izmjene) model.getValueAt(row, 0); // Koristimo objekat iz modela
-                    izmjeneDAO.acceptChange(izmjena);
-
-                    // Remove the row from the table model
-                    model.removeRow(row);
-
-                    //fireEditingStopped(); // Zaustavi uređivanje nakon klika
-                }
-            });
-
-            rejectButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    int row = table.getEditingRow();
-                    Izmjene izmjena = (Izmjene) model.getValueAt(row, 0); // Koristimo objekat iz modela
-                    izmjeneDAO.deleteChange(izmjena);
-
-                    // Remove the row from the table model
-                    model.removeRow(row);
-
-                   // fireEditingStopped(); // Zaustavi uređivanje nakon klika
-                }
-            });
-
-            panel.add(acceptButton);
-            panel.add(rejectButton);
-        }
-
-        @Override
-        public Component getTableCellEditorComponent(JTable table, Object value,
-                                                     boolean isSelected, int row, int column) {
-            return panel;
-        }
-
-        @Override
-        public Object getCellEditorValue() {
-            return null;
-        }
+    public void updateRequestList() {
+    	mainContentPanel.removeAll();
+    	
+    	List<Izmjene> list = izmjeneDAO.getAllChanges();
+    	for (Izmjene i : list) {
+    		mainContentPanel.add(new ChangesRequestPanel(this, i));
+    	}
+    	
+    	mainContentPanel.revalidate();
+    	mainContentPanel.repaint();
     }
 }

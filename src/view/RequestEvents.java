@@ -1,234 +1,149 @@
 package view;
 
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableCellEditor;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Image;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 import java.util.List;
-import javax.swing.border.EmptyBorder;
+import java.util.Map;
 
-import model.Administrator;
-import model.AdministratorDAO;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+
 import model.Dogadjaj;
 import model.DogadjajDAO;
+import model.SektorDAO;
+import model.Karta;
+import model.KartaDAO;
+import model.Korisnik;
+import model.KorisnikDAO;
+import model.LokacijaDAO;
+import model.Organizator;
+import model.OrganizatorDAO;
+import model.Sektor;
 
-public class RequestEvents extends JFrame {
 
-    private static final long serialVersionUID = 1L;
-    private JPanel contentPane;
-    private JTable table;
-    private DefaultTableModel model;
-    private DogadjajDAO dogadjajDAO;
-    private JButton loadMoreButton;
-    private JButton backButton;
-    private Administrator administrator; // Currently logged-in administrator
-    private int offset = 0; // Variable to track the position in the database
+class DogadjajCreationRequestPanel extends JPanel {
+	private static final long serialVersionUID = 1L;
+	RequestEvents parentDialog;
+	KorisnikDAO korisnikDAO = new KorisnikDAO();
+	KartaDAO kartaDAO = new KartaDAO();
+	DogadjajDAO dogadjajDAO = new DogadjajDAO();
+	JButton odbijButton;
+	JButton prihvatiButton;
+	Dogadjaj dogadjaj;
+	public DogadjajCreationRequestPanel(RequestEvents parentDialog, Dogadjaj dogadjaj) {
+		this.parentDialog = parentDialog;
+		this.dogadjaj = dogadjaj;
+		setLayout(new BorderLayout());
+		setPreferredSize(new Dimension(600, 100));
+		setMaximumSize(new Dimension(Integer.MAX_VALUE, 200));
 
-    public RequestEvents(Administrator administrator) { // Constructor now accepts Administrator
-        this.administrator = administrator; // Set the administrator
-        dogadjajDAO = new DogadjajDAO(); // Initialize DAO
+		JPanel infoPanel = new JPanel();
+		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
 
-        setTitle("Event Requests");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setBounds(450, 190, 800, 600);
-        setResizable(false);
+		infoPanel.add(new JLabel("name: " + dogadjaj.getNaziv()));
+		infoPanel.add(new JLabel("Location: " + dogadjaj.getLokacija().getNaziv()));
+		infoPanel.add(new JLabel("Event creator: " + dogadjaj.getOrganizator().getName() + " " + dogadjaj.getOrganizator().getLastName()));
+		infoPanel.add(new JLabel("Date: " + dogadjaj.getDatum()));
+		
+		
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		
+		odbijButton = new JButton("decline event");
+		odbijButton.addActionListener((e) -> {
+			odbijButtonPressed();
+		});
+		buttonPanel.add(odbijButton);
+		prihvatiButton = new JButton("accept event");
+		prihvatiButton.addActionListener((e) -> {
+			prihvatiButtonPressed();
+		});
+		buttonPanel.add(prihvatiButton);
 
-        contentPane = new JPanel();
-        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-        contentPane.setLayout(new BorderLayout(0, 0));
-        setContentPane(contentPane);
+		JPanel centerPanel = new JPanel();
+		centerPanel.setLayout(new BorderLayout());
+		centerPanel.add(infoPanel, BorderLayout.CENTER);
+		centerPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-        // Create table
-        String[] columnNames = {"ID", "Event Name", "Status", "Actions"};
-        model = new DefaultTableModel(columnNames, 0);
-        table = new JTable(model) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                // Only Actions column is editable (for buttons)
-                return column == 3;
-            }
+		add(centerPanel, BorderLayout.CENTER);
+	}
+	private void prihvatiButtonPressed() {
+		dogadjaj.setDogadjajApproved(true);;
+		dogadjajDAO.updateDogadjaj(dogadjaj);;
+		prihvatiButton.setEnabled(false);
+		odbijButton.setEnabled(false);
+	}
+	private void odbijButtonPressed() {
+		dogadjajDAO.deleteDogadjaj(dogadjaj);
+		prihvatiButton.setEnabled(false);
+		odbijButton.setEnabled(false);
+	}
+}
 
-            @Override
-            public TableCellRenderer getCellRenderer(int row, int column) {
-                if (column == 3) {
-                    return new ButtonRenderer(); // Custom renderer for buttons
-                } else {
-                    return new CustomTableCellRenderer(); // Custom renderer for other columns
-                }
-            }
+public class RequestEvents extends JDialog {
+	private static final long serialVersionUID = 1L;
+	SektorDAO sektorDAO = new SektorDAO();
+	KartaDAO kartaDAO = new KartaDAO();
+	DogadjajDAO dogadjajDAO = new DogadjajDAO();
+	AdminView parent;
+	JPanel topPanel;
+	JLabel walletBalanceLabel;
+	JPanel mainContentPanel;
+    public RequestEvents(AdminView parent) {
+    	super(parent, "Event requests", true);
+    	this.parent = parent;
+    	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        setTitle("Zahtjevi za profil:");
+        setSize(800, 600);
+        setMinimumSize(new Dimension(800, 600));
+        setLayout(new BorderLayout());
 
-            @Override
-            public TableCellEditor getCellEditor(int row, int column) {
-                if (column == 3) {
-                    return new ButtonEditor(); // Custom editor for buttons
-                }
-                return super.getCellEditor(row, column);
-            }
-        };
+        topPanel = new JPanel();
+        topPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        
+        mainContentPanel = new JPanel();
+        mainContentPanel.setLayout(new BoxLayout(mainContentPanel, BoxLayout.Y_AXIS));
+        mainContentPanel.setPreferredSize(new Dimension(600, 1000));
+        
+        updateRequestList();
 
-        // Increase row height
-        table.setRowHeight(40);
+        add(topPanel, BorderLayout.NORTH);
+        add(mainContentPanel, BorderLayout.CENTER);
 
-        loadEventRequests();
-
-        JScrollPane scrollPane = new JScrollPane(table);
-        contentPane.add(scrollPane, BorderLayout.CENTER);
-
-        // Create button panel at the bottom
-        JPanel buttonPanel = new JPanel();
-        loadMoreButton = new JButton("Load More");
-        buttonPanel.add(loadMoreButton);
-
-        backButton = new JButton("Back");
-        buttonPanel.add(backButton);
-
-        // Add buttonPanel to the bottom of the window
-        contentPane.add(buttonPanel, BorderLayout.SOUTH);
-
-        // Action for the back button
-        backButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose(); // Close current window
-                AdminView adminView = new AdminView(administrator); // Return to AdminView with the logged-in administrator
-                adminView.setVisible(true);
-            }
-        });
-
-        // Action for the Load More button
-        loadMoreButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                offset += 30; // Increase offset to load the next set of requests
-                loadEventRequests();
-            }
-        });
+        // I kao, da mozes skrolat
+        JScrollPane scrollPane = new JScrollPane(mainContentPanel);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        add(scrollPane, BorderLayout.CENTER);
     }
-
-    private void loadEventRequests() {
-        List<Dogadjaj> eventRequests = dogadjajDAO.getLimitedPending(offset, 30);
-
-        System.out.println("Fetched events count: " + eventRequests.size()); // Provjerite broj vraćenih događaja
-
-        // Očisti postojeće redove pre dodavanja novih
-        model.setRowCount(0);
-
-        for (Dogadjaj dogadjaj1 : eventRequests) {
-            model.addRow(new Object[]{
-                dogadjaj1.getDogadjaj_id(),
-                dogadjaj1.getNaziv(), // Pretpostavljam da 'getNaziv' metoda postoji u Dogadjaj klasi
-                dogadjaj1.isDogadjajApproved() ? "Approved" : "Pending", // Pretpostavljam da 'isDogadjajApproved' metoda postoji u Dogadjaj klasi
-                "" // Placeholder za dugmad
-            });
-        }
-    }
-
-    // Custom renderer for other columns
-    class CustomTableCellRenderer extends JLabel implements TableCellRenderer {
-        public CustomTableCellRenderer() {
-            setOpaque(true); // Make the background visible
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                                                       boolean isSelected, boolean hasFocus,
-                                                       int row, int column) {
-            setText(value != null ? value.toString() : "");
-            setBackground(new Color(20, 190, 166));
-
-            if (isSelected) {
-                setBackground(Color.YELLOW);
-            }
-
-            setHorizontalAlignment(CENTER);
-
-            return this;
-        }
-    }
-
-    // Custom renderer for buttons
-    class ButtonRenderer extends JPanel implements TableCellRenderer {
-        private JButton acceptButton;
-        private JButton rejectButton;
-
-        public ButtonRenderer() {
-            setLayout(new FlowLayout());
-            acceptButton = new JButton("Approve");
-            rejectButton = new JButton("Reject");
-            acceptButton.setBackground(new Color(95, 95, 95));
-            rejectButton.setBackground(new Color(95, 95, 95));
-            acceptButton.setForeground(Color.WHITE);
-            rejectButton.setForeground(Color.WHITE);
-            add(acceptButton);
-            add(rejectButton);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                                                       boolean isSelected, boolean hasFocus,
-                                                       int row, int column) {
-            return this;
-        }
-    }
-
-    // Custom editor for buttons
-    class ButtonEditor extends AbstractCellEditor implements TableCellEditor {
-        private JPanel panel;
-        private JButton acceptButton;
-        private JButton rejectButton;
-        private int row;
-
-        public ButtonEditor() {
-            panel = new JPanel();
-            panel.setLayout(new FlowLayout());
-            acceptButton = new JButton("Approve");
-            rejectButton = new JButton("Reject");
-            acceptButton.setBackground(new Color(95, 95, 95));
-            rejectButton.setBackground(new Color(95, 95, 95));
-            acceptButton.setForeground(Color.WHITE);
-            rejectButton.setForeground(Color.WHITE);
-
-            acceptButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    row = table.convertRowIndexToModel(table.getSelectedRow());
-                    Dogadjaj selectedEvent = dogadjajDAO.getLimitedPending(offset, 30).get(row);
-                    selectedEvent.setDogadjajApproved(true);
-                    dogadjajDAO.updateDogadjaj(selectedEvent);
-                    model.removeRow(row);
-                    fireEditingStopped(); // Stop editing after button click
-                }
-            });
-
-            rejectButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    row = table.convertRowIndexToModel(table.getSelectedRow());
-                    Dogadjaj selectedEvent = dogadjajDAO.getLimitedPending(offset, 30).get(row);
-                    selectedEvent.setDogadjajApproved(false);
-                    dogadjajDAO.updateDogadjaj(selectedEvent);
-                    model.removeRow(row);
-                    fireEditingStopped(); // Stop editing after button click
-                }
-            });
-
-            panel.add(acceptButton);
-            panel.add(rejectButton);
-        }
-
-        @Override
-        public Component getTableCellEditorComponent(JTable table, Object value,
-                                                     boolean isSelected, int row, int column) {
-            this.row = row; // Postavi trenutni red
-            return panel;
-        }
-
-        @Override
-        public Object getCellEditorValue() {
-            return null;
-        }
+    public void updateRequestList() {
+    	mainContentPanel.removeAll();
+    	
+    	List<Dogadjaj> list = dogadjajDAO.getPending();
+    	for (Dogadjaj i : list) {
+    		mainContentPanel.add(new DogadjajCreationRequestPanel(this, i));
+    	}
+    	
+    	mainContentPanel.revalidate();
+    	mainContentPanel.repaint();
     }
 }

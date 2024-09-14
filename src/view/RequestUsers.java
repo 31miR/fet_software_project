@@ -1,251 +1,223 @@
 package view;
 
-import javax.swing.*;
-import javax.swing.table.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Image;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 import java.util.List;
-import javax.swing.border.EmptyBorder;
+import java.util.Map;
+
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+
+import model.Dogadjaj;
+import model.DogadjajDAO;
+import model.SektorDAO;
+import model.Karta;
+import model.KartaDAO;
 import model.Korisnik;
 import model.KorisnikDAO;
+import model.LokacijaDAO;
 import model.Organizator;
 import model.OrganizatorDAO;
-import model.Administrator;
+import model.Sektor;
 
-public class RequestUsers extends JFrame {
 
-    private static final long serialVersionUID = 1L;
-    private JPanel contentPane;
-    private JTable table;
-    private DefaultTableModel model;
-    private KorisnikDAO korisnikDAO;
-    private OrganizatorDAO organizatorDAO;
-    private JButton loadMoreButton;
-    private JButton backButton;
-    private int offset = 0;
+class KorisnikCreationRequestPanel extends JPanel {
+	private static final long serialVersionUID = 1L;
+	RequestUsers parentDialog;
+	KorisnikDAO korisnikDAO = new KorisnikDAO();
+	KartaDAO kartaDAO = new KartaDAO();
+	DogadjajDAO dogadjajDAO = new DogadjajDAO();
+	JButton odbijButton;
+	JButton prihvatiButton;
+	Korisnik korisnik;
+	public KorisnikCreationRequestPanel(RequestUsers parentDialog, Korisnik korisnik) {
+		this.parentDialog = parentDialog;
+		this.korisnik = korisnik;
+		setLayout(new BorderLayout());
+		setPreferredSize(new Dimension(600, 100));
+		setMaximumSize(new Dimension(Integer.MAX_VALUE, 200));
 
-    public RequestUsers(Administrator admin) {
-        korisnikDAO = new KorisnikDAO();
-        organizatorDAO = new OrganizatorDAO();
+		JPanel infoPanel = new JPanel();
+		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
 
-        setTitle("User and Organizer Requests");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setBounds(450, 190, 1000, 800);
-        setResizable(false);
+		infoPanel.add(new JLabel("username: " + korisnik.getUsername()));
+		infoPanel.add(new JLabel("full name: " + korisnik.getName() + " " + korisnik.getLastName()));
+		infoPanel.add(new JLabel("e-mail: " + korisnik.getEmail()));
+		
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		
+		odbijButton = new JButton("decline profile");
+		odbijButton.addActionListener((e) -> {
+			odbijButtonPressed();
+		});
+		buttonPanel.add(odbijButton);
+		prihvatiButton = new JButton("accept profile");
+		prihvatiButton.addActionListener((e) -> {
+			prihvatiButtonPressed();
+		});
+		buttonPanel.add(prihvatiButton);
 
-        contentPane = new JPanel();
-        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-        contentPane.setLayout(new BorderLayout(0, 0));
-        setContentPane(contentPane);
+		JPanel centerPanel = new JPanel();
+		centerPanel.setLayout(new BorderLayout());
+		centerPanel.add(infoPanel, BorderLayout.CENTER);
+		centerPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-        // Kreiraj tabelu
-        String[] columnNames = {"Type", "Username", "Name", "LastName", "Accept", "Reject"};
-        model = new DefaultTableModel(columnNames, 0);
-        table = new JTable(model) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return column == 4 || column == 5;
-            }
+		add(centerPanel, BorderLayout.CENTER);
+	}
+	private void prihvatiButtonPressed() {
+		korisnik.setProfileApproved(true);
+		korisnikDAO.updateKorisnik(korisnik);
+		prihvatiButton.setEnabled(false);
+		odbijButton.setEnabled(false);
+	}
+	private void odbijButtonPressed() {
+		korisnikDAO.deleteKorisnik(korisnik);
+		prihvatiButton.setEnabled(false);
+		odbijButton.setEnabled(false);
+	}
+}
 
-            @Override
-            public TableCellRenderer getCellRenderer(int row, int column) {
-                if (column == 4 || column == 5) {
-                    return new ButtonRenderer();
-                } else {
-                    return new CustomTableCellRenderer();
-                }
-            }
 
-            @Override
-            public TableCellEditor getCellEditor(int row, int column) {
-                if (column == 4 || column == 5) {
-                    return new ButtonEditor();
-                }
-                return super.getCellEditor(row, column);
-            }
-        };
+class OrganizatorCreationRequestPanel extends JPanel {
+	private static final long serialVersionUID = 1L;
+	RequestUsers parentDialog;
+	OrganizatorDAO organizatorDAO = new OrganizatorDAO();
+	KartaDAO kartaDAO = new KartaDAO();
+	DogadjajDAO dogadjajDAO = new DogadjajDAO();
+	JButton odbijButton;
+	JButton prihvatiButton;
+	Organizator organizator;
+	public OrganizatorCreationRequestPanel(RequestUsers parentDialog, Organizator organizator) {
+		this.parentDialog = parentDialog;
+		this.organizator = organizator;
+		setLayout(new BorderLayout());
+		setPreferredSize(new Dimension(600, 100));
+		setMaximumSize(new Dimension(Integer.MAX_VALUE, 200));
 
-        table.setRowHeight(40);
+		JPanel infoPanel = new JPanel();
+		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
 
-        loadRequests();
+		infoPanel.add(new JLabel("username: " + organizator.getUsername()));
+		infoPanel.add(new JLabel("full name: " + organizator.getName() + " " + organizator.getLastName()));
+		infoPanel.add(new JLabel("e-mail: " + organizator.getEmail()));
+		
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		
+		odbijButton = new JButton("decline profile");
+		odbijButton.addActionListener((e) -> {
+			odbijButtonPressed();
+		});
+		buttonPanel.add(odbijButton);
+		prihvatiButton = new JButton("accept profile");
+		prihvatiButton.addActionListener((e) -> {
+			prihvatiButtonPressed();
+		});
+		buttonPanel.add(prihvatiButton);
 
-        JScrollPane scrollPane = new JScrollPane(table);
-        contentPane.add(scrollPane, BorderLayout.CENTER);
+		JPanel centerPanel = new JPanel();
+		centerPanel.setLayout(new BorderLayout());
+		centerPanel.add(infoPanel, BorderLayout.CENTER);
+		centerPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-        JPanel buttonPanel = new JPanel();
-        loadMoreButton = new JButton("Load More");
-        buttonPanel.add(loadMoreButton);
+		add(centerPanel, BorderLayout.CENTER);
+	}
+	private void prihvatiButtonPressed() {
+		organizator.setProfileApproved(true);
+		organizatorDAO.updateOrganizator(organizator);
+		prihvatiButton.setEnabled(false);
+		odbijButton.setEnabled(false);
+	}
+	private void odbijButtonPressed() {
+		organizatorDAO.deleteOrganizator(organizator);
+		prihvatiButton.setEnabled(false);
+		odbijButton.setEnabled(false);
+	}
+}
+
+
+public class RequestUsers extends JDialog {
+	private static final long serialVersionUID = 1L;
+	KorisnikDAO korisnikDAO = new KorisnikDAO();
+	SektorDAO sektorDAO = new SektorDAO();
+	KartaDAO kartaDAO = new KartaDAO();
+	OrganizatorDAO organizatorDAO = new OrganizatorDAO();
+	AdminView parent;
+	JPanel topPanel;
+	JLabel walletBalanceLabel;
+	JPanel mainContentPanel;
+	JComboBox<String> choiceSelector;
+    public RequestUsers(AdminView parent) {
+    	super(parent, "Profile creation requests", true);
+    	this.parent = parent;
+    	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        setTitle("Zahtjevi za profil:");
+        setSize(800, 600);
+        setMinimumSize(new Dimension(800, 600));
+        setLayout(new BorderLayout());
+
+        topPanel = new JPanel();
+        topPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         
-        backButton = new JButton ("Back");
-        buttonPanel.add(backButton);
-
-        contentPane.add(buttonPanel, BorderLayout.SOUTH);
-
-        loadMoreButton.addActionListener(e -> {
-            offset += 30;
-            loadRequests();
+        choiceSelector = new JComboBox<>(new String[] {"organizatori", "korisnici"});
+        choiceSelector.addActionListener((e) -> {
+        	updateRequestList();
         });
+        topPanel.add(choiceSelector);
         
-        backButton.addActionListener(e -> {
-            AdminView back = new AdminView(admin);
-            back.setVisible(true);
-            dispose();
-        });
+        mainContentPanel = new JPanel();
+        mainContentPanel.setLayout(new BoxLayout(mainContentPanel, BoxLayout.Y_AXIS));
+        mainContentPanel.setPreferredSize(new Dimension(600, 1000));
+        
+        updateRequestList();
+
+        add(topPanel, BorderLayout.NORTH);
+        add(mainContentPanel, BorderLayout.CENTER);
+
+        // I kao, da mozes skrolat
+        JScrollPane scrollPane = new JScrollPane(mainContentPanel);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        add(scrollPane, BorderLayout.CENTER);
     }
-    
-    private void loadRequests() {
-        List<Korisnik> userRequests = korisnikDAO.getLimitedPending(offset, 30);
-        List<Organizator> organizatorRequests = organizatorDAO.getLimitedPending(offset, 30);
-
-        model.setRowCount(0); // Clear existing rows
-
-        for (Korisnik korisnik : userRequests) {
-            model.addRow(new Object[]{
-                "Korisnik",
-                korisnik.getUsername(),
-                korisnik.getName(),
-                korisnik.getLastName(),
-                korisnik, // Korisnik objekat
-                null // Organizator objekat
-            });
-        }
-
-        for (Organizator organizator : organizatorRequests) {
-            model.addRow(new Object[]{
-                "Organizator",
-                organizator.getUsername(),
-                organizator.getName(),
-                organizator.getLastName(),
-                null, // Korisnik objekat
-                organizator // Organizator objekat
-            });
-        }
-    }
-
-    private class CustomTableCellRenderer extends JLabel implements TableCellRenderer {
-        public CustomTableCellRenderer() {
-            setOpaque(true);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                                                       boolean isSelected, boolean hasFocus,
-                                                       int row, int column) {
-            setText(value != null ? value.toString() : "");
-            setBackground(new Color(20, 190, 166));
-            if (isSelected) {
-                setBackground(Color.YELLOW);
-            }
-            setHorizontalAlignment(CENTER);
-            return this;
-        }
-    }
-
-    private class ButtonRenderer extends JPanel implements TableCellRenderer {
-        private JButton acceptButton;
-        private JButton rejectButton;
-
-        public ButtonRenderer() {
-            setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
-            acceptButton = new JButton("Accept");
-            rejectButton = new JButton("Reject");
-
-            acceptButton.setBackground(new Color(95, 95, 95));
-            rejectButton.setBackground(new Color(95, 95, 95));
-            acceptButton.setForeground(Color.WHITE);
-            rejectButton.setForeground(Color.WHITE);
-
-            add(acceptButton);
-            add(rejectButton);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                                                       boolean isSelected, boolean hasFocus,
-                                                       int row, int column) {
-            acceptButton.setVisible(column == 4);
-            rejectButton.setVisible(column == 5);
-            return this;
-        }
-    }
-
-    private class ButtonEditor extends AbstractCellEditor implements TableCellEditor {
-        private JPanel panel;
-        private JButton acceptButton;
-        private JButton rejectButton;
-        private JTable table;
-        private int editingRow;
-
-        public ButtonEditor() {
-            panel = new JPanel();
-            panel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
-
-            acceptButton = new JButton("Accept");
-            rejectButton = new JButton("Reject");
-
-            acceptButton.setBackground(new Color(95, 95, 95));
-            rejectButton.setBackground(new Color(95, 95, 95));
-
-            acceptButton.setForeground(Color.WHITE);
-            rejectButton.setForeground(Color.WHITE);
-
-            acceptButton.addActionListener(e -> {
-                if (table != null) {
-                    int row = table.convertRowIndexToModel(editingRow);
-                    if (row >= 0 && row < model.getRowCount()) {
-                        String userType = (String) model.getValueAt(row, 0);
-                        if ("Korisnik".equals(userType)) {
-                            Korisnik selectedUser = (Korisnik) model.getValueAt(row, 4);
-                            selectedUser.setProfileApproved(true);
-                            korisnikDAO.updateKorisnik(selectedUser);
-                        } else {
-                            Organizator selectedOrg = (Organizator) model.getValueAt(row, 5);
-                            selectedOrg.setProfileApproved(true);
-                            organizatorDAO.updateOrganizator(selectedOrg);
-                        }
-                        model.removeRow(row);
-                    }
-                    stopCellEditing();
-                }
-            });
-
-            rejectButton.addActionListener(e -> {
-                if (table != null) {
-                    int row = table.convertRowIndexToModel(editingRow);
-                    if (row >= 0 && row < model.getRowCount()) {
-                        String userType = (String) model.getValueAt(row, 0);
-                        if ("Korisnik".equals(userType)) {
-                            Korisnik selectedUser = (Korisnik) model.getValueAt(row, 4);
-                            selectedUser.setProfileApproved(false);
-                            korisnikDAO.updateKorisnik(selectedUser);
-                        } else {
-                            Organizator selectedOrg = (Organizator) model.getValueAt(row, 5);
-                            selectedOrg.setProfileApproved(false);
-                            organizatorDAO.updateOrganizator(selectedOrg);
-                        }
-                        model.removeRow(row);
-                    }
-                    stopCellEditing();
-                }
-            });
-
-            panel.add(acceptButton);
-            panel.add(rejectButton);
-        }
-
-        @Override
-        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            this.table = table;
-            this.editingRow = row;
-            return panel;
-        }
-       
-
-
-        @Override
-        public Object getCellEditorValue() {
-            return null;
-        }
+    public void updateRequestList() {
+    	mainContentPanel.removeAll();
+    	String choiceString = (String)choiceSelector.getSelectedItem();
+    	
+    	if (choiceString.equals("organizatori")) {
+    		List<Organizator> list = organizatorDAO.getPending();
+    		for (Organizator i : list) {
+    			mainContentPanel.add(new OrganizatorCreationRequestPanel(this, i));
+    		}
+    	}
+    	else {
+    		List<Korisnik> list = korisnikDAO.getPending();
+    		for (Korisnik i : list) {
+    			mainContentPanel.add(new KorisnikCreationRequestPanel(this, i));
+    		}
+    	}
+    	
+    	mainContentPanel.revalidate();
+    	mainContentPanel.repaint();
     }
 }
