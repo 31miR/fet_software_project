@@ -73,8 +73,8 @@ public class AddTickets extends JDialog {
             btnGenerate.addActionListener(e -> {
                 try {
                     int amount = Integer.parseInt(txtAmount.getText());
-                    int price = Integer.parseInt(txtPrice.getText());
-                    int resPrice = Integer.parseInt(txtResPrice.getText());
+                    int price = (int)(100*Double.parseDouble(txtPrice.getText()));
+                    int resPrice = (int)(100*Double.parseDouble(txtResPrice.getText()));
 
                     if (amount > sektor.getKapacitet()) {
                         JOptionPane.showMessageDialog(AddTickets.this,
