@@ -2,6 +2,7 @@ package view;
 
 import model.IzmjeneDAO;
 import model.Korisnik;
+import model.Organizator;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -9,7 +10,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class EditProfile extends JFrame {
+public class EditProfile extends JDialog {
+
     private static final long serialVersionUID = 1L;
     private Korisnik korisnik;
     private IzmjeneDAO izmjeneDAO = new IzmjeneDAO();
@@ -21,10 +23,9 @@ public class EditProfile extends JFrame {
     }
 
     private void initialize() {
-    	
-  
-  
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setTitle("Karta");
+        setModal(true); // Ensures that it acts as a modal dialog
+        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         setBounds(450, 190, 1014, 597);
         setResizable(false);
 
@@ -33,17 +34,16 @@ public class EditProfile extends JFrame {
         setContentPane(contentPane);
         contentPane.setLayout(null);
         contentPane.setBackground(new Color(29, 190, 166));
-        
+
         // Prikaz slike
-        ImageIcon imageIcon = new ImageIcon("resources/logo.png"); // Postavi putanju do svoje slike
+        ImageIcon imageIcon = new ImageIcon("resources/logo.png"); // Postavi putanju do slike
         Image image = imageIcon.getImage(); // Transformacija slike
         Image scaledImage = image.getScaledInstance(300, 300, java.awt.Image.SCALE_SMOOTH); // Promijeni veličinu slike
         imageIcon = new ImageIcon(scaledImage); // Ponovo kreiraj ImageIcon sa promijenjenom slikom
-        
+
         JLabel label = new JLabel(imageIcon);
         label.setBounds(50, 100, 400, 300);
         contentPane.add(label);
-        
 
         // Tekstualni okviri za unos novih podataka
         JLabel lblName = new JLabel("Name:");
@@ -108,7 +108,7 @@ public class EditProfile extends JFrame {
 
         // Dugme za čuvanje promjena
         JButton saveButton = new JButton("Request Changes");
-        saveButton.setBounds(500, 470, 200, 50);
+        saveButton.setBounds(500, 470, 250, 50);
         saveButton.setFont(new Font("Chilanka", Font.PLAIN, 26));
         saveButton.setForeground(new Color(51, 51, 51));
         saveButton.setBackground(Color.decode("#f3f7f8"));
@@ -116,53 +116,25 @@ public class EditProfile extends JFrame {
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (nameField.getText().length() != 0) {
-                	izmjeneDAO.addChange("Korisnik", korisnik.getUsername(), "name", nameField.getText());
+                // Provera i slanje promena samo ako su se vrednosti promenile
+                if (!nameField.getText().equals(korisnik.getName()) && !nameField.getText().isEmpty()) {
+                    izmjeneDAO.addChange("Korisnik", korisnik.getUsername(), "name", nameField.getText());
                 }
-                if (lastNameField.getText().length() != 0) {
-                	izmjeneDAO.addChange("Korisnik", korisnik.getUsername(), "lastName", lastNameField.getText());
+                if (!lastNameField.getText().equals(korisnik.getLastName()) && !lastNameField.getText().isEmpty()) {
+                    izmjeneDAO.addChange("Korisnik", korisnik.getUsername(), "lastName", lastNameField.getText());
                 }
-                if (emailField.getText().length() != 0) {
-                	izmjeneDAO.addChange("Korisnik", korisnik.getUsername(), "email", emailField.getText());
+                if (!emailField.getText().equals(korisnik.getEmail()) && !emailField.getText().isEmpty()) {
+                    izmjeneDAO.addChange("Korisnik", korisnik.getUsername(), "email", emailField.getText());
                 }
-                if (phoneField.getText().length() != 0) {
-                	izmjeneDAO.addChange("Korisnik", korisnik.getUsername(), "phone", phoneField.getText());
+                if (!phoneField.getText().equals(korisnik.getPhone()) && !phoneField.getText().isEmpty()) {
+                    izmjeneDAO.addChange("Korisnik", korisnik.getUsername(), "phone", phoneField.getText());
                 }
-                if (addressField.getText().length() != 0) {
-                	izmjeneDAO.addChange("Korisnik", korisnik.getUsername(), "address", addressField.getText());
+                if (!addressField.getText().equals(korisnik.getAddress()) && !addressField.getText().isEmpty()) {
+                    izmjeneDAO.addChange("Korisnik", korisnik.getUsername(), "address", addressField.getText());
                 }
-                dispose();
+                dispose(); // Zatvaranje prozora nakon slanja promjena
             }
         });
         contentPane.add(saveButton);
-        
-        // Back Button
-        JButton backButton = new JButton("Back");
-        backButton.setFont(new Font("Chilanka", Font.PLAIN, 26));
-        backButton.setBounds(750, 470, 200, 50);
-        backButton.setForeground(new Color(51, 51, 51));
-        backButton.setBackground(Color.decode("#f3f7f8"));
-        backButton.setBorder(BorderFactory.createLineBorder(Color.decode("#e2e2e2")));
-        backButton.addActionListener(e -> {
-            KorisnikView back = new KorisnikView(korisnik);
-            back.setVisible(true);
-            dispose();
-        });
-        contentPane.add(backButton);
-    }
-    
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Korisnik korisnik = new Korisnik(); // Zamijeni sa stvarnim Korisnik objektom
-                    EditProfile frame = new EditProfile(korisnik);
-                    frame.setVisible(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
     }
 }

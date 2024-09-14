@@ -371,8 +371,14 @@ public class KorisnikAndDogadjajListView extends JFrame {
 		view.setVisible(true);
 	}
 	private void profileSettingsButtonPressed() {
-		// TODO Auto-generated method stub
-		
+		EditProfile view = new EditProfile(korisnik);
+		view.addWindowListener(new WindowAdapter() {
+		    @Override
+		    public void windowClosed(WindowEvent e) {
+		    	updateTopPanel();
+		    }
+		});
+		view.setVisible(true);
 	}
 	private void addMoneyButtonPressed() {
 		WalletBalanceView view = new WalletBalanceView(this, korisnik);
