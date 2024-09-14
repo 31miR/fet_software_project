@@ -1,12 +1,17 @@
 package view;
 
 import javax.swing.*;
+
 import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import model.Lokacija;
@@ -78,7 +83,7 @@ public class CreateLocation extends JFrame {
         Font font = new Font("Chilanka", Font.PLAIN, 26);
 
         // Postavljanje fonta na JLabel i JTextField
-        JLabel nazivLabel = new JLabel("Location name:");
+        JLabel nazivLabel = new JLabel("Name Loc:");
         nazivLabel.setFont(font);
         JLabel gradLabel = new JLabel("City:");
         gradLabel.setFont(font);
@@ -100,7 +105,7 @@ public class CreateLocation extends JFrame {
         cancelButton.setFont(font);
 
         // Postavljanje pozicija i veličina komponenti
-        nazivLabel.setBounds(400, 100, 150, 50);
+        nazivLabel.setBounds(400, 100, 150, 100);
         nazivField.setBounds(550, 100, 300, 50);
         gradLabel.setBounds(400, 200, 150, 50);
         gradField.setBounds(550, 200, 300, 50);
@@ -133,19 +138,48 @@ public class CreateLocation extends JFrame {
         contentPane.add(saveButton);
         contentPane.add(cancelButton);
 
-        // Postavljanje akcije za dugme "Browse"
         browseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFileChooser fileChooser = new JFileChooser();
                 fileChooser.setFileFilter(new FileNameExtensionFilter("Image Files", "png", "jpg", "gif"));
                 int returnValue = fileChooser.showOpenDialog(null);
+                
                 if (returnValue == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
-                    slikaField.setText(selectedFile.getAbsolutePath());
+
+                    // Folder u koji ćemo kopirati sliku
+                    File destFolder = new File("resources");
+                    if (!destFolder.exists()) {
+                        destFolder.mkdirs(); // Kreiraj folder ako ne postoji
+                    }
+
+                    // Odabir novog imena slike
+                    String newFileName = JOptionPane.showInputDialog("Enter new name for the image (without extension):");
+                    if (newFileName == null || newFileName.trim().isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "Invalid file name.");
+                        return;
+                    }
+
+                    // Preuzimanje ekstenzije originalne datoteke
+                    String fileExtension = selectedFile.getName().substring(selectedFile.getName().lastIndexOf('.'));
+                    File newFile = new File(destFolder, newFileName + fileExtension);
+
+                    try {
+                        // Kopiranje slike u "resources" folder
+                        Files.copy(selectedFile.toPath(), newFile.toPath());
+                        
+                        // Postavi putanju nove slike u tekstualno polje
+                        slikaField.setText(newFile.getAbsolutePath());
+
+                        JOptionPane.showMessageDialog(null, "Image successfully copied and renamed.");
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, "Error while copying the file: " + ex.getMessage());
+                    }
                 }
             }
         });
+
 
         // Postavljanje akcije za dugme "Add Sectors"
         addSectorButton.addActionListener(new ActionListener() {
