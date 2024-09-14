@@ -83,7 +83,7 @@ public class FinishedEventOrganizator extends JDialog {
             JPanel eventPanel = new JPanel(new GridBagLayout());
             eventPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
             eventPanel.setBackground(new Color(240, 240, 240));
-            eventPanel.setMaximumSize(new Dimension(780, 120)); // Ensure panel width fits within the window
+            eventPanel.setMaximumSize(new Dimension(780, 400)); // Ensure panel width fits within the window
 
             GridBagConstraints eventGbc = new GridBagConstraints();
             eventGbc.insets = new Insets(5, 5, 5, 5);
@@ -127,9 +127,11 @@ public class FinishedEventOrganizator extends JDialog {
             eventGbc.insets = new Insets(5, 5, 5, 15);
             eventPanel.add(dateLabel, eventGbc);
 
-            // Location Image - Right side
-            JLabel imageLabel = new JLabel(new ImageIcon(event.getSlika()));
-            imageLabel.setPreferredSize(new Dimension(350, 50));
+            ImageIcon imageIcon = new ImageIcon(event.getSlika());
+    		Image image = imageIcon.getImage();
+    		Image scaledImage = image.getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+            JLabel imageLabel = new JLabel(new ImageIcon(scaledImage));
+            imageLabel.setPreferredSize(new Dimension(150, 150)); // Fixed size for the image
             eventGbc.gridy = 1;
             eventGbc.insets = new Insets(5, 5, 5, 15);
             eventPanel.add(imageLabel, eventGbc);

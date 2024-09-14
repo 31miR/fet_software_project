@@ -82,7 +82,7 @@ public class ViewEventOrganizator extends JDialog {  // Extend JDialog instead o
             JPanel eventPanel = new JPanel(new GridBagLayout());
             eventPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
             eventPanel.setBackground(new Color(240, 240, 240));
-            eventPanel.setMaximumSize(new Dimension(780, 120)); // Ensure panel width fits within the window
+            eventPanel.setMaximumSize(new Dimension(780, 400)); // Ensure panel width fits within the window
 
             GridBagConstraints eventGbc = new GridBagConstraints();
             eventGbc.insets = new Insets(5, 5, 5, 5);
@@ -127,8 +127,11 @@ public class ViewEventOrganizator extends JDialog {  // Extend JDialog instead o
             eventPanel.add(dateLabel, eventGbc);
 
             // Location Image - Right side
-            JLabel imageLabel = new JLabel(new ImageIcon(event.getSlika()));
-            imageLabel.setPreferredSize(new Dimension(350, 50)); // Fixed size for the image
+            ImageIcon imageIcon = new ImageIcon(event.getSlika());
+    		Image image = imageIcon.getImage();
+    		Image scaledImage = image.getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+            JLabel imageLabel = new JLabel(new ImageIcon(scaledImage));
+            imageLabel.setPreferredSize(new Dimension(150, 150)); // Fixed size for the image
             eventGbc.gridy = 1;
             eventGbc.insets = new Insets(5, 5, 5, 15); // Add extra space to the right
             eventPanel.add(imageLabel, eventGbc);
