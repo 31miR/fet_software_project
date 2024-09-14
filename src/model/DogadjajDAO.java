@@ -13,6 +13,19 @@ import javax.persistence.*;
 
 public class DogadjajDAO {
 	private EntityManagerFactory emf = EntityManagerFactoryHolder.getEntityManagerFactory();
+	public Dogadjaj searchById(int id) {
+		try {
+			EntityManager em = emf.createEntityManager();
+			Dogadjaj ret = em.createQuery("SELECT a FROM Dogadjaj a WHERE a.dogadjaj_id = :id", Dogadjaj.class)
+					.setParameter("id", id)
+					.getSingleResult();
+			em.close();
+			return ret;
+		}
+		catch (Exception e) {
+			return null; //Makes this a total function, i.e. returns valid value for all inputs (I HOPE)
+		}
+	}
 	public List<Dogadjaj> getFiltered(List<String> filters, String searchString, String sortBy, boolean ascending,
 										int start, int ammount) {
 		String where_part = "";
@@ -54,19 +67,34 @@ public class DogadjajDAO {
 		em.getTransaction().commit();
 		em.close();
 	} //This function should not be used when requesting updates from Organizator!
-	public List<Dogadjaj> getLimitedPending(int start, int ammount) {
+	public List<Dogadjaj> getPending() {
 		EntityManager em = emf.createEntityManager();
-		List<Dogadjaj> ret = em.createQuery("SELECT a FROM Dogadjaj a WHERE a.dogadjajApproved = :falseValue", Dogadjaj.class).setFirstResult(start)
-				.setParameter("falseValue", false).setMaxResults(ammount).getResultList();
+		List<Dogadjaj> ret = em.createQuery("SELECT a FROM Dogadjaj a WHERE a.dogadjajApproved = :falseValue", Dogadjaj.class)
+				.setParameter("falseValue", false).getResultList();
 		em.close();
 		return ret;
 	}
 	public void deleteDogadjaj(Dogadjaj dogadjaj) {
-		EntityManager em = emf.createEntityManager();
-		em.getTransaction().begin();
-		em.merge(dogadjaj);
-		em.remove(dogadjaj);
-		em.getTransaction().commit();
+	    EntityManager em = emf.createEntityManager();
+	    try {
+	        em.getTransaction().begin();
+	        
+	        // Pronađi entitet u bazi koristeći njegov ID
+	        Dogadjaj managedDogadjaj = em.find(Dogadjaj.class, dogadjaj.getDogadjaj_id());
+	        
+	        if (managedDogadjaj != null) {
+	            em.remove(managedDogadjaj);
+	        }
+	        
+	        em.getTransaction().commit();
+	    } catch (Exception e) {
+	        if (em.getTransaction().isActive()) {
+	            em.getTransaction().rollback();
+	        }
+	        e.printStackTrace(); // Log or handle the exception as necessary
+	    } finally {
+	        em.close();
+	    }
 	}
 	//Every list in map starts with empty string and there is at least one key with empty string!
 	public Map<String, List<String>> getTypeToSubTypeMapping() {
