@@ -1,83 +1,332 @@
 package view;
 
 import javax.swing.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+import model.Dogadjaj;
+import model.DogadjajDAO;
+import model.Korisnik;
+import model.LokacijaDAO;
+
+//This is for each individual dogadjaj OK
+class GuestDogadjajPanel extends JPanel {
+	private static final long serialVersionUID = 1L;
+	Dogadjaj dogadjaj;
+	Guest parent;
+
+	public GuestDogadjajPanel(Guest parent, Dogadjaj dogadjaj) {
+		this.dogadjaj = dogadjaj;
+		this.parent = parent;
+		setLayout(new BorderLayout());
+		setPreferredSize(new Dimension(600, 200));
+		setMaximumSize(new Dimension(Integer.MAX_VALUE, 200));
+
+		// DODAVANJE SLIKE UZAS
+		JPanel slikaPanel = new JPanel();
+		slikaPanel.setPreferredSize(new Dimension(200, 200));
+		slikaPanel.setBackground(Color.PINK);
+		ImageIcon imageIcon = new ImageIcon(dogadjaj.getSlika());
+		Image image = imageIcon.getImage();
+		Image scaledImage = image.getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+		JLabel slikaLabel = new JLabel(new ImageIcon(scaledImage));
+		slikaPanel.add(slikaLabel);
+		add(slikaPanel, BorderLayout.WEST);
+
+		JPanel infoPanel = new JPanel();
+		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+
+		JLabel nazivLabel = new JLabel(dogadjaj.getNaziv());
+		nazivLabel.setFont(new Font("Arial", Font.BOLD, 18));
+		infoPanel.add(nazivLabel);
+
+		infoPanel.add(new JLabel(dogadjaj.getOpis()));
+		infoPanel.add(new JLabel(dogadjaj.getDatum().toString()));
+		infoPanel.add(new JLabel(dogadjaj.getVrsta()));
+		infoPanel.add(new JLabel(dogadjaj.getPodvrsta()));
+		infoPanel.add(new JLabel(dogadjaj.isZavrsio() ? "DOGADJAJ JE ZAVRSEN!" : ""));
+		infoPanel.add(new JLabel(dogadjaj.getLokacija().getGrad()));
+
+		// Panel za dugmad
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+		JButton detaljiButton = new JButton("Detaljnije informacije");
+		detaljiButton.addActionListener((e) -> {
+			detaljiButtonPressed();
+		});
+
+		buttonPanel.add(detaljiButton);
+
+		// Dodaj panele za informacije i dugmad u glavni panel
+		JPanel centerPanel = new JPanel();
+		centerPanel.setLayout(new BorderLayout());
+		centerPanel.add(infoPanel, BorderLayout.CENTER);
+		centerPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+		add(centerPanel, BorderLayout.CENTER);
+	}
+	private void detaljiButtonPressed() {
+		EventDetailsDialogBox view = new EventDetailsDialogBox(dogadjaj);
+		view.setVisible(true);
+	}
+}
+
+
+class GuestDogadjajListViewPanel extends JPanel {
+	private static final long serialVersionUID = 1L;
+	List<Dogadjaj> dogadjajList;
+	Guest parent;
+	GuestDogadjajListViewPanel(List<Dogadjaj> dogadjajList, Guest parent) {
+		this.dogadjajList = dogadjajList;
+		this.parent = parent;
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		refreshLayout();
+	}
+	public void refreshLayout() {
+		removeAll();
+		for (Dogadjaj i : dogadjajList) {
+			GuestDogadjajPanel dp = new GuestDogadjajPanel(parent, i);
+			add(dp);
+		}
+		revalidate();
+		repaint();
+	}
+}
 
 public class Guest extends JFrame {
     private static final long serialVersionUID = 1L;
-
+    private LokacijaDAO lokacijaDAO = new LokacijaDAO();
+    private DogadjajDAO dogadjajDAO = new DogadjajDAO();
+    private int dogadjajOffset = 0;
+    private final int PER_PAGE = 5;
+    private Map<String, List<String>> typeToSubType;
+    JPanel topPanel;
+    private JComboBox<String> cityJCB;
+    private JComboBox<String> typeJCB;
+    private JComboBox<String> subTypeJCB;
+    private JCheckBox showFinishedCheckBox;
+    private JTextField searchBarTF;
+    private JButton prevPageButton;
+    private JButton nextPageButton;
+    private List<Dogadjaj> dogadjajList = new ArrayList<Dogadjaj>();
+    GuestDogadjajListViewPanel mainContentPanel;
+    
+    //values which are only allowed to be changed in the searchButtonPressed function! NOWHERE ELSE!!!!
+    List<String> filters;
+    String searchString;
+    
     public Guest() {
-        // Inicijalizacija gostujućeg pogleda
-        setTitle("Karta");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setBounds(450, 190, 1014, 597);
-        setResizable(false);
+        setTitle("Karta - korisnicki panel");
+        setSize(800, 600);
+        setMinimumSize(new Dimension(800, 600));
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
 
-        JPanel contentPane = new JPanel();
-        contentPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        setContentPane(contentPane);
-        contentPane.setLayout(null);
-        contentPane.setBackground(new Color(29, 190, 166));
+        // Vrh opcije
+        topPanel = new JPanel();
+        topPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        updateTopPanel();
 
-        // Logo kao slika
-        ImageIcon imageIcon = new ImageIcon("resources/logo.png");
-        Image image = imageIcon.getImage();
-        Image scaledImage = image.getScaledInstance(300, 300, Image.SCALE_SMOOTH);
-        imageIcon = new ImageIcon(scaledImage);
+        // Opcije za pretragu dogadjaja
+        JPanel searchPanel = new JPanel();
+        searchPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        
+        updateCityJCB();
+        updateTypeJCB();
+        updateSubTypeJCB();
+        typeJCB.addActionListener((e) -> {
+        	updateSubTypeJCB();
+        });
+        searchPanel.add(cityJCB);
+        searchPanel.add(typeJCB);
+        searchPanel.add(subTypeJCB);
+        searchBarTF = new JTextField("search bar", 15);
+        addPlaceholderEffect(searchBarTF, "search bar");
+        searchPanel.add(searchBarTF);
+        showFinishedCheckBox = new JCheckBox("prikazi zavrsene dogadjaje");
+        searchPanel.add(showFinishedCheckBox);
+        JButton searchButton = new JButton("search");
+        searchButton.addActionListener((e) -> {
+        	searchButtonPressed();
+        });
+        searchPanel.add(searchButton);
+        
+        mainContentPanel = new GuestDogadjajListViewPanel(dogadjajList, this);
+        mainContentPanel.setPreferredSize(new Dimension(600, 1000));
+        
+        
+        // Za promjenu stranice
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        prevPageButton = new JButton("prev page");
+        prevPageButton.setEnabled(false);
+        prevPageButton.addActionListener((e) -> {
+        	prevPagePressed();
+        });
+        bottomPanel.add(prevPageButton);
+        nextPageButton = new JButton("next page");
+        nextPageButton.setEnabled(false);
+        nextPageButton.addActionListener((e) -> {
+        	nextPagePressed();
+        });
+        bottomPanel.add(nextPageButton);
 
-        JLabel label = new JLabel(imageIcon);
-        label.setBounds(15, 140, 300, 300);
-        contentPane.add(label);
+        // uvezivanje YAY
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new BorderLayout());
+        centerPanel.add(searchPanel, BorderLayout.NORTH);
+        centerPanel.add(mainContentPanel, BorderLayout.CENTER);
+        centerPanel.add(bottomPanel, BorderLayout.SOUTH);
 
-        // Dugme za pregled događaja
-        JButton viewTicketsButton = new JButton("View Tickets");
-        viewTicketsButton.setFont(new Font("Chilanka", Font.PLAIN, 26));
-        viewTicketsButton.setBounds(500, 220, 200, 50);
-        viewTicketsButton.setForeground(new Color(51, 51, 51));
-        viewTicketsButton.setBackground(Color.decode("#f3f7f8"));
-        viewTicketsButton.setBorder(BorderFactory.createLineBorder(Color.decode("#e2e2e2")));
-        viewTicketsButton.addActionListener(new ActionListener() {
+        add(topPanel, BorderLayout.NORTH);
+        add(centerPanel, BorderLayout.CENTER);
+
+        // I kao, da mozes skrolat
+        JScrollPane scrollPane = new JScrollPane(centerPanel);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        add(scrollPane, BorderLayout.CENTER);
+
+        setVisible(true);
+    }
+    private void updateCityJCB() {
+		java.util.List<String> cities = lokacijaDAO.getAllCities();
+		cityJCB = new JComboBox<String>();
+		cityJCB.addItem("");
+		for (String i : cities) {
+			cityJCB.addItem(i);
+		}
+	}
+	private void updateSubTypeJCB() {
+		if (subTypeJCB == null) {
+			subTypeJCB = new JComboBox<String>(typeToSubType.get(typeJCB.getSelectedItem()).toArray(new String[0]));
+		}
+		else {
+			subTypeJCB.removeAllItems();
+			for (String i : typeToSubType.get(typeJCB.getSelectedItem())) {
+				subTypeJCB.addItem(i);
+			}
+		}
+	}
+	private void updateTypeJCB() {
+		typeToSubType = dogadjajDAO.getTypeToSubTypeMapping();
+		typeJCB = new JComboBox<String>(typeToSubType.keySet().toArray(new String[0]));
+	}
+	private void nextPagePressed() {
+		dogadjajOffset += PER_PAGE;
+		dogadjajList.removeAll(dogadjajList);
+		List<Dogadjaj> dummy = dogadjajDAO.getFiltered(filters, searchString, "datum", false, dogadjajOffset, PER_PAGE);
+		dogadjajList.addAll(dummy);
+		if (dogadjajDAO.getFiltered(filters, searchString, "datum", false, dogadjajOffset + PER_PAGE, PER_PAGE).size() != 0) {
+			nextPageButton.setEnabled(true);
+		}
+		else {
+			nextPageButton.setEnabled(false);
+		}
+		prevPageButton.setEnabled(true);
+		mainContentPanel.refreshLayout();
+	}
+	private void prevPagePressed() {
+		dogadjajOffset -= PER_PAGE;
+		dogadjajList.removeAll(dogadjajList);
+		List<Dogadjaj> dummy = dogadjajDAO.getFiltered(filters, searchString, "datum", false, dogadjajOffset, PER_PAGE);
+		dogadjajList.addAll(dummy);
+		if (dogadjajDAO.getFiltered(filters, searchString, "datum", false, dogadjajOffset + PER_PAGE, PER_PAGE).size() != 0) {
+			nextPageButton.setEnabled(true);
+		}
+		else {
+			nextPageButton.setEnabled(false);
+		}
+		if (dogadjajOffset == 0) {
+			prevPageButton.setEnabled(false);
+		}
+		else {
+			prevPageButton.setEnabled(true);
+		}
+		mainContentPanel.refreshLayout();
+	}
+	private void searchButtonPressed() {
+		dogadjajOffset = 0;
+		String grad = (String) cityJCB.getSelectedItem();
+		String vrsta = (String) typeJCB.getSelectedItem();
+		String podvrsta = (String) subTypeJCB.getSelectedItem();
+		if (searchBarTF.getText().equals("search bar")) {
+			searchString = "";
+		}
+		else {
+			searchString = searchBarTF.getText();
+		}
+		filters = new ArrayList<String>();
+		if (!grad.equals("")) {
+			filters.add("grad");
+			filters.add(grad);
+		}
+		if (!vrsta.equals("")) {
+			filters.add("vrsta");
+			filters.add(vrsta);
+		}
+		if (!podvrsta.equals("")) {
+			filters.add("podvrsta");
+			filters.add(podvrsta);
+		}
+		if (!showFinishedCheckBox.isSelected()) {
+			filters.add("zavrsio");
+			filters.add("false");
+		}
+		dogadjajList.removeAll(dogadjajList);
+		List<Dogadjaj> dummy = dogadjajDAO.getFiltered(filters, searchString, "datum", false, dogadjajOffset, PER_PAGE);
+		dogadjajList.addAll(dummy);
+		if (dogadjajDAO.getFiltered(filters, searchString, "datum", false, dogadjajOffset + PER_PAGE, PER_PAGE).size() != 0) {
+			nextPageButton.setEnabled(true);
+		}
+		else {
+			nextPageButton.setEnabled(false);
+		}
+		prevPageButton.setEnabled(false);
+		mainContentPanel.refreshLayout();
+	}
+	private void addPlaceholderEffect(JTextField textField, String placeholder) {
+        textField.setForeground(Color.GRAY);
+        textField.addFocusListener(new FocusListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                otvoriPregledDogadjaja();
+            public void focusGained(FocusEvent e) {
+                if (textField.getText().equals(placeholder)) {
+                    textField.setText("");
+                    textField.setForeground(Color.BLACK);
+                }
             }
-        });
-        contentPane.add(viewTicketsButton);
 
-        // Dugme "Nazad"
-        JButton backButton = new JButton("Back");
-        backButton.setFont(new Font("Chilanka", Font.PLAIN, 26));
-        backButton.setBounds(500, 320, 200, 50);
-        backButton.setForeground(new Color(51, 51, 51));
-        backButton.setBackground(Color.decode("#f3f7f8"));
-        backButton.setBorder(BorderFactory.createLineBorder(Color.decode("#e2e2e2")));
-        backButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                // Vratite se na Login ekran
-                Login loginView = new Login();
-                loginView.setVisible(true);
-                dispose(); // Zatvori trenutni prozor
-            }
-        });
-        contentPane.add(backButton);
-    }
-
-    private void otvoriPregledDogadjaja() {
-      //  ViewTickets viewTickets = new ViewTickets(null); // Null za scenarij gosta
-        //viewTickets.setVisible(true);
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            try {
-                Guest frame = new Guest();
-                frame.setVisible(true);
-            } catch (Exception e) {
-                e.printStackTrace();
+            public void focusLost(FocusEvent e) {
+                if (textField.getText().isEmpty()) {
+                    textField.setForeground(Color.GRAY);
+                    textField.setText(placeholder);
+                }
             }
         });
     }
+	private void logoutButtonPressed() {
+		Login view = new Login();
+		dispose();
+		view.setVisible(true);
+	}
+	public void updateTopPanel() {
+		topPanel.removeAll();
+		topPanel.add(new JLabel("Guest"));
+        JButton logoutButton = new JButton("leave guest view");
+        logoutButton.addActionListener((e) -> {
+        	logoutButtonPressed();
+        });
+        topPanel.add(logoutButton);
+        topPanel.revalidate();
+        topPanel.repaint();
+	}
 }
