@@ -23,9 +23,9 @@ public class RegisterOrg extends JFrame {
     private JLabel label;
     private JPanel contentPane;
 
-    private KorisnikDAO userController;
-    private AdministratorDAO adminController;
-    private OrganizatorDAO orgController;
+    private KorisnikDAO userController = new KorisnikDAO();
+    private AdministratorDAO adminController = new AdministratorDAO();
+    private OrganizatorDAO orgController = new OrganizatorDAO();
     private JTextField textField;
     private JPasswordField passwordField;
     private JTextField firstNameField;
@@ -237,6 +237,7 @@ public class RegisterOrg extends JFrame {
                     phoneField.setText("");
 
                 } catch (Exception err) {
+                	err.printStackTrace();
                     JOptionPane.showMessageDialog(RegisterOrg.this, "An error occurred during registration.");
                 }
             }
