@@ -36,7 +36,6 @@ public class CreateEvent extends JDialog {
     private JSpinner dateSpinner;
     private JButton saveButton;
     private JButton cancelButton;
-    private JButton ticketDataButton;
     private JFileChooser fileChooser;
     private Map<String, String[]> eventSubtypesMap;
     private DogadjajDAO dogadjajDAO = new DogadjajDAO();
@@ -225,11 +224,6 @@ public class CreateEvent extends JDialog {
 	        cancelButton.setBounds(300, 600, 150, 40);
 	        contentPane.add(cancelButton);
 
-	        ticketDataButton = new JButton("Add Tickets");
-	        ticketDataButton.setFont(new Font("Chilanka", Font.PLAIN, 20));
-	        ticketDataButton.setBounds(60, 520, 150, 40);
-	        contentPane.add(ticketDataButton);
-
 	        // Button Action Listeners
 	        cancelButton.addActionListener(e -> dispose());
 
@@ -268,20 +262,6 @@ public class CreateEvent extends JDialog {
 	                    dogadjajDAO.updateDogadjaj(dogadjaj);
 	                    dogadjajDAO.deleteDogadjaj(dogadjaj);
 	                    kartaDAO.deleteFreeTicketsForDogadjaj(dogadjaj);
-	                }
-	            }
-	        });
-
-	        ticketDataButton.addActionListener(e -> {
-	            if (validateFields()) {
-	                if (selectedLocation != null) {
-	                	AddTickets dialog = new AddTickets( dogadjaj, selectedLocation);
-	                    dialog.setVisible(true);
-	                    if (dialog.isTicketsAdded()) {
-	                        saveButton.setEnabled(true); // Enable save button if tickets are added
-	                    }
-	                } else {
-	                    JOptionPane.showMessageDialog(CreateEvent.this, "Please select a location first.");
 	                }
 	            }
 	        });
