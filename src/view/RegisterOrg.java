@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 
 import model.KorisnikDAO;
 import model.OrganizatorDAO;
+import model.Administrator;
 import model.AdministratorDAO;
 import model.Korisnik;
 import model.Organizator;
@@ -192,6 +193,22 @@ public class RegisterOrg extends JFrame {
                     // Provjera email formata
                     if (!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$")) {
                         JOptionPane.showMessageDialog(RegisterOrg.this, "Invalid email format.");
+                        return;
+                    }
+                    
+                    Administrator check_admin = adminController.searchByUserName(username);
+                    if (check_admin != null) {
+                    	JOptionPane.showMessageDialog(RegisterOrg.this, "Profile with that username already exists!");
+                        return;
+                    }
+                    Organizator check_org = orgController.searchByUserName(username);
+                    if (check_org != null) {
+                    	JOptionPane.showMessageDialog(RegisterOrg.this, "Profile with that username already exists!");
+                        return;
+                    }
+                    Korisnik check_kor = userController.searchByUserName(username);
+                    if (check_kor != null) {
+                    	JOptionPane.showMessageDialog(RegisterOrg.this, "Profile with that username already exists!");
                         return;
                     }
 

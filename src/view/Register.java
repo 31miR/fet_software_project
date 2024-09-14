@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import model.KorisnikDAO;
+import model.Organizator;
+import model.Administrator;
 import model.AdministratorDAO;
 import model.OrganizatorDAO;
 import model.Korisnik;
@@ -25,6 +27,10 @@ public class Register extends JFrame {
     private JTextField phoneField;
     private JButton registerButton;
     private JButton backButton;
+    
+    private KorisnikDAO korisnikDAO = new KorisnikDAO();
+    private AdministratorDAO administratorDAO = new AdministratorDAO();
+    private OrganizatorDAO organizatorDAO = new OrganizatorDAO();
 
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
@@ -176,6 +182,23 @@ public class Register extends JFrame {
                         JOptionPane.showMessageDialog(Register.this, "Invalid email format.");
                         return;
                     }
+                    
+                    Administrator check_admin = administratorDAO.searchByUserName(username);
+                    if (check_admin != null) {
+                    	JOptionPane.showMessageDialog(Register.this, "Profile with that username already exists!");
+                        return;
+                    }
+                    Organizator check_org = organizatorDAO.searchByUserName(username);
+                    if (check_org != null) {
+                    	JOptionPane.showMessageDialog(Register.this, "Profile with that username already exists!");
+                        return;
+                    }
+                    Korisnik check_kor = korisnikDAO.searchByUserName(username);
+                    if (check_kor != null) {
+                    	JOptionPane.showMessageDialog(Register.this, "Profile with that username already exists!");
+                        return;
+                    }
+                    
 
                     // Registruj korisnika
                     Korisnik korisnik = new Korisnik();
@@ -188,7 +211,6 @@ public class Register extends JFrame {
                     korisnik.setPhone(phone);
 
                     // Dodavanje korisnika u bazu
-                    KorisnikDAO korisnikDAO = new KorisnikDAO();
                     korisnikDAO.addKorisnik(korisnik);
                     JOptionPane.showMessageDialog(Register.this, "Registration successful!");
 
