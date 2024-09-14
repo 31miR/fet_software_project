@@ -27,6 +27,12 @@ public class IzmjeneDAO {
 		em.close();
 		return ret;
 	}
+	public List<Izmjene> getAllChanges() {
+		EntityManager em = emf.createEntityManager();
+		List<Izmjene> ret = em.createQuery("SELECT a FROM Izmjene a", Izmjene.class).getResultList();
+		em.close();
+		return ret;
+	}
 	private boolean doesEntityExist(String table_name, String id) {
 		String statement;
 		switch (table_name) {
@@ -55,23 +61,23 @@ public class IzmjeneDAO {
 		switch (izmjena.getImeTabele()) {
 		case "Korisnik":
 			em.getTransaction().begin();
-			em.createQuery("UPDATE Korisnik a SET a." + izmjena.getImeKolone() + " = "
-					+ izmjena.getNovaVrijednost() + " WHERE a.username = "
-					+ izmjena.getStringIdEntitija()).executeUpdate();
+			em.createQuery("UPDATE Korisnik a SET a." + izmjena.getImeKolone() + " = '"
+					+ izmjena.getNovaVrijednost() + "' WHERE a.username = '"
+					+ izmjena.getStringIdEntitija() + "'").executeUpdate();
 			em.getTransaction().commit();
 			break;
 		case "Organizator":
 			em.getTransaction().begin();
-			em.createQuery("UPDATE Organizator a SET a." + izmjena.getImeKolone() + " = "
-					+ izmjena.getNovaVrijednost() + " WHERE a.username = "
-					+ izmjena.getStringIdEntitija()).executeUpdate();
+			em.createQuery("UPDATE Organizator a SET a." + izmjena.getImeKolone() + " = '"
+					+ izmjena.getNovaVrijednost() + "' WHERE a.username = '"
+					+ izmjena.getStringIdEntitija() + "'").executeUpdate();
 			em.getTransaction().commit();
 			break;
 		case "Dogadjaj":
 			em.getTransaction().begin();
-			em.createQuery("UPDATE Dogadjaj a SET a." + izmjena.getImeKolone() + " = "
-					+ izmjena.getNovaVrijednost() + " WHERE a.dogadjaj_id = "
-					+ izmjena.getStringIdEntitija()).executeUpdate();
+			em.createQuery("UPDATE Dogadjaj a SET a." + izmjena.getImeKolone() + " = '"
+					+ izmjena.getNovaVrijednost() + "' WHERE a.dogadjaj_id = '"
+					+ izmjena.getStringIdEntitija() + "'").executeUpdate();
 			em.getTransaction().commit();
 			break;
 		default:
@@ -83,7 +89,7 @@ public class IzmjeneDAO {
 	public void deleteChange(Izmjene izmjena) {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
-		em.merge(izmjena);
+		izmjena = em.merge(izmjena);
 		em.remove(izmjena);
 		em.getTransaction().commit();
 	}
