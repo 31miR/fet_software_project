@@ -4,6 +4,7 @@ import javax.swing.*;
 
 import model.Dogadjaj;
 import model.Organizator;
+import model.IzmjeneDAO;
 
 import java.awt.*;
 import java.util.List;
@@ -15,6 +16,8 @@ public class SelectEventWindow extends JDialog {
     private JButton seeMoreButton;
     private int start = 0;
     private final int limit = 5;
+    private IzmjeneDAO izmjeneDAO;
+    
 
     public SelectEventWindow(Organizator organizator) {
         this.organizator = organizator;
@@ -95,7 +98,26 @@ public class SelectEventWindow extends JDialog {
                 editEvent.setVisible(true);
             });
             eventPanel.add(editButton);
-
+            
+            JButton finishButton = new JButton("Finish Event");
+            finishButton.addActionListener(e -> {
+                int response = JOptionPane.showConfirmDialog(
+                        this,
+                        "Are you sure you want to mark this event as finished?",
+                        "Confirm Finish Event",
+                        JOptionPane.YES_NO_OPTION
+                );
+                
+                if (response == JOptionPane.YES_OPTION) {
+                    // Mark the event as finished
+                    event.setZavrsio(true);
+                    izmjeneDAO.addChange("Dogadjaj", String.valueOf(event.getDogadjaj_id()), "zavrsio", "true");
+                    JOptionPane.showMessageDialog(this, "Event has been marked as finished.");
+                    dispose();
+                }
+            });
+                eventPanel.add(finishButton);
+            
             eventsPanel.add(eventPanel);
         }
 

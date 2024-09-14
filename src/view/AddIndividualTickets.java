@@ -15,7 +15,7 @@ import model.Karta;
 import model.KartaDAO;
 import model.Sektor;
 
-public class AddIndividualTickets extends JDialog {
+public clas/s AddIndividualTickets extends JDialog {
     private KartaDAO kartaDAO;
     private Dogadjaj dogadjaj;
     private Sektor sektor;

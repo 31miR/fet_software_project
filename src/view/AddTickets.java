@@ -1,15 +1,15 @@
 package view;
 
 import javax.swing.*;
-
 import model.Dogadjaj;
+import model.Karta;
 import model.KartaDAO;
 import model.Lokacija;
 import model.Sektor;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AddTickets extends JDialog {
@@ -17,9 +17,9 @@ public class AddTickets extends JDialog {
     private KartaDAO kartaDAO;
     private Lokacija selectedLokacija;
     private boolean ticketsAdded = false;
+    private List<Karta> createdTickets = new ArrayList<>(); // List to keep track of created tickets
 
-    public AddTickets(Frame parent, Dogadjaj dogadjaj, Lokacija selectedLokacija) {
-        super(parent, "Add Tickets", true);
+    public AddTickets(Dogadjaj dogadjaj, Lokacija selectedLokacija) {
         this.dogadjaj = dogadjaj;
         this.kartaDAO = new KartaDAO();
         this.selectedLokacija = selectedLokacija;
@@ -77,7 +77,9 @@ public class AddTickets extends JDialog {
                         JOptionPane.showMessageDialog(AddTickets.this,
                                 "Cannot generate tickets. The amount exceeds the sector's capacity.");
                     } else {
+                       // List<Karta> tickets = 
                         kartaDAO.generateTickets(dogadjaj, sektor, amount, price, resPrice);
+                      //  createdTickets.addAll(tickets); // Add generated tickets to the list
                         JOptionPane.showMessageDialog(AddTickets.this, "Tickets generated successfully.");
                         ticketsAdded = true; // Mark tickets as added
                     }
@@ -93,6 +95,7 @@ public class AddTickets extends JDialog {
                 dispose(); // Close dialog if tickets were added
             } else {
                 JOptionPane.showMessageDialog(AddTickets.this, "No tickets were added.");
+                dispose();
             }
         });
         panel.add(btnClose);
@@ -102,5 +105,9 @@ public class AddTickets extends JDialog {
 
     public boolean isTicketsAdded() {
         return ticketsAdded;
+    }
+
+    public List<Karta> getCreatedTickets() {
+        return createdTickets;
     }
 }

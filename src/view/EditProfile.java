@@ -23,7 +23,7 @@ public class EditProfile extends JFrame {
     private void initialize() {
     	
   
-        
+  
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setBounds(450, 190, 1014, 597);
         setResizable(false);
