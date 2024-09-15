@@ -251,7 +251,7 @@ public class EditEvent extends JDialog {
             izmjeneDAO.addChange("Dogadjaj", String.valueOf(event.getDogadjaj_id()), "slika", newImagePath);
         }
         if (!newLocation.equals(originalLocation)) {
-            izmjeneDAO.addChange("Dogadjaj", String.valueOf(event.getDogadjaj_id()), "lokacija", newLocation.toString());
+            izmjeneDAO.addChange("Dogadjaj", String.valueOf(event.getDogadjaj_id()), "lokacija", String.valueOf(newLocation.getLokacija_id()));
         }
         if (newMaxTickets != originalMaxTickets) {
             izmjeneDAO.addChange("Dogadjaj", String.valueOf(event.getDogadjaj_id()), "maxKartiPoKorisniku", String.valueOf(newMaxTickets));

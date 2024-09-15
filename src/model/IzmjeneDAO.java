@@ -2,12 +2,15 @@ package model;
 
 import misc.EntityManagerFactoryHolder;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.*;
 
 public class IzmjeneDAO {
 	private EntityManagerFactory emf = EntityManagerFactoryHolder.getEntityManagerFactory();
+	LokacijaDAO lokacijaDAO = new LokacijaDAO();
 	public void addChange(String table_name, String id, String column_name, String value) {
 		Izmjene change = new Izmjene();
 		change.setImeTabele(table_name);
@@ -37,10 +40,10 @@ public class IzmjeneDAO {
 		String statement;
 		switch (table_name) {
 		case "Korisnik":
-			statement = "SELECT COUNT(a) FROM Korisnik a WHERE a.username = " + id;
+			statement = "SELECT COUNT(a) FROM Korisnik a WHERE a.username = '" + id + "'";
 			break;
 		case "Organizator":
-			statement = "SELECT COUNT(a) FROM Organizator a WHERE a.username = " + id;
+			statement = "SELECT COUNT(a) FROM Organizator a WHERE a.username = '" + id + "'";
 			break;
 		case "Dogadjaj":
 			statement = "SELECT COUNT(a) FROM Dogadjaj a WHERE a.dogadjaj_id = " + id;
@@ -58,33 +61,69 @@ public class IzmjeneDAO {
 			return;
 		}
 		EntityManager em = emf.createEntityManager();
-		switch (izmjena.getImeTabele()) {
-		case "Korisnik":
-			em.getTransaction().begin();
-			em.createQuery("UPDATE Korisnik a SET a." + izmjena.getImeKolone() + " = '"
-					+ izmjena.getNovaVrijednost() + "' WHERE a.username = '"
-					+ izmjena.getStringIdEntitija() + "'").executeUpdate();
-			em.getTransaction().commit();
-			break;
-		case "Organizator":
-			em.getTransaction().begin();
-			em.createQuery("UPDATE Organizator a SET a." + izmjena.getImeKolone() + " = '"
-					+ izmjena.getNovaVrijednost() + "' WHERE a.username = '"
-					+ izmjena.getStringIdEntitija() + "'").executeUpdate();
-			em.getTransaction().commit();
-			break;
-		case "Dogadjaj":
-			em.getTransaction().begin();
-			em.createQuery("UPDATE Dogadjaj a SET a." + izmjena.getImeKolone() + " = '"
-					+ izmjena.getNovaVrijednost() + "' WHERE a.dogadjaj_id = '"
-					+ izmjena.getStringIdEntitija() + "'").executeUpdate();
-			em.getTransaction().commit();
-			break;
-		default:
-			return;
+		em.getTransaction().begin();
+		if (izmjena.getImeTabele().equals("Dogadjaj")) {
+			switch(DogadjajColumnTypeOf(izmjena.getImeKolone())) {
+			case "String":
+				em.createQuery("UPDATE Dogadjaj a SET a." + izmjena.getImeKolone() + " = :value WHERE a.dogadjaj_id = :id")
+				.setParameter("value", izmjena.getNovaVrijednost()).setParameter("id", Integer.parseInt(izmjena.getStringIdEntitija()))
+				.executeUpdate();
+				break;
+			case "int":
+				em.createQuery("UPDATE Dogadjaj a SET a." + izmjena.getImeKolone() + " = :value WHERE a.dogadjaj_id = :id")
+				.setParameter("value", Integer.parseInt(izmjena.getNovaVrijednost())).setParameter("id", Integer.parseInt(izmjena.getStringIdEntitija()))
+				.executeUpdate();
+				break;
+			case "Date":
+				em.createQuery("UPDATE Dogadjaj a SET a." + izmjena.getImeKolone() + " = :value WHERE a.dogadjaj_id = :id")
+				.setParameter("value", java.util.Date.parse(izmjena.getNovaVrijednost())).setParameter("id", Integer.parseInt(izmjena.getStringIdEntitija()))
+				.executeUpdate();
+				break;
+			case "Lokacija":
+				em.createQuery("UPDATE Dogadjaj a SET a." + izmjena.getImeKolone() + " = :value WHERE a.dogadjaj_id = :id")
+				.setParameter("value", lokacijaDAO.searchById(Integer.parseInt(izmjena.getNovaVrijednost())))
+				.setParameter("id", Integer.parseInt(izmjena.getStringIdEntitija())).executeUpdate();
+				break;
+			case "boolean":
+				em.createQuery("UPDATE Dogadjaj a SET a." + izmjena.getImeKolone() + " = :value WHERE a.dogadjaj_id = :id")
+				.setParameter("value", Boolean.parseBoolean(izmjena.getNovaVrijednost()))
+				.setParameter("id", Integer.parseInt(izmjena.getStringIdEntitija())).executeUpdate();
+				break;
+			}
 		}
+		else {
+			em.createQuery("UPDATE " + izmjena.getImeTabele() + " a SET a." + izmjena.getImeKolone() + " = :value WHERE a.username = :id")
+			.setParameter("value", izmjena.getNovaVrijednost()).setParameter("id", izmjena.getStringIdEntitija())
+			.executeUpdate();
+		}
+		em.getTransaction().commit();
 		em.close();
 		deleteChange(izmjena);
+	}
+	private String DogadjajColumnTypeOf(String imeKolone) {
+		switch(imeKolone) {
+		case "naziv":
+			return "String";
+		case "opis":
+			return "String";
+		case "datum":
+			return "Date";
+		case "vrsta":
+			return "String";
+		case "povrsta":
+			return "String";
+		case "slika":
+			return "String";
+		case "naplataPriRezervaciji":
+			return "boolean";
+		case "zavrsio":
+			return "boolean";
+		case "maxKartiPoKorisniku":
+			return "int";
+		case "lokacija":
+			return "Lokacija";
+		}
+		return "String";
 	}
 	public void deleteChange(Izmjene izmjena) {
 		EntityManager em = emf.createEntityManager();

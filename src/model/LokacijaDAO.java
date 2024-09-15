@@ -9,6 +9,15 @@ import javax.persistence.*;
 
 public class LokacijaDAO {
 	EntityManagerFactory emf = EntityManagerFactoryHolder.getEntityManagerFactory();
+	public Lokacija searchById(int id) {
+		EntityManager em = emf.createEntityManager();
+		em.getTransaction().begin();
+		Lokacija ret = em.createQuery("SELECT a FROM Lokacija a WHERE a.lokacija_id = :id", Lokacija.class)
+				.setParameter("id", id).getSingleResult();
+		em.getTransaction().commit();
+		em.close();
+		return ret;
+	}
 	public void addLocation(Lokacija lokacija) {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
