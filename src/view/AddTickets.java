@@ -80,7 +80,16 @@ public class AddTickets extends JDialog {
                     if (amount > sektor.getKapacitet()) {
                         JOptionPane.showMessageDialog(AddTickets.this,
                                 "Cannot generate tickets. The amount exceeds the sector's capacity.");
-                    } else {
+                    }
+                    else if (amount < 0) {
+                    	JOptionPane.showMessageDialog(AddTickets.this,
+                                "Ammount of tickets cannot be negative.");
+                    }
+                    else if (price < 0 || resPrice < 0) {
+                    	JOptionPane.showMessageDialog(AddTickets.this,
+                                "Prices cannot be negative!");
+                    }
+                    else {
                        // List<Karta> tickets = 
                         kartaDAO.generateTickets(dogadjaj, sektor, amount, price, resPrice);
                       //  createdTickets.addAll(tickets); // Add generated tickets to the list
