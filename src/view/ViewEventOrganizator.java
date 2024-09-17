@@ -28,7 +28,8 @@ import model.Dogadjaj;
 import model.Organizator;
 
 public class ViewEventOrganizator extends JDialog {  // Extend JDialog instead of JFrame
-    private JPanel eventsPanel;
+	private static final long serialVersionUID = 1L;
+	private JPanel eventsPanel;
     private JButton seeMoreButton;
     private int start = 0;
     private final int limit = 5;

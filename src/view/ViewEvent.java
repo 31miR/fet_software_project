@@ -27,7 +27,8 @@ import model.Dogadjaj;
 import model.DogadjajDAO;
 
 public class ViewEvent extends JFrame {
-    private DogadjajDAO dogadjajDAO;
+	private static final long serialVersionUID = 1L;
+	private DogadjajDAO dogadjajDAO;
     private JPanel eventsPanel;
     private JButton seeMoreButton;
     private int start = 0;

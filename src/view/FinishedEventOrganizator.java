@@ -28,8 +28,8 @@ import model.Dogadjaj;
 import model.Organizator;
 
 public class FinishedEventOrganizator extends JDialog {
-
-    private JPanel eventsPanel;
+	private static final long serialVersionUID = 1L;
+	private JPanel eventsPanel;
     private JButton seeMoreButton;
     private int start = 0;
     private final int limit = 5;

@@ -42,7 +42,8 @@ import model.LokacijaDAO;
 import model.Organizator;
 
 public class CreateEvent extends JDialog {
-    private JPanel contentPane;
+	private static final long serialVersionUID = 1L;
+	private JPanel contentPane;
     private JComboBox<Lokacija> locationComboBox;
     private Lokacija selectedLocation;
     private JTextField eventNameField;
@@ -330,7 +331,8 @@ public class CreateEvent extends JDialog {
 	}
 
     class LocationRenderer extends JLabel implements ListCellRenderer<Lokacija> {
-        @Override
+		private static final long serialVersionUID = 1L;
+		@Override
         public Component getListCellRendererComponent(JList<? extends Lokacija> list, Lokacija value, int index, boolean isSelected, boolean cellHasFocus) {
             setText(value.getNaziv());
             if (isSelected) {

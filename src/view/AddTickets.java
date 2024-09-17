@@ -23,7 +23,8 @@ import model.Sektor;
 import model.SektorDAO;
 
 public class AddTickets extends JDialog {
-    private KartaDAO kartaDAO;
+	private static final long serialVersionUID = 1L;
+	private KartaDAO kartaDAO;
     private SektorDAO sektorDAO = new SektorDAO();
     private boolean ticketsAdded = false;
     private List<Karta> createdTickets = new ArrayList<>(); // List to keep track of created tickets

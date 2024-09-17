@@ -29,6 +29,7 @@ import model.Sektor;
 import model.SektorDAO;
 
 public class CreateLocation extends JFrame {
+	private static final long serialVersionUID = 1L;
 	private JTextField nazivField;
 	private JTextField gradField;
 	private JTextField adresaField;

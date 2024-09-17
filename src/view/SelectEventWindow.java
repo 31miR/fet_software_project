@@ -21,7 +21,8 @@ import model.IzmjeneDAO;
 import model.Organizator;
 
 public class SelectEventWindow extends JDialog {
-    private Organizator organizator;
+	private static final long serialVersionUID = 1L;
+	private Organizator organizator;
     private JPanel eventsPanel;
     private JButton seeMoreButton;
     private int start = 0;

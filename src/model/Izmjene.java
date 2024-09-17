@@ -7,6 +7,7 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 
 class IzmjeneId implements Serializable {
+	private static final long serialVersionUID = 1L;
 	@SuppressWarnings("unused")
 	private String imeTabele;
 	@SuppressWarnings("unused")
