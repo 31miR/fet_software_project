@@ -127,15 +127,21 @@ public class ViewEvent extends JFrame {
             nameLabel.setFont(new Font("Arial", Font.BOLD, 18)); // Podešavanje fonta
             eventGbc.gridx = 0;
             eventGbc.gridy = 0;
-            eventGbc.weightx = 0.7;
+            eventGbc.weightx = 0.5;
             eventPanel.add(nameLabel, eventGbc);
+            
+            // Dodavanje naziva lokacije
+            JLabel dogadjajLabel = new JLabel("Location Name: " + event.getLokacija().getNaziv());
+            dogadjajLabel.setFont(new Font("Arial", Font.BOLD, 18)); // Podešavanje fonta
+            eventGbc.gridx = 0;
+            eventGbc.gridy = 1;
+            eventPanel.add(dogadjajLabel, eventGbc);
 
             // Dodavanje datuma događaja
             JLabel dateLabel = new JLabel("Date: " + event.getDatum().toString());
             dateLabel.setFont(new Font("Arial", Font.PLAIN, 14)); // Podešavanje fonta
-            eventGbc.gridx = 1;
-            eventGbc.gridy = 0;
-            eventGbc.weightx = 0.3;
+            eventGbc.gridx = 0;
+            eventGbc.gridy = 2;
             eventGbc.anchor = GridBagConstraints.EAST; // Poravnanje desno
             eventPanel.add(dateLabel, eventGbc);
 
