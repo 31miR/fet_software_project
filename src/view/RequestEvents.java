@@ -40,6 +40,7 @@ class DogadjajCreationRequestPanel extends JPanel {
 
 		infoPanel.add(new JLabel("name: " + dogadjaj.getNaziv()));
 		infoPanel.add(new JLabel("Location: " + dogadjaj.getLokacija().getNaziv()));
+		infoPanel.add(new JLabel("City: " + dogadjaj.getLokacija().getGrad()));
 		infoPanel.add(new JLabel("Event creator: " + dogadjaj.getOrganizator().getName() + " " + dogadjaj.getOrganizator().getLastName()));
 		infoPanel.add(new JLabel("Date: " + dogadjaj.getDatum()));
 		
