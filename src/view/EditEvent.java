@@ -10,6 +10,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class EditEvent extends JDialog {
@@ -115,7 +116,7 @@ public class EditEvent extends JDialog {
 
         dateSpinner = new JSpinner(new SpinnerDateModel(originalDate, null, null, Calendar.DAY_OF_MONTH));
         dateSpinner.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(dateSpinner, "yyyy-mm-dd hh:mm:ss");
+        JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(dateSpinner, "yyyy-MM-dd HH:mm:ss");
         dateSpinner.setEditor(dateEditor);
         dateSpinner.setBounds(180, 220, 200, 30);
         contentPane.add(dateSpinner);
@@ -223,6 +224,8 @@ public class EditEvent extends JDialog {
         String newName = eventNameField.getText();
         String newDescription = eventDescriptionArea.getText();
         Date newDate = (Date) dateSpinner.getValue();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String stringDate = dateFormat.format(newDate);
         String newType = (String) eventTypeComboBox.getSelectedItem();
         String newSubtype = (String) eventSubtypeComboBox.getSelectedItem();
         String newImagePath = eventImageField.getText();
@@ -239,7 +242,7 @@ public class EditEvent extends JDialog {
             izmjeneDAO.addChange("Dogadjaj", String.valueOf(event.getDogadjaj_id()), "opis", newDescription);
         }
         if (!newDate.equals(originalDate)) {
-            izmjeneDAO.addChange("Dogadjaj", String.valueOf(event.getDogadjaj_id()), "datum", newDate.toString());
+            izmjeneDAO.addChange("Dogadjaj", String.valueOf(event.getDogadjaj_id()), "datum", stringDate);
         }
         if (!newType.equals(originalType)) {
             izmjeneDAO.addChange("Dogadjaj", String.valueOf(event.getDogadjaj_id()), "vrsta", newType);

@@ -2,14 +2,18 @@ package model;
 
 import misc.EntityManagerFactoryHolder;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.persistence.*;
 
 public class IzmjeneDAO {
 	private EntityManagerFactory emf = EntityManagerFactoryHolder.getEntityManagerFactory();
+	SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
 	LokacijaDAO lokacijaDAO = new LokacijaDAO();
 	public void addChange(String table_name, String id, String column_name, String value) {
 		Izmjene change = new Izmjene();
@@ -19,7 +23,7 @@ public class IzmjeneDAO {
 		change.setNovaVrijednost(value);
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
-		em.persist(change);
+		em.merge(change);
 		em.getTransaction().commit();
 		em.close();
 	}
@@ -75,9 +79,15 @@ public class IzmjeneDAO {
 				.executeUpdate();
 				break;
 			case "Date":
-				em.createQuery("UPDATE Dogadjaj a SET a." + izmjena.getImeKolone() + " = :value WHERE a.dogadjaj_id = :id")
-				.setParameter("value", java.util.Date.parse(izmjena.getNovaVrijednost())).setParameter("id", Integer.parseInt(izmjena.getStringIdEntitija()))
-				.executeUpdate();
+				try {
+					em.createQuery("UPDATE Dogadjaj a SET a." + izmjena.getImeKolone() + " = :value WHERE a.dogadjaj_id = :id")
+					.setParameter("value", formatter.parse(izmjena.getNovaVrijednost())).setParameter("id", Integer.parseInt(izmjena.getStringIdEntitija()))
+					.executeUpdate();
+				} catch (NumberFormatException e) {
+					e.printStackTrace();
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
 				break;
 			case "Lokacija":
 				em.createQuery("UPDATE Dogadjaj a SET a." + izmjena.getImeKolone() + " = :value WHERE a.dogadjaj_id = :id")

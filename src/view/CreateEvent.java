@@ -110,7 +110,7 @@ public class CreateEvent extends JDialog {
 	        Calendar calendar = Calendar.getInstance();
 	        SpinnerDateModel model = new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_MONTH);
 	        dateSpinner = new JSpinner(model);
-	        JSpinner.DateEditor editor = new JSpinner.DateEditor(dateSpinner, "yyyy-MM-dd hh:mm:ss");
+	        JSpinner.DateEditor editor = new JSpinner.DateEditor(dateSpinner, "yyyy-MM-dd HH:mm:ss");
 	        dateSpinner.setEditor(editor);
 	        dateSpinner.setFont(new Font("Chilanka", Font.PLAIN, 18));
 	        dateSpinner.setBounds(200, 220, 210, 30);
