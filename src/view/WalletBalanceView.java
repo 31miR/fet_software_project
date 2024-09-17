@@ -91,12 +91,16 @@ public class WalletBalanceView extends JDialog {
                     int cvcnum = Integer.parseInt(cvcField.getText());
 
                     // Provjeri ID i godinu
-                    if (enteredID.equals(initializedID) && enteredYear == initializedYear && cvcnum==cvc ) {
+                    if (enteredID.equals(initializedID) && enteredYear == initializedYear && cvcnum==cvc && balanceToAdd >=0) {
                         korisnik.setWalletBalance(korisnik.getWalletBalance() + (int)(balanceToAdd * 100));
                         korisnikDAO.updateKorisnik(korisnik);
                         JOptionPane.showMessageDialog(null, "Wallet balance updated!");
                         dispose();
-                    } else {
+                    }
+                    else if (balanceToAdd < 0) {
+                    	JOptionPane.showMessageDialog(null, "You can't remove money from your wallet.");
+                    }
+                    else {
                         JOptionPane.showMessageDialog(null, "Invalid ID card or expiration year. Please try again.");
                     }
                 } catch (NumberFormatException ex) {
