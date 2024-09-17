@@ -23,8 +23,6 @@ public class EditEvent extends JDialog {
     private JComboBox<String> eventTypeComboBox;
     private JComboBox<String> eventSubtypeComboBox;
     private JTextField eventImageField;
-    private JComboBox<Lokacija> locationComboBox;
-    private Lokacija selectedLocation;
     private JTextField maxTicketsField;
     private JCheckBox paymentOnRegistrationCheckBox;
     private Map<String, String[]> eventSubtypesMap;
@@ -37,7 +35,6 @@ public class EditEvent extends JDialog {
     private String originalType;
     private String originalSubtype;
     private String originalImagePath;
-    private Lokacija originalLocation;
     private int originalMaxTickets;
     private boolean originalPaymentOnRegistration;
     
@@ -62,9 +59,10 @@ public class EditEvent extends JDialog {
 
         // Initialize subtype map
         eventSubtypesMap = new HashMap<>();
-        eventSubtypesMap.put("Muzika", new String[]{"Koncert", "Festival", "Ostalo"});
-        eventSubtypesMap.put("Kultura", new String[]{"Izložba", "Pozorište", "Ostalo"});
-        eventSubtypesMap.put("Sport", new String[]{"Utakmica", "Trka", "Ostalo"});
+        eventSubtypesMap.put("", new String[]{""});
+        eventSubtypesMap.put("Muzika", new String[]{"", "Koncert", "Festival", "Ostalo"});
+        eventSubtypesMap.put("Kultura", new String[]{"", "Izložba", "Pozorište", "Ostalo"});
+        eventSubtypesMap.put("Sport", new String[]{"", "Utakmica", "Trka", "Ostalo"});
 
         // Store original values
         originalName = event.getNaziv();
@@ -73,7 +71,6 @@ public class EditEvent extends JDialog {
         originalType = event.getVrsta();
         originalSubtype = event.getPodvrsta();
         originalImagePath = event.getSlika();
-        originalLocation = event.getLokacija();
         originalMaxTickets = event.getMaxKartiPoKorisniku();
         originalPaymentOnRegistration = event.isNaplataPriRezervaciji();
        
@@ -127,7 +124,7 @@ public class EditEvent extends JDialog {
         lblEventType.setBounds(20, 260, 150, 30);
         contentPane.add(lblEventType);
 
-        eventTypeComboBox = new JComboBox<>(new String[]{"Muzika", "Kultura", "Sport"});
+        eventTypeComboBox = new JComboBox<>(new String[]{"", "Muzika", "Kultura", "Sport"});
         eventTypeComboBox.setFont(new Font("Chilanka", Font.PLAIN, 18));
         eventTypeComboBox.setBounds(180, 260, 200, 30);
         eventTypeComboBox.setSelectedItem(originalType);
@@ -157,23 +154,6 @@ public class EditEvent extends JDialog {
         eventImageField.setFont(new Font("Chilanka", Font.PLAIN, 18));
         eventImageField.setBounds(180, 340, 400, 30);
         contentPane.add(eventImageField);
-
-        // Location
-        JLabel lblLocation = new JLabel("Location:");
-        lblLocation.setFont(new Font("Chilanka", Font.PLAIN, 20));
-        lblLocation.setBounds(20, 380, 150, 30);
-        contentPane.add(lblLocation);
-
-        LokacijaDAO lokacijaDAO = new LokacijaDAO();
-        java.util.List<Lokacija> locations = lokacijaDAO.getAllLocations();
-        locationComboBox = new JComboBox<>(locations.toArray(new Lokacija[0]));
-        locationComboBox.setRenderer(new LocationRenderer());
-        locationComboBox.setFont(new Font("Chilanka", Font.PLAIN, 18));
-        locationComboBox.setSelectedItem(originalLocation);
-        locationComboBox.setBounds(180, 380, 300, 30);
-        contentPane.add(locationComboBox);
-
-        locationComboBox.addActionListener(e -> selectedLocation = (Lokacija) locationComboBox.getSelectedItem());
         
         // Max Tickets
         JLabel lblMaxTickets = new JLabel("Max Tickets:");
@@ -229,7 +209,6 @@ public class EditEvent extends JDialog {
         String newType = (String) eventTypeComboBox.getSelectedItem();
         String newSubtype = (String) eventSubtypeComboBox.getSelectedItem();
         String newImagePath = eventImageField.getText();
-        Lokacija newLocation = (Lokacija) locationComboBox.getSelectedItem();
         int newMaxTickets = Integer.parseInt(maxTicketsField.getText());
         boolean newPaymentOnRegistration = paymentOnRegistrationCheckBox.isSelected();
         
@@ -244,17 +223,14 @@ public class EditEvent extends JDialog {
         if (!newDate.equals(originalDate)) {
             izmjeneDAO.addChange("Dogadjaj", String.valueOf(event.getDogadjaj_id()), "datum", stringDate);
         }
-        if (!newType.equals(originalType)) {
+        if (!newType.equals(originalType) && !newType.equals("")) {
             izmjeneDAO.addChange("Dogadjaj", String.valueOf(event.getDogadjaj_id()), "vrsta", newType);
         }
-        if (!newSubtype.equals(originalSubtype)) {
+        if (!newSubtype.equals(originalSubtype) && !newType.equals("")) {
             izmjeneDAO.addChange("Dogadjaj", String.valueOf(event.getDogadjaj_id()), "podvrsta", newSubtype);
         }
         if (!newImagePath.equals(originalImagePath)) {
             izmjeneDAO.addChange("Dogadjaj", String.valueOf(event.getDogadjaj_id()), "slika", newImagePath);
-        }
-        if (!newLocation.equals(originalLocation)) {
-            izmjeneDAO.addChange("Dogadjaj", String.valueOf(event.getDogadjaj_id()), "lokacija", String.valueOf(newLocation.getLokacija_id()));
         }
         if (newMaxTickets != originalMaxTickets) {
             izmjeneDAO.addChange("Dogadjaj", String.valueOf(event.getDogadjaj_id()), "maxKartiPoKorisniku", String.valueOf(newMaxTickets));
@@ -268,14 +244,5 @@ public class EditEvent extends JDialog {
      
         dispose();
         
-    }
-        private class LocationRenderer extends JLabel implements ListCellRenderer<Lokacija> {
-            @Override
-            public Component getListCellRendererComponent(JList<? extends Lokacija> list, Lokacija value, int index, boolean isSelected, boolean cellHasFocus) {
-                setText(value.getNaziv());
-                return this;
-            }
-    }
-
-    
+    }    
 }
