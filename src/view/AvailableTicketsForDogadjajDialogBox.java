@@ -43,28 +43,28 @@ class AvailableTicket extends JPanel {
 		JPanel infoPanel = new JPanel();
 		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
 
-		infoPanel.add(new JLabel("Lokacija sjedista: " + karta.getSjediste()));
-		infoPanel.add(new JLabel("Cijena karte: "
+		infoPanel.add(new JLabel("Seat location: " + karta.getSjediste()));
+		infoPanel.add(new JLabel("Ticket price: $"
 								+ String.valueOf(karta.getCijena() / 100)
 								+ "."
 								+String.valueOf(karta.getCijena() % 100)));
-		infoPanel.add(new JLabel("Cijena rezervacije: "
-				+ (karta.getCijenaRezervacije() == 0 ? "BESPLATNO" : String.valueOf(karta.getCijenaRezervacije() / 100)
+		infoPanel.add(new JLabel("Reservation price: "
+				+ (karta.getCijenaRezervacije() == 0 ? "FREE" : "$" + String.valueOf(karta.getCijenaRezervacije() / 100)
 																	+ "."
 																	+ String.valueOf(karta.getCijenaRezervacije() % 100))));
 		if (karta.getCijenaRezervacije() != 0 && (!karta.getDogadjaj().isNaplataPriRezervaciji())) {
-			infoPanel.add(new JLabel("Rezervacija se naplacuje samo u slucaju da je rezervacija otkazana"));
+			infoPanel.add(new JLabel("You will pay for reservation only if the reservation is cancelled!"));
 		}
 		
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 		
-		rezervisiButton = new JButton("Rezervisi kartu");
+		rezervisiButton = new JButton("Reserve ticket");
 		rezervisiButton.addActionListener((e) -> {
 			rezervisiButtonPressed();
 		});
 		buttonPanel.add(rezervisiButton);
-		kupiButton = new JButton("Kupi kartu");
+		kupiButton = new JButton("Buy ticket");
 		kupiButton.addActionListener((e) -> {
 			kupiButtonPressed();
 		});
@@ -84,7 +84,7 @@ class AvailableTicket extends JPanel {
 		if (kartaDAO.countTakenTicketsForUserGivenDogadjaj(korisnik, karta.getDogadjaj()) >= karta.getDogadjaj().getMaxKartiPoKorisniku()) {
 			JOptionPane.showMessageDialog(
 		            parentDialog,
-		            "Vec ste kupili/rezervisali maksimalan broj karti za dati dogadaj. Maksimalan broj karti je: "
+		            "You've already bought/reserved maximum ammount of tickets for this Event. Maximum ticket count is: "
 		            	+String.valueOf(karta.getDogadjaj().getMaxKartiPoKorisniku()),
 		            "Oopsie :(",
 		            JOptionPane.INFORMATION_MESSAGE
@@ -94,7 +94,7 @@ class AvailableTicket extends JPanel {
 		if (korisnik.getWalletBalance() < calculatedPrice) {
 			JOptionPane.showMessageDialog(
 		            parentDialog,
-		            "Nemate dovoljno novca da bi kupili kartu. Cijena karte sa eventualnim popustom je: " +
+		            "You do not have enough money to buy this ticket. Ticket price with possible discount is: $" +
             				String.valueOf(calculatedPrice / 100) + "." + String.valueOf(calculatedPrice % 100),
 		            "Oopsie :(",
 		            JOptionPane.INFORMATION_MESSAGE
@@ -103,9 +103,9 @@ class AvailableTicket extends JPanel {
 		}
 		int response = JOptionPane.showOptionDialog(
 				parentDialog,
-				"Cijena karte sa eventualnim popustom je: " +
+				"Ticket price with possible discount is: $" +
 						String.valueOf(calculatedPrice / 100) + "." + String.valueOf(calculatedPrice % 100),
-				"Zelite li kupiti kartu? ",
+				"Would you like to buy this ticket?",
 				JOptionPane.DEFAULT_OPTION,
 				JOptionPane.QUESTION_MESSAGE,
 				null,
@@ -128,7 +128,7 @@ class AvailableTicket extends JPanel {
 		if (kartaDAO.countTakenTicketsForUserGivenDogadjaj(korisnik, karta.getDogadjaj()) >= karta.getDogadjaj().getMaxKartiPoKorisniku()) {
 			JOptionPane.showMessageDialog(
 		            parentDialog,
-		            "Vec ste kupili/rezervisali maksimalan broj karti za dati dogadaj. Maksimalan broj karti je: "
+		            "You've already bought/reserved maximum ammount of tickets for this Event. Maximum ticket count is: "
 		            	+String.valueOf(karta.getDogadjaj().getMaxKartiPoKorisniku()),
 		            "Oopsie :(",
 		            JOptionPane.INFORMATION_MESSAGE
@@ -138,7 +138,7 @@ class AvailableTicket extends JPanel {
 		if (!karta.getDogadjaj().isNaplataPriRezervaciji() && korisnik.getWalletBalance() < 0) {
 			JOptionPane.showMessageDialog(
 		            parentDialog,
-		            "Vase stanje racuna je u minusu i ne mozete izvrsiti nikakvu kupnju ili rezervaciju zbog toga!",
+		            "Your wallet balance is negative and as such, you are unable to make any purchases!",
 		            "Oopsie :(",
 		            JOptionPane.INFORMATION_MESSAGE
 		        );
@@ -147,7 +147,7 @@ class AvailableTicket extends JPanel {
 		if (karta.getDogadjaj().isNaplataPriRezervaciji() && korisnik.getWalletBalance() < karta.getCijenaRezervacije()) {
 			JOptionPane.showMessageDialog(
 		            parentDialog,
-		            "Nemate dovoljno novca da izvrsite rezervaciju!",
+		            "You do not have enough balance to make this reservation!",
 		            "Oopsie :(",
 		            JOptionPane.INFORMATION_MESSAGE
 		        );
@@ -156,10 +156,10 @@ class AvailableTicket extends JPanel {
 		if (karta.getDogadjaj().isNaplataPriRezervaciji()) {
 			int response = JOptionPane.showOptionDialog(
 					parentDialog,
-					"Rezervacija se naplaćuje unaprijed, cijena naplate je: " +
+					"Reservation is paid upfront. The price of reservation is: " +
 							String.valueOf(karta.getCijenaRezervacije() / 100) + "."
 							+ String.valueOf(karta.getCijenaRezervacije() % 100),
-					"Zelite li rezervisati kartu? ",
+					"Would you like to make a reservation? ",
 					JOptionPane.DEFAULT_OPTION,
 					JOptionPane.QUESTION_MESSAGE,
 					null,
@@ -194,11 +194,11 @@ public class AvailableTicketsForDogadjajDialogBox extends JDialog {
 	List<Sektor> sektori;
 	List<Karta> karte;
     public AvailableTicketsForDogadjajDialogBox(KorisnikAndDogadjajListView parent, Dogadjaj dogadjaj) {
-    	super(parent, "Add Wallet Balance", true);
+    	super(parent, "Available tickets", true);
     	this.parent = parent;
     	this.dogadjaj = dogadjaj;
     	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        setTitle("Slobodne karte za " + dogadjaj.getNaziv());
+        setTitle("Available cards for: " + dogadjaj.getNaziv());
         setSize(800, 600);
         setMinimumSize(new Dimension(800, 600));
         setLayout(new BorderLayout());
@@ -258,7 +258,7 @@ public class AvailableTicketsForDogadjajDialogBox extends JDialog {
     	mainContentPanel.repaint();
     }
     public void updateWalletBalanceLabel() {
-        walletBalanceLabel.setText("Stanje racuna: "
+        walletBalanceLabel.setText("Wallet balance: "
             + String.valueOf(parent.korisnik.getWalletBalance() / 100)
             + "." 
             + String.valueOf(parent.korisnik.getWalletBalance() % 100));

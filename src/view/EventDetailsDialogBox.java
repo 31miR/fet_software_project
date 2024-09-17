@@ -59,13 +59,13 @@ class DogadjajDetailsPanel extends JPanel {
         podvrstaDogadjaja.setAlignmentX(LEFT_ALIGNMENT);
         add(podvrstaDogadjaja);
 
-        JLabel dogadjajZavrsio = new JLabel(dogadjaj.isZavrsio() ? "Dogadjaj je zavrsio!" : "");
+        JLabel dogadjajZavrsio = new JLabel(dogadjaj.isZavrsio() ? "Event is finished!" : "");
         dogadjajZavrsio.setForeground(Color.RED);
         dogadjajZavrsio.setFont(new Font("Arial", Font.BOLD, 12));
         dogadjajZavrsio.setAlignmentX(LEFT_ALIGNMENT);
         add(dogadjajZavrsio);
 
-        JLabel rezervacijeNaplacuju = new JLabel(dogadjaj.isNaplataPriRezervaciji() ? "Rezervacija se naplacuje" : "");
+        JLabel rezervacijeNaplacuju = new JLabel(dogadjaj.isNaplataPriRezervaciji() ? "Reservation is paid upfront" : "");
         rezervacijeNaplacuju.setForeground(Color.GREEN);
         rezervacijeNaplacuju.setFont(new Font("Arial", Font.BOLD, 12));
         rezervacijeNaplacuju.setAlignmentX(LEFT_ALIGNMENT);
@@ -87,7 +87,7 @@ class LokacijaDetailsPanel extends JPanel {
         nazivLokacije.setAlignmentX(LEFT_ALIGNMENT);
         add(nazivLokacije);
 
-        JLabel ukupanKapacitet = new JLabel("Ukupan kapacitet: " + String.valueOf(lokacija.getKapacitet()));
+        JLabel ukupanKapacitet = new JLabel("Location capacity: " + String.valueOf(lokacija.getKapacitet()));
         ukupanKapacitet.setFont(new Font("Arial", Font.PLAIN, 12));
         ukupanKapacitet.setAlignmentX(LEFT_ALIGNMENT);
         add(ukupanKapacitet);
@@ -160,7 +160,7 @@ public class EventDetailsDialogBox extends JDialog {
 	private Organizator organizator;
 	private JPanel dataPanel;
 	public EventDetailsDialogBox(Dogadjaj dogadjaj) {
-		super((JFrame)null, "Detalji dogadjaja", true);
+		super((JFrame)null, "Event details", true);
 		this.setSize(new Dimension(500,500));
         this.dogadjaj = dogadjaj;
         this.lokacija = dogadjaj.getLokacija();
@@ -170,17 +170,17 @@ public class EventDetailsDialogBox extends JDialog {
         
         JPanel topPanel = new JPanel();
         
-        JButton dogadjajButton = new JButton("detalji dogadjaja");
+        JButton dogadjajButton = new JButton("Event details");
         dogadjajButton.addActionListener((e) -> {
         	dogadjajButtonPressed();
         });
         topPanel.add(dogadjajButton);
-        JButton lokacijaButton = new JButton("detalji lokacije");
+        JButton lokacijaButton = new JButton("Location details");
         lokacijaButton.addActionListener((e) -> {
         	lokacijaButtonPressed();
         });
         topPanel.add(lokacijaButton);
-        JButton organizatorButton = new JButton("detalji o organizatoru");
+        JButton organizatorButton = new JButton("Event creator details");
         organizatorButton.addActionListener((e) -> {
         	organizatorButtonPressed();
         });

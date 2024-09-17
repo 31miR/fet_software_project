@@ -62,14 +62,14 @@ class GuestDogadjajPanel extends JPanel {
 		infoPanel.add(new JLabel(dogadjaj.getDatum().toString()));
 		infoPanel.add(new JLabel(dogadjaj.getVrsta()));
 		infoPanel.add(new JLabel(dogadjaj.getPodvrsta()));
-		infoPanel.add(new JLabel(dogadjaj.isZavrsio() ? "DOGADJAJ JE ZAVRSEN!" : ""));
+		infoPanel.add(new JLabel(dogadjaj.isZavrsio() ? "Event is finished!" : ""));
 		infoPanel.add(new JLabel(dogadjaj.getLokacija().getGrad()));
 
 		// Panel za dugmad
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
-		JButton detaljiButton = new JButton("Detaljnije informacije");
+		JButton detaljiButton = new JButton("Details");
 		detaljiButton.addActionListener((e) -> {
 			detaljiButtonPressed();
 		});
@@ -135,7 +135,7 @@ public class Guest extends JFrame {
     String searchString;
     
     public Guest() {
-        setTitle("Karta - korisnicki panel");
+        setTitle("Karta - user panel");
         setSize(800, 600);
         setMinimumSize(new Dimension(800, 600));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -162,7 +162,7 @@ public class Guest extends JFrame {
         searchBarTF = new JTextField("search bar", 15);
         addPlaceholderEffect(searchBarTF, "search bar");
         searchPanel.add(searchBarTF);
-        showFinishedCheckBox = new JCheckBox("prikazi zavrsene dogadjaje");
+        showFinishedCheckBox = new JCheckBox("show finished events");
         searchPanel.add(showFinishedCheckBox);
         JButton searchButton = new JButton("search");
         searchButton.addActionListener((e) -> {

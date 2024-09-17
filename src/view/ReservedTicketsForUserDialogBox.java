@@ -38,28 +38,28 @@ class ReservedTicket extends JPanel {
 		JPanel infoPanel = new JPanel();
 		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
 
-		infoPanel.add(new JLabel("Lokacija sjedista: " + karta.getSjediste()));
-		infoPanel.add(new JLabel("Cijena karte: "
+		infoPanel.add(new JLabel("Seat location: " + karta.getSjediste()));
+		infoPanel.add(new JLabel("Ticket price: $"
 								+ String.valueOf(karta.getCijena() / 100)
 								+ "."
 								+String.valueOf(karta.getCijena() % 100)));
-		infoPanel.add(new JLabel("Cijena rezervacije: "
-				+ (karta.getCijenaRezervacije() == 0 ? "BESPLATNO" : String.valueOf(karta.getCijenaRezervacije() / 100)
+		infoPanel.add(new JLabel("Reservation price: "
+				+ (karta.getCijenaRezervacije() == 0 ? "FREE" : "$" + String.valueOf(karta.getCijenaRezervacije() / 100)
 																	+ "."
 																	+ String.valueOf(karta.getCijenaRezervacije() % 100))));
 		if (karta.getCijenaRezervacije() != 0 && (!karta.getDogadjaj().isNaplataPriRezervaciji())) {
-			infoPanel.add(new JLabel("Rezervacija se naplacuje samo u slucaju da je rezervacija otkazana"));
+			infoPanel.add(new JLabel("You will pay for reservation only if the reservation is cancelled!"));
 		}
 		
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 		
-		otkaziButton = new JButton("Otkazi rezervaciju");
+		otkaziButton = new JButton("Cancel reservation");
 		otkaziButton.addActionListener((e) -> {
 			otkaziButtonPressed();
 		});
 		buttonPanel.add(otkaziButton);
-		kupiButton = new JButton("Kupi kartu");
+		kupiButton = new JButton("Buy ticket");
 		kupiButton.addActionListener((e) -> {
 			kupiButtonPressed();
 		});
@@ -81,7 +81,7 @@ class ReservedTicket extends JPanel {
 		if (korisnik.getWalletBalance() < calculatedPrice && calculatedPrice > 0) {
 			JOptionPane.showMessageDialog(
 		            parentDialog,
-		            "Nemate dovoljno novca da izvršite kupovinu, kolicina novca potrebna za kupnju je: "
+		            "You do not have enough balance to buy the ticket. Needed ammount is: $"
 		            	+String.valueOf(calculatedPrice / 100) + "." + String.valueOf(Math.abs(calculatedPrice) % 100),
 		            "Oopsie :(",
 		            JOptionPane.INFORMATION_MESSAGE
@@ -92,13 +92,13 @@ class ReservedTicket extends JPanel {
 		int priceWithoutReturnal = calculatedPrice + returnalAmmount;
 		int response = JOptionPane.showOptionDialog(
 				parentDialog,
-				"Cijena karte sa eventualnim popustom je: "
+				"Ticket price with possible discount is: $"
 						+ String.valueOf(priceWithoutReturnal / 100) + "." + String.valueOf(priceWithoutReturnal % 100)
-						+ (returnalAmmount == 0 ? "" : ", Kolicina novca koja se vraca (koja je data pri rezervaciji): "
+						+ (returnalAmmount == 0 ? "" : ", Returned money (the ammount you've paid when you've made the reservation): $"
 							+ String.valueOf(returnalAmmount / 100) + "." + String.valueOf(returnalAmmount % 100)
-							+ ", Krajnja cijena: " + String.valueOf(calculatedPrice / 100) + "."
+							+ ", Final price: " + String.valueOf(calculatedPrice / 100) + "."
 							+ String.valueOf(Math.abs(calculatedPrice) % 100)),
-				"Zelite li kupiti kartu? ",
+				"Do you wish to buy the ticket? ",
 				JOptionPane.DEFAULT_OPTION,
 				JOptionPane.QUESTION_MESSAGE,
 				null,
@@ -122,13 +122,13 @@ class ReservedTicket extends JPanel {
 		if (karta.getDogadjaj().isNaplataPriRezervaciji()) {
 			int response = JOptionPane.showOptionDialog(
 					parentDialog,
-					"Jeste li sigurni da zelite otkazati rezervaciju",
-					"Zelite li otkazati rezervaciju?",
+					"Are you sure you want to cancel the reservation",
+					"Cancel?",
 					JOptionPane.DEFAULT_OPTION,
 					JOptionPane.QUESTION_MESSAGE,
 					null,
-					new String[]{"Da", "Ne"},
-					"Ne"
+					new String[]{"Yes", "No"},
+					"No"
 					);
 			if (response == 1) { //means he pressed no!
 				return;
@@ -137,16 +137,16 @@ class ReservedTicket extends JPanel {
 		else {
 			int response = JOptionPane.showOptionDialog(
 					parentDialog,
-					"Jeste li sigurni da zelite otkazati rezervaciju?" + (karta.getCijenaRezervacije() == 0 ? ""
-							: " Rezervacija ce vam ipak biti naplacena ukoliko to ucinite. Cijena: "
+					"Are you sure you want to cancel the reservation?" + (karta.getCijenaRezervacije() == 0 ? ""
+							: " You will have to pay for the reservation if you decide to cancel. Reservation price: $"
 								+ String.valueOf(karta.getCijenaRezervacije() / 100) + "."
 								+ String.valueOf(karta.getCijenaRezervacije() % 100)),
-					"Zelite li otkazati rezervaciju?",
+					"Do you wish to cancel said reservation?",
 					JOptionPane.DEFAULT_OPTION,
 					JOptionPane.QUESTION_MESSAGE,
 					null,
-					new String[]{"Da", "Ne"},
-					"Ne"
+					new String[]{"Yes", "No"},
+					"No"
 					);
 			if (response == 1) { //means he pressed no!
 				return;
@@ -182,7 +182,7 @@ public class ReservedTicketsForUserDialogBox extends JDialog {
     	parent.korisnik = korisnikDAO.searchByUserName(parent.korisnik.getUsername());
     	
     	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        setTitle("Rezervisane karte - " + parent.korisnik.getName() + " " + parent.korisnik.getLastName());
+        setTitle("Reserved tickets - " + parent.korisnik.getName() + " " + parent.korisnik.getLastName());
         setSize(800, 600);
         setMinimumSize(new Dimension(800, 600));
         setLayout(new BorderLayout());
@@ -225,7 +225,7 @@ public class ReservedTicketsForUserDialogBox extends JDialog {
     	mainContentPanel.repaint();
     }
     public void updateWalletBalanceLabel() {
-        walletBalanceLabel.setText("Stanje racuna: "
+        walletBalanceLabel.setText("Wallet balance: "
             + String.valueOf(parent.korisnik.getWalletBalance() / 100)
             + "." 
             + String.valueOf(parent.korisnik.getWalletBalance() % 100));

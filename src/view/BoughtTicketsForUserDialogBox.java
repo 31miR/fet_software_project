@@ -40,23 +40,23 @@ class BoughtTicket extends JPanel {
 		JPanel infoPanel = new JPanel();
 		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
 
-		infoPanel.add(new JLabel("Lokacija sjedista: " + karta.getSjediste()));
-		infoPanel.add(new JLabel("Cijena karte: "
+		infoPanel.add(new JLabel("Seat location: " + karta.getSjediste()));
+		infoPanel.add(new JLabel("Ticket price: $"
 								+ String.valueOf(karta.getCijena() / 100)
 								+ "."
 								+String.valueOf(karta.getCijena() % 100)));
-		infoPanel.add(new JLabel("Cijena rezervacije: "
-				+ (karta.getCijenaRezervacije() == 0 ? "BESPLATNO" : String.valueOf(karta.getCijenaRezervacije() / 100)
+		infoPanel.add(new JLabel("Reservation price: $"
+				+ (karta.getCijenaRezervacije() == 0 ? "FREE" : "$" + String.valueOf(karta.getCijenaRezervacije() / 100)
 																	+ "."
 																	+ String.valueOf(karta.getCijenaRezervacije() % 100))));
 		if (karta.getCijenaRezervacije() != 0 && (!karta.getDogadjaj().isNaplataPriRezervaciji())) {
-			infoPanel.add(new JLabel("Rezervacija se naplacuje samo u slucaju da je rezervacija otkazana"));
+			infoPanel.add(new JLabel("You will pay for reservation only if the reservation is cancelled!"));
 		}
 		
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 		
-		JButton generisiPDFButton = new JButton("generisi PDF");
+		JButton generisiPDFButton = new JButton("generate PDF");
 		generisiPDFButton.addActionListener((e) -> {
 			generisiPDFButtonPressed();
 		});
@@ -84,12 +84,12 @@ class BoughtTicket extends JPanel {
 	            Document document = new Document(pdf);
 	            
 	            // Dodaj podatke o karti
-	            document.add(new Paragraph("Cijena karte: " + String.valueOf(karta.getCijena() / 100) + "."
+	            document.add(new Paragraph("Ticket price: $" + String.valueOf(karta.getCijena() / 100) + "."
 	            		+ String.valueOf(karta.getCijena() % 100)));
-	            document.add(new Paragraph("Sjediste: " + karta.getSjediste()));
-	            document.add(new Paragraph("Sektor: " + karta.getSektor().getNaziv()));
-	            document.add(new Paragraph("Dogadjaj: " + karta.getDogadjaj().getNaziv()));
-	            document.add(new Paragraph("Datum: " + karta.getDogadjaj().getDatum()));
+	            document.add(new Paragraph("Seat location: " + karta.getSjediste()));
+	            document.add(new Paragraph("Sector: " + karta.getSektor().getNaziv()));
+	            document.add(new Paragraph("Event: " + karta.getDogadjaj().getNaziv()));
+	            document.add(new Paragraph("Date: " + karta.getDogadjaj().getDatum()));
 	            
 	            document.close();
 	        } catch (IOException e) {
@@ -109,11 +109,11 @@ public class BoughtTicketsForUserDialogBox extends JDialog {
 	JPanel mainContentPanel;
 	List<Karta> karte;
     public BoughtTicketsForUserDialogBox(KorisnikAndDogadjajListView parent) {
-    	super(parent, "Add Wallet Balance", true);
+    	super(parent, "Bought tickets", true);
     	this.parent = parent;
     	
     	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        setTitle("Kupljene karte - " + parent.korisnik.getName() + " " + parent.korisnik.getLastName());
+        setTitle("Bought tickets - " + parent.korisnik.getName() + " " + parent.korisnik.getLastName());
         setSize(800, 600);
         setMinimumSize(new Dimension(800, 600));
         setLayout(new BorderLayout());
@@ -121,7 +121,7 @@ public class BoughtTicketsForUserDialogBox extends JDialog {
         topPanel = new JPanel();
         topPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         
-        topPanel.add(new JLabel("Lista svih kupljenih karti"));
+        topPanel.add(new JLabel("List of all bought tickets"));
         
         mainContentPanel = new JPanel();
         mainContentPanel.setLayout(new BoxLayout(mainContentPanel, BoxLayout.Y_AXIS));

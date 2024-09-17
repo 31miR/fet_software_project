@@ -77,7 +77,7 @@ public class RegisterOrg extends JFrame {
         contentPane.add(label);
         
 
-        JLabel lblNewLabel = new JLabel("Dobrodosli u Kartu!");
+        JLabel lblNewLabel = new JLabel("Welcome to Karta!");
         lblNewLabel.setForeground(Color.BLACK);
         lblNewLabel.setFont(new Font("Chilanka", Font.ITALIC, 46));
         lblNewLabel.setBounds(500, 12, 600, 95);
