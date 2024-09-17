@@ -13,6 +13,7 @@ import java.awt.event.WindowEvent;
 
 import model.Dogadjaj;
 import model.DogadjajDAO;
+import model.KartaDAO;
 import model.Korisnik;
 import model.LokacijaDAO;
 
@@ -125,6 +126,7 @@ public class KorisnikAndDogadjajListView extends JFrame {
     private static final long serialVersionUID = 1L;
     private LokacijaDAO lokacijaDAO = new LokacijaDAO();
     private DogadjajDAO dogadjajDAO = new DogadjajDAO();
+    private KartaDAO kartaDAO = new KartaDAO();
     public Korisnik korisnik;
     private int dogadjajOffset = 0;
     private final int PER_PAGE = 5;
@@ -146,6 +148,8 @@ public class KorisnikAndDogadjajListView extends JFrame {
     
     public KorisnikAndDogadjajListView(Korisnik k) {
     	this.korisnik = k;
+    	kartaDAO.forceUserReservedPayment(korisnik);
+    	kartaDAO.removeUserReservedAndPaid(korisnik);
         setTitle("Karta - korisnicki panel");
         setSize(800, 600);
         setMinimumSize(new Dimension(800, 600));
