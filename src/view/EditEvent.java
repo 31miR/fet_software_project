@@ -102,6 +102,7 @@ public class EditEvent extends JDialog {
         eventDescriptionArea.setLineWrap(true);
         eventDescriptionArea.setWrapStyleWord(true);
         JScrollPane descriptionScrollPane = new JScrollPane(eventDescriptionArea);
+        descriptionScrollPane.getVerticalScrollBar().setUnitIncrement(16);
         descriptionScrollPane.setBounds(20, 100, 560, 100);
         contentPane.add(descriptionScrollPane);
 

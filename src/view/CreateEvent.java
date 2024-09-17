@@ -96,6 +96,7 @@ public class CreateEvent extends JDialog {
 	        eventDescriptionArea.setLineWrap(true); 
 
 	        JScrollPane scrollPane = new JScrollPane(eventDescriptionArea);
+	        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 	        scrollPane.setBounds(200, 80, 350, 70); 
 	        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); 
 	        contentPane.add(scrollPane);

@@ -40,6 +40,7 @@ public class ViewEvent extends JFrame {
         eventsPanel = new JPanel();
         eventsPanel.setLayout(new BoxLayout(eventsPanel, BoxLayout.Y_AXIS));
         JScrollPane scrollPane = new JScrollPane(eventsPanel);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         add(scrollPane, BorderLayout.CENTER);
 
         // See More Button
