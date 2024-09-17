@@ -250,12 +250,18 @@ public class CreateEvent extends JDialog {
 	                    dogadjajDAO.addDogadjaj(dogadjaj);
 	                    
 	                    //THIS IS EXPERIMENTAL
-	                    AddTickets dialog = new AddTickets( dogadjaj, selectedLocation);
+	                    AddTickets dialog = new AddTickets(dogadjaj, selectedLocation);
 	                    dialog.setVisible(true);
 	                    //THIS IS THE END
 	                    
-	                    JOptionPane.showMessageDialog(CreateEvent.this, "Event saved successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-	                    dispose();
+	                    if (dialog.isTicketsAdded()) {
+	                    	JOptionPane.showMessageDialog(CreateEvent.this, "Event saved successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+	                    	dispose();
+	                    }
+	                    else {
+	                    	dogadjajDAO.deleteDogadjaj(dogadjaj);
+	                    	JOptionPane.showMessageDialog(CreateEvent.this, "Did not create event, no tickets were added",  "0 tickets added", JOptionPane.INFORMATION_MESSAGE);
+	                    }
 	                } catch (IOException e1) {
 	                	e1.printStackTrace();
 	                    JOptionPane.showMessageDialog(CreateEvent.this, "Error saving image: " + e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
