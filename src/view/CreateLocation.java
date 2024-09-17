@@ -1,24 +1,32 @@
 package view;
 
-import javax.swing.*;
-
-import javax.swing.border.Border;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import model.Lokacija;
-import model.Sektor;
-import model.LokacijaDAO;
-import model.SektorDAO;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.Border;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
 import model.Administrator;
+import model.Lokacija;
+import model.LokacijaDAO;
+import model.Sektor;
+import model.SektorDAO;
 
 public class CreateLocation extends JFrame {
 	private JTextField nazivField;

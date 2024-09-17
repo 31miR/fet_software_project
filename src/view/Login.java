@@ -1,16 +1,27 @@
 package view;
 
-import javax.swing.*;
-import javax.swing.border.Border;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+
 import model.Administrator;
-import model.Organizator;
-import model.Korisnik;
 import model.AdministratorDAO;
-import model.OrganizatorDAO;
+import model.Korisnik;
 import model.KorisnikDAO;
+import model.Organizator;
+import model.OrganizatorDAO;
 
 public class Login extends JFrame {
 

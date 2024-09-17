@@ -1,14 +1,14 @@
 package model;
 
-import misc.EntityManagerFactoryHolder;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+
+import misc.EntityManagerFactoryHolder;
 
 
 public class DogadjajDAO {

@@ -1,18 +1,26 @@
 package view;
 
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.GridLayout;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
 import model.Dogadjaj;
 import model.Karta;
 import model.KartaDAO;
 import model.Lokacija;
 import model.Sektor;
 import model.SektorDAO;
-
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
 
 public class AddTickets extends JDialog {
     private Dogadjaj dogadjaj;

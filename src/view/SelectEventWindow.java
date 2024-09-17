@@ -1,14 +1,24 @@
 package view;
-import javax.swing.*;
-
-
-import model.Dogadjaj;
-import model.Organizator;
-import model.IzmjeneDAO;
-
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
+import model.Dogadjaj;
+import model.IzmjeneDAO;
+import model.Organizator;
 
 public class SelectEventWindow extends JDialog {
     private Organizator organizator;

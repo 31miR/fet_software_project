@@ -1,9 +1,17 @@
 package view;
 
-import javax.swing.*;
-import model.Organizator;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Image;
 
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import model.Organizator;
 
 public class OrganizatorView extends JFrame {
 

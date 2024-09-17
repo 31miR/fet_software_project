@@ -24,6 +24,7 @@ public class CreateDBAndBootStrapDataScript {
 				sql = new StringBuilder();
 			}
 		}
+		reader.close();
 		reader = new BufferedReader(new FileReader("src/misc/sqlAddTestData.sql"));
 		sql = new StringBuilder();
 		while ((line = reader.readLine()) != null) {
@@ -35,6 +36,7 @@ public class CreateDBAndBootStrapDataScript {
 				sql = new StringBuilder();
 			}
 		}
+		reader.close();
 		statement.close();
 		connection.close();
 	}

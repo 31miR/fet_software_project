@@ -1,7 +1,9 @@
 package model;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+
 import misc.EntityManagerFactoryHolder;
-import javax.persistence.*;
 
 public class AdministratorDAO {
 	private EntityManagerFactory emf = EntityManagerFactoryHolder.getEntityManagerFactory();

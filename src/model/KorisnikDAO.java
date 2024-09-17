@@ -1,8 +1,11 @@
 package model;
 
-import misc.EntityManagerFactoryHolder;
-import javax.persistence.*;
 import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+
+import misc.EntityManagerFactoryHolder;
 
 public class KorisnikDAO {
 	private EntityManagerFactory emf = EntityManagerFactoryHolder.getEntityManagerFactory();

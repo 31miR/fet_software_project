@@ -2,7 +2,9 @@ package model;
 
 import java.io.Serializable;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
 
 class IzmjeneId implements Serializable {
 	@SuppressWarnings("unused")

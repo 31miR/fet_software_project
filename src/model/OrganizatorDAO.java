@@ -1,10 +1,11 @@
 package model;
 
-import misc.EntityManagerFactoryHolder;
-
 import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+
+import misc.EntityManagerFactoryHolder;
 
 public class OrganizatorDAO {
 	private EntityManagerFactory emf = EntityManagerFactoryHolder.getEntityManagerFactory();

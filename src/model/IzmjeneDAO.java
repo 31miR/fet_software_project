@@ -1,15 +1,14 @@
 package model;
 
-import misc.EntityManagerFactoryHolder;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+
+import misc.EntityManagerFactoryHolder;
 
 public class IzmjeneDAO {
 	private EntityManagerFactory emf = EntityManagerFactoryHolder.getEntityManagerFactory();

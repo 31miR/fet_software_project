@@ -1,11 +1,12 @@
 package model;
 
-import misc.EntityManagerFactoryHolder;
-
 import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.TypedQuery;
+
+import misc.EntityManagerFactoryHolder;
 
 public class SektorDAO {
     EntityManagerFactory emf = EntityManagerFactoryHolder.getEntityManagerFactory();
