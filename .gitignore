@@ -4,3 +4,4 @@ bin
 /myDB/
 derby.log
 .classpath
+/resources/
