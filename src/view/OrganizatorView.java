@@ -16,11 +16,9 @@ import model.Organizator;
 public class OrganizatorView extends JFrame {
 
     private static final long serialVersionUID = 1L;
-    private Organizator organizator;
     private JPanel contentPane;
 
     public OrganizatorView(Organizator organizator) {
-        this.organizator = organizator;
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(450, 190, 1014, 650);
         setResizable(false);
@@ -71,7 +69,7 @@ public class OrganizatorView extends JFrame {
         viewActiveEventsButton.addActionListener(e -> {
             // Create the dialog, passing the current frame (this) as the owner
             ViewEventOrganizator viewActiveEventsDialog = new ViewEventOrganizator(this, organizator);
-          //  viewActiveEventsDialog.setVisible(true);
+            viewActiveEventsDialog.setVisible(true);
         });
         contentPane.add(viewActiveEventsButton);
 
@@ -85,7 +83,7 @@ public class OrganizatorView extends JFrame {
         viewFinishedEventsButton.addActionListener(e -> {
             // Create the dialog, passing the current frame (this) as the owner
             FinishedEventOrganizator viewFinishedEventsDialog = new FinishedEventOrganizator(this, organizator);
-           // viewFinishedEventsDialog.setVisible(true);
+            viewFinishedEventsDialog.setVisible(true);
         });
         contentPane.add(viewFinishedEventsButton);
 

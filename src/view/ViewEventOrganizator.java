@@ -25,11 +25,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import model.Dogadjaj;
-import model.DogadjajDAO;
 import model.Organizator;
 
 public class ViewEventOrganizator extends JDialog {  // Extend JDialog instead of JFrame
-    private DogadjajDAO dogadjajDAO;
     private JPanel eventsPanel;
     private JButton seeMoreButton;
     private int start = 0;
@@ -39,7 +37,6 @@ public class ViewEventOrganizator extends JDialog {  // Extend JDialog instead o
     public ViewEventOrganizator(Frame owner, Organizator organizator) {
         super(owner, "View Active Events", true);  // Modal dialog with title
         this.organizator = organizator;
-        dogadjajDAO = new DogadjajDAO();
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         
         setPreferredSize(new Dimension(800, 600));
@@ -76,7 +73,6 @@ public class ViewEventOrganizator extends JDialog {  // Extend JDialog instead o
 
         pack();
         setLocationRelativeTo(owner);  // Center relative to owner window
-        setVisible(true);  // Show dialog after components are loaded
     }
 
 

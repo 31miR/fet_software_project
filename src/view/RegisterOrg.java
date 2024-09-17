@@ -28,13 +28,11 @@ import model.OrganizatorDAO;
 public class RegisterOrg extends JFrame {
 
     private static final long serialVersionUID = 1L;
-    private JLabel label;
     private JPanel contentPane;
 
     private KorisnikDAO userController = new KorisnikDAO();
     private AdministratorDAO adminController = new AdministratorDAO();
     private OrganizatorDAO orgController = new OrganizatorDAO();
-    private JTextField textField;
     private JPasswordField passwordField;
     private JTextField firstNameField;
     private JTextField lastNameField;

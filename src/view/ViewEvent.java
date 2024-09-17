@@ -32,11 +32,9 @@ public class ViewEvent extends JFrame {
     private JButton seeMoreButton;
     private int start = 0;
     private final int limit = 5;
-    private Administrator admin; // Dodana varijabla za admina
 
     // Konstruktor koji prima admin objekt
     public ViewEvent(Administrator admin) {
-        this.admin = admin; // Postavljanje admina
         dogadjajDAO = new DogadjajDAO();
         setTitle("Karta");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

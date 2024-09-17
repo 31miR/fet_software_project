@@ -42,10 +42,8 @@ public class CreateLocation extends JFrame {
 	private SektorDAO sektorDAO;
 	private List<Sektor> sektori;
 	private int ukupniKapacitet;
-	private Administrator admin;
 
 	public CreateLocation(Administrator admin) {
-		this.admin = admin;
 
 		// Postavke prozora
 		setTitle("Create Location");

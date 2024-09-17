@@ -25,12 +25,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import model.Dogadjaj;
-import model.DogadjajDAO;
 import model.Organizator;
 
 public class FinishedEventOrganizator extends JDialog {
 
-    private DogadjajDAO dogadjajDAO;
     private JPanel eventsPanel;
     private JButton seeMoreButton;
     private int start = 0;
@@ -40,7 +38,6 @@ public class FinishedEventOrganizator extends JDialog {
     public FinishedEventOrganizator(Frame owner,Organizator organizator) {
     	super(owner, "View Finished Events", true);  // Modal dialog with title
         this.organizator = organizator;
-        dogadjajDAO = new DogadjajDAO();
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         
         setPreferredSize(new Dimension(800, 600));
@@ -79,7 +76,6 @@ public class FinishedEventOrganizator extends JDialog {
 
         pack();
         setLocationRelativeTo(owner);  // Center relative to owner window
-        setVisible(true);  //
     }
 
     private void loadEvents() {

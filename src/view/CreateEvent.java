@@ -58,11 +58,9 @@ public class CreateEvent extends JDialog {
 	private JTextField maxTicketsField;
 	private JTextComponent eventImageField;
 	private JCheckBox paymentOnRegistrationCheckBox;
-	private Organizator organizator;
 	
 
 	    public CreateEvent(Organizator organizator) {
-	    	this.organizator = organizator;
 	        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	        setBounds(450, 210, 620, 750);
 	        setResizable(false);
@@ -122,7 +120,6 @@ public class CreateEvent extends JDialog {
 	        lblEventDate.setBounds(30, 220, 150, 30);
 	        contentPane.add(lblEventDate);
 
-	        Calendar calendar = Calendar.getInstance();
 	        SpinnerDateModel model = new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_MONTH);
 	        dateSpinner = new JSpinner(model);
 	        JSpinner.DateEditor editor = new JSpinner.DateEditor(dateSpinner, "yyyy-MM-dd HH:mm:ss");
@@ -291,7 +288,6 @@ public class CreateEvent extends JDialog {
 	    private boolean validateFields() {
 	        String newName = eventNameField.getText().trim();
 	        String newDescription = eventDescriptionArea.getText().trim();
-	        Date newDate = (Date) dateSpinner.getValue();
 	        Lokacija newLocation = (Lokacija) locationComboBox.getSelectedItem();
 	        int newMaxTickets;
 	        

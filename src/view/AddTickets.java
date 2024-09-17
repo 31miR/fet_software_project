@@ -23,18 +23,14 @@ import model.Sektor;
 import model.SektorDAO;
 
 public class AddTickets extends JDialog {
-    private Dogadjaj dogadjaj;
     private KartaDAO kartaDAO;
     private SektorDAO sektorDAO = new SektorDAO();
-    private Lokacija selectedLokacija;
     private boolean ticketsAdded = false;
     private List<Karta> createdTickets = new ArrayList<>(); // List to keep track of created tickets
 
     public AddTickets(Dogadjaj dogadjaj, Lokacija selectedLokacija) {
     	super((JFrame)null, "Add tickets", true);
-        this.dogadjaj = dogadjaj;
         this.kartaDAO = new KartaDAO();
-        this.selectedLokacija = selectedLokacija;
 
         if (selectedLokacija == null) {
             JOptionPane.showMessageDialog(this, "Selected location cannot be null", "Error", JOptionPane.ERROR_MESSAGE);

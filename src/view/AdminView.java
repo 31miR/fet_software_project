@@ -17,11 +17,9 @@ import model.Administrator;
 public class AdminView extends JFrame {
 
     private static final long serialVersionUID = 1L;
-    private Administrator admin;
     private JPanel contentPane;
 
     public AdminView(Administrator admin) {
-        this.admin = admin;
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(450, 190, 1014, 800); 
         setResizable(false);
